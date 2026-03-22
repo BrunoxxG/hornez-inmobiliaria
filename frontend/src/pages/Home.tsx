@@ -1,26 +1,40 @@
 import { Link } from 'react-router-dom'
+import Carousel from '../components/common/Carousel'
 import heroImage from '../assets/sierras-portada.jpg'
 
 const Home = () => {
+  const carouselItems = [
+    {
+      id: 1,
+      title: 'Encontrá tu hogar perfecto',
+      description: 'En Hornez Inmobiliaria tenemos las mejores propiedades',
+      image: heroImage,
+      url: '/properties',
+    },
+    {
+      id: 2,
+      title: 'Inversiones Seguras',
+      description: 'Propiedades verificadas y listas para invertir',
+      image: heroImage,
+      url: '/properties',
+    },
+    {
+      id: 3,
+      title: '40 años de experiencia',
+      description: 'Confianza y profesionalismo en cada transacción',
+      image: heroImage,
+      url: '/contact',
+    },
+  ]
+
   return (
-    <div>
-      {/* Hero Section with Image */}
-      <section className="relative h-96 md:h-screen bg-cover bg-center" style={{backgroundImage: `url(${heroImage})`}}>
-        <div className="absolute inset-0 bg-black bg-opacity-40"></div>
-        <div className="relative container mx-auto px-4 h-full flex items-center justify-center text-center text-white">
-          <div>
-            <h1 className="text-5xl md:text-6xl font-bold mb-4">Bienvenido a Hornez Inmobiliaria</h1>
-            <p className="text-lg md:text-2xl mb-8">Encuentra tu hogar perfecto entre nuestras propiedades excepcionales</p>
-            <Link to="/properties" className="btn-secondary inline-block">
-              Explorar Propiedades
-            </Link>
-          </div>
-        </div>
-      </section>
+    <div className="w-full overflow-x-hidden">
+      {/* Carousel */}
+      <Carousel items={carouselItems} />
 
       {/* Features Section */}
-      <section className="py-16 bg-gray-100">
-        <div className="container mx-auto px-4">
+      <section className="w-full py-16 bg-gray-100">
+        <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">¿Por qué elegirnos?</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="card text-center">
@@ -43,8 +57,8 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16">
-        <div className="container mx-auto px-4 text-center">
+      <section className="w-full py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">¿Listo para encontrar tu hogar?</h2>
           <p className="text-gray-600 mb-8">Sabemos que buscar hogar puede ser abrumador.</p>
           <Link to="/properties" className="btn-primary">
