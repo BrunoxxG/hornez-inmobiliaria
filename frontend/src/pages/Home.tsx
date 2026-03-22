@@ -1,16 +1,20 @@
 import { Link } from 'react-router-dom'
+import heroImage from '../assets/sierras-portada.jpg'
 
 const Home = () => {
   return (
     <div>
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-primary to-secondary text-white py-20">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-5xl font-bold mb-4">Bienvenido a Hornez Inmobiliaria</h1>
-          <p className="text-xl mb-8">Encuentra tu hogar perfecto entre nuestras propiedades excepcionales</p>
-          <Link to="/properties" className="btn-secondary">
-            Explorar Propiedades
-          </Link>
+      {/* Hero Section with Image */}
+      <section className="relative h-96 md:h-screen bg-cover bg-center" style={{backgroundImage: `url(${heroImage})`}}>
+        <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+        <div className="relative container mx-auto px-4 h-full flex items-center justify-center text-center text-white">
+          <div>
+            <h1 className="text-5xl md:text-6xl font-bold mb-4">Bienvenido a Hornez Inmobiliaria</h1>
+            <p className="text-lg md:text-2xl mb-8">Encuentra tu hogar perfecto entre nuestras propiedades excepcionales</p>
+            <Link to="/properties" className="btn-secondary inline-block">
+              Explorar Propiedades
+            </Link>
+          </div>
         </div>
       </section>
 
