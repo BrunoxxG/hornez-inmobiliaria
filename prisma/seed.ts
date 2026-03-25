@@ -31,6 +31,53 @@ async function main() {
     skipDuplicates: true,
   });
 
+  // =====================
+  // LISTING TYPES
+  // =====================
+  await prisma.listingType.createMany({
+    data: [
+      { name: "Venta", slug: "venta" },
+      { name: "Alquiler", slug: "alquiler" },
+    ],
+    skipDuplicates: true,
+  });
+
+  // =====================
+  // PROPERTY TYPES
+  // =====================
+  await prisma.propertyType.createMany({
+    data: [
+      { name: "Casa", slug: "casa" },
+      { name: "Departamento", slug: "departamento" },
+      { name: "Cabaña", slug: "cabaña" },
+      { name: "Terreno", slug: "terreno" },
+      { name: "Oficina", slug: "oficina" },
+      { name: "Local", slug: "local" },
+    ],
+    skipDuplicates: true,
+  });
+
+  // =====================
+  // FEATURES
+  // =====================
+  await prisma.feature.createMany({
+    data: [
+      { name: "Pileta" },
+      { name: "Garage" },
+      { name: "Balcón" },
+      { name: "Terraza" },
+      { name: "Patio" },
+      { name: "Quincho" },
+      { name: "Parrilla" },
+      { name: "Aire acondicionado" },
+      { name: "Calefacción" },
+      { name: "Ascensor" },
+      { name: "Seguridad 24hs" },
+      { name: "Amoblado" },
+    ],
+    skipDuplicates: true,
+  });
+
   console.timeEnd("Seeding complete 🌱");
 }
 

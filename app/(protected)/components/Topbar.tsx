@@ -27,7 +27,7 @@ export default function Topbar({
   };
 
   return (
-    <header className="sticky top-0 z-999 flex items-center justify-between border-b border-gray-200 px-4 md:px-8 py-4">
+    <header className="sticky top-0 z-999 flex bg-white items-center justify-between border-b border-gray-200 px-4 md:px-8 py-4">
       <div className="flex items-center gap-4">
         <Button
           icon="pi pi-bars"
