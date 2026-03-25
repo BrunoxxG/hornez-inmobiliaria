@@ -33,7 +33,7 @@ export default function FormLogin() {
       if (response.error) {
         setError(response.error);
       } else {
-        router.push('/dashboard');
+        router.push('/dashboard/home');
       }
     } catch (error) {
       setError("Error al conectar con el servidor");

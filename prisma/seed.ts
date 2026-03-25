@@ -14,14 +14,6 @@ const prisma = new PrismaClient({
 async function main() {
   console.time("Seeding complete 🌱");
 
-  await prisma.company.create({
-    data: {
-      name: "Hornez Inmobiliaria",
-      address: "Camino 4215 - La Paz, Cordoba",
-      phone: "1133557799",
-    },
-  });
-
   // =====================
   // USERS
   // =====================
