@@ -1,5 +1,6 @@
 import Navbar from "./components/Navbar";
 import PropertyCard from "./components/PropertyCard";
+import Footer from "./components/Footer";
 import { getFeaturedProperties } from "./lib/dataHome";
 
 export default async function Home() {
@@ -56,6 +57,56 @@ export default async function Home() {
           )}
         </div>
       </section>
+
+      {/* Quiénes Somos */}
+      <section id="nosotros" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <span className="text-hornez-red font-semibold text-sm uppercase tracking-widest">
+                Quiénes somos
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
+                Tu inmobiliaria de confianza en Villa de Merlo
+              </h2>
+              <p className="text-gray-600 leading-relaxed">
+                En Hornez Inmobiliaria te acompañamos en cada etapa del proceso, ya sea que estés buscando
+                comprar, vender o alquilar. Nuestro equipo de profesionales está comprometido con brindarte
+                una experiencia personalizada y transparente.
+              </p>
+              <ul className="space-y-3">
+                {[
+                  "Asesoramiento personalizado",
+                  "Amplio portafolio de propiedades",
+                  "Gestión integral de compra y venta",
+                  "Proceso simple y transparente",
+                ].map((item) => (
+                  <li key={item} className="flex items-center gap-3 text-gray-700">
+                    <i className="pi pi-check-circle text-hornez-red" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <a
+                href="#contacto"
+                className="inline-block bg-hornez-red text-white px-8 py-3 rounded-md font-semibold hover:bg-red-700 transition-colors"
+              >
+                Contactanos
+              </a>
+            </div>
+
+            {/* Imagen decorativa / placeholder */}
+            <div className="relative h-80 lg:h-[420px] bg-gray-100 rounded-2xl overflow-hidden">
+              <div className="flex items-center justify-center h-full text-gray-300">
+                <i className="pi pi-home text-8xl" />
+              </div>
+              {/* Reemplazar con: <Image src="/img/nosotros.jpg" alt="Equipo Hornez" fill className="object-cover" /> */}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <Footer />
     </>
   );
 }

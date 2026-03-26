@@ -23,3 +23,28 @@ export async function getFeaturedProperties() {
 }
 
 export type FeaturedProperty = Awaited<ReturnType<typeof getFeaturedProperties>>[number];
+
+export async function getPropertyById(id: string) {
+  try {
+    const property = await prisma.property.findUnique({
+      where: { id },
+      include: {
+        images: { orderBy: { order: "asc" } },
+        listingType: true,
+        propertyType: true,
+        features: { include: { feature: true } },
+      },
+    });
+
+    if (!property) return null;
+
+    return {
+      ...property,
+      price: Number(property.price),
+    };
+  } catch {
+    return null;
+  }
+}
+
+export type PropertyDetail = NonNullable<Awaited<ReturnType<typeof getPropertyById>>>;
