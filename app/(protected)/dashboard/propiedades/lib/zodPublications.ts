@@ -1,4 +1,4 @@
-import z, { boolean, date, number, object, string } from "zod";
+import z, { boolean, date, number, object, string, array } from "zod";
 import { Dispatch, SetStateAction } from "react";
 import type { Toast as ToastType } from "primereact/toast";
 
@@ -15,17 +15,26 @@ export const propertySchema = object({
   city: string(),
   province: string(),
   zipCode: string(),
-  bedrooms: number().nullable().optional(),
-  bathrooms: number().nullable().optional(),
-  area: number().nullable().optional(),
+  totalRooms: number(),
+  bedrooms: number(),
+  bathrooms: number(),
+  area: number(),
   currency: z.enum(Currency),
-  lat: number().nullable().optional(),
-  lng: number().nullable().optional(),
+  lat: number(),
+  lng: number(),
   status: z.enum(PropertyStatus),
   active: boolean(),
   userId: string(),
   createdAt: date(),
   updatedAt: date(),
+  features: array(object({
+    id: string(),
+    value: string(),
+    feature: object({
+      id: string(),
+      name: string(),
+    }),
+  }))
 });
 export type PropertyZod = z.infer<typeof propertySchema>;
 
@@ -39,14 +48,17 @@ export const propertyFormSchema = object({
   city: string("Ciudad requerida").min(1),
   province: string("Provincia requerida").min(1),
   zipCode: string("Código postal requerido").min(1),
-  bedrooms: number().optional().default(0),
-  bathrooms: number().optional().default(0),
-  area: number().optional().default(0),
+  totalRooms: number(),
+  bedrooms: number(),
+  bathrooms: number(),
+  area: number(),
   currency: z.enum(Currency),
-  lat: number().optional().default(0),
-  lng: number().optional().default(0),
+  lat: number(),
+  lng: number(),
   status: z.enum(PropertyStatus),
-  active: boolean().default(true),
+  active: boolean(),
+  userId: string("Usuario requerido").min(1, "Usuario requerido"),
+  features: array(string()),
 });
 
 export type PropertyFormZod = z.infer<typeof propertyFormSchema>;

@@ -1,3 +1,4 @@
+import { ListProperties } from "./components/ListProperties";
 import { getProperties } from "./lib/dataPublications";
 
 export default async function Publicaciones() {
@@ -5,8 +6,8 @@ export default async function Publicaciones() {
   
   return (
     <>
-      
-        <h1 className="text-4xl font-bold mb-8">Publicaciones</h1>
+      <ListProperties properties={properties} />
+        
         
     </>
   );
