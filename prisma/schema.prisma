@@ -82,14 +82,15 @@ model Property {
   province String
   zipCode  String
 
-  bedrooms  Int?
-  bathrooms Int?
-  area      Float?
+  totalRooms Int
+  bedrooms   Int
+  bathrooms  Int
+  area       Float
 
   currency Currency @default(USD)
 
-  lat Float?
-  lng Float?
+  lat Float
+  lng Float
 
   status PropertyStatus @default(AVAILABLE)
   active Boolean        @default(true)
@@ -98,6 +99,7 @@ model Property {
   user   User   @relation(fields: [userId], references: [id])
 
   images Image[]
+  video  String
 
   features PropertyFeature[]
 
@@ -124,8 +126,8 @@ model Feature {
 }
 
 model PropertyFeature {
-  id    String  @id @default(cuid())
-  value String? @default("-")
+  id    String @id @default(cuid())
+  value String @default("-")
 
   propertyId String
   property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
