@@ -17,14 +17,12 @@ export default function PropertyGallery({ images }: { images: { url: string; id:
   return (
     <div className="space-y-3">
       {/* Imagen principal */}
-      <div className="relative h-80 md:h-[480px] bg-gray-100 rounded-xl overflow-hidden">
-        <Image
+      <div className="relative h-80 md:h-120 bg-gray-100 rounded-xl overflow-hidden">
+        <img
           src={images[active].url}
           alt="Imagen de la propiedad"
-          fill
           className="object-cover"
           sizes="(max-width: 768px) 100vw, 60vw"
-          priority
         />
         {images.length > 1 && (
           <>
@@ -56,11 +54,11 @@ export default function PropertyGallery({ images }: { images: { url: string; id:
             <button
               key={img.id}
               onClick={() => setActive(i)}
-              className={`relative flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition-colors ${
+              className={`relative shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition-colors ${
                 i === active ? "border-hornez-red" : "border-transparent"
               }`}
             >
-              <Image src={img.url} alt="" fill className="object-cover" sizes="80px" />
+              <img src={img.url} alt="" className="object-cover" sizes="80px" />
             </button>
           ))}
         </div>

@@ -37,6 +37,7 @@ export type FormPropertyTypeProps = {
 export const featureSchema = object({
   id: string(),
   name: string(),
+  slug: string(),
 });
 export type FeatureZod = z.infer<typeof featureSchema>;
 export const featureFormSchema = object({

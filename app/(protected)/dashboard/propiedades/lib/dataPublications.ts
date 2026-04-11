@@ -4,13 +4,26 @@ import { PropertyZod } from "./zodPublications";
 export async function getProperties(): Promise<PropertyZod[]> {
   try {
     const findProperties = await prisma.property.findMany({
+      orderBy: {
+        updatedAt: "desc" 
+      },
       select: {
         id: true,
         title: true,
         description: true,
         price: true,
-        listingTypeId: true,
-        propertyTypeId: true,
+        listingType: {
+          select: {
+            id: true,
+            name: true,
+          }
+        },
+        propertyType: {
+          select: {
+            id: true,
+            name: true,
+          }
+        },
         address: true,
         city: true,
         province: true,
@@ -24,9 +37,11 @@ export async function getProperties(): Promise<PropertyZod[]> {
         lng: true,
         status: true,
         active: true,
+        standOut: true,
         userId: true,
         createdAt: true,
         updatedAt: true,
+        video: true,
         features: {
           select: {
             id: true,
@@ -38,7 +53,8 @@ export async function getProperties(): Promise<PropertyZod[]> {
               },
             },
           }
-        }
+        },
+        images: true,
       },
     });
 

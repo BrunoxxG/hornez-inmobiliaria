@@ -92,14 +92,15 @@ model Property {
   lat Float
   lng Float
 
-  status PropertyStatus @default(AVAILABLE)
-  active Boolean        @default(true)
+  status   PropertyStatus @default(AVAILABLE)
+  active   Boolean        @default(true)
+  standOut Boolean        @default(false)
 
   userId String
   user   User   @relation(fields: [userId], references: [id])
 
   images Image[]
-  video  String
+  video  String  @default("-")
 
   features PropertyFeature[]
 
@@ -119,6 +120,7 @@ model Property {
 model Feature {
   id   String @id @default(cuid())
   name String
+  slug String @unique
 
   properties PropertyFeature[]
 

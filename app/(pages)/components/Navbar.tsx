@@ -1,13 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
 const NAV_LINKS = [
   { href: "/", label: "Inicio" },
-  { href: "#propiedades", label: "Propiedades" },
-  { href: "#contacto", label: "Contacto" },
+  { href: "/propiedades", label: "Propiedades" },
+  { href: "/#contacto", label: "Contacto" },
 ];
 
 export default function Navbar() {
@@ -19,12 +18,10 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <Image
+            <img
               src="/img/logo.svg"
               alt="Hornez Inmobiliaria"
-              width={140}
-              height={40}
-              priority
+              className="h-16"
             />
           </Link>
 

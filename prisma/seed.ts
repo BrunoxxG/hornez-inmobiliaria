@@ -62,18 +62,18 @@ async function main() {
   // =====================
   await prisma.feature.createMany({
     data: [
-      { name: "Pileta" },
-      { name: "Garage" },
-      { name: "Balcón" },
-      { name: "Terraza" },
-      { name: "Patio" },
-      { name: "Quincho" },
-      { name: "Parrilla" },
-      { name: "Aire acondicionado" },
-      { name: "Calefacción" },
-      { name: "Ascensor" },
-      { name: "Seguridad 24hs" },
-      { name: "Amoblado" },
+      { name: "Pileta", slug: "pileta" },
+      { name: "Garage", slug: "garage" },
+      { name: "Balcón", slug: "balcon" },
+      { name: "Terraza", slug: "terraza" },
+      { name: "Patio", slug: "patio" },
+      { name: "Quincho", slug: "quincho" },
+      { name: "Parrilla", slug: "parrilla" },
+      { name: "Aire acondicionado", slug: "aire-acondicionado" },
+      { name: "Calefacción", slug: "calefaccion" },
+      { name: "Ascensor", slug: "ascensor" },
+      { name: "Seguridad 24hs", slug: "seguridad-24hs" },
+      { name: "Amoblado", slug: "amoblado" },
     ],
     skipDuplicates: true,
   });
@@ -103,6 +103,7 @@ async function main() {
         city: "Villa de Merlo",
         province: "San Luis",
         zipCode: "5881",
+        totalRooms: 5,
         bedrooms: 3,
         bathrooms: 2,
         area: 220,
@@ -111,6 +112,8 @@ async function main() {
         status: "AVAILABLE" as const,
         active: true,
         userId: user.id,
+        video: "-",
+        standOut: true
       },
       {
         title: "Departamento céntrico con balcón",
@@ -123,6 +126,7 @@ async function main() {
         city: "Villa de Merlo",
         province: "San Luis",
         zipCode: "5881",
+        totalRooms: 5,
         bedrooms: 1,
         bathrooms: 1,
         area: 55,
@@ -131,6 +135,8 @@ async function main() {
         status: "AVAILABLE" as const,
         active: true,
         userId: user.id,
+        video: "-",
+        standOut: true
       },
       {
         title: "Cabaña de montaña con vista panorámica",
@@ -143,6 +149,7 @@ async function main() {
         city: "Villa de Merlo",
         province: "San Luis",
         zipCode: "5881",
+        totalRooms: 5,
         bedrooms: 2,
         bathrooms: 1,
         area: 95,
@@ -151,6 +158,8 @@ async function main() {
         status: "AVAILABLE" as const,
         active: true,
         userId: user.id,
+        video: "-",
+        standOut: true
       },
       {
         title: "Terreno en Barrio La Sebastiana",
@@ -163,14 +172,17 @@ async function main() {
         city: "Villa de Merlo",
         province: "San Luis",
         zipCode: "5881",
-        bedrooms: null,
-        bathrooms: null,
+        totalRooms: 0,
+        bedrooms: 0,
+        bathrooms: 0,
         area: 800,
         lat: -32.3500,
         lng: -65.0050,
         status: "AVAILABLE" as const,
         active: true,
         userId: user.id,
+        video: "-",
+        standOut: true
       },
       {
         title: "Casa a estrenar en Las Moreras",
@@ -183,6 +195,7 @@ async function main() {
         city: "Villa de Merlo",
         province: "San Luis",
         zipCode: "5881",
+        totalRooms: 5,
         bedrooms: 4,
         bathrooms: 3,
         area: 280,
@@ -191,6 +204,8 @@ async function main() {
         status: "AVAILABLE" as const,
         active: true,
         userId: user.id,
+        video: "-",
+        standOut: true
       },
       {
         title: "Departamento en alquiler temporario",
@@ -203,6 +218,7 @@ async function main() {
         city: "Villa de Merlo",
         province: "San Luis",
         zipCode: "5881",
+        totalRooms: 5,
         bedrooms: 2,
         bathrooms: 1,
         area: 70,
@@ -211,6 +227,8 @@ async function main() {
         status: "AVAILABLE" as const,
         active: true,
         userId: user.id,
+        video: "-",
+        standOut: true
       },
       {
         title: "Local comercial sobre avenida principal",
@@ -223,7 +241,8 @@ async function main() {
         city: "Villa de Merlo",
         province: "San Luis",
         zipCode: "5881",
-        bedrooms: null,
+        totalRooms: 5,
+        bedrooms: 2,
         bathrooms: 1,
         area: 120,
         lat: -32.3460,
@@ -231,6 +250,8 @@ async function main() {
         status: "AVAILABLE" as const,
         active: true,
         userId: user.id,
+        video: "-",
+        standOut: false
       },
       {
         title: "Cabaña con pileta en Barranca Arriba",
@@ -243,6 +264,7 @@ async function main() {
         city: "Villa de Merlo",
         province: "San Luis",
         zipCode: "5881",
+        totalRooms: 5,
         bedrooms: 3,
         bathrooms: 2,
         area: 150,
@@ -251,6 +273,8 @@ async function main() {
         status: "AVAILABLE" as const,
         active: true,
         userId: user.id,
+        video: "-",
+        standOut: false
       },
     ];
 

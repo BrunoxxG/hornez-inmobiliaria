@@ -39,6 +39,7 @@ export async function getFeatures(): Promise<FeatureZod[]> {
       select: {
         id: true,
         name: true,
+        slug: true,
       },
     });
 

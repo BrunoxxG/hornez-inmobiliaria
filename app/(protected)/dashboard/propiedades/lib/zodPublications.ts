@@ -9,8 +9,14 @@ export const propertySchema = object({
   title: string(),
   description: string(),
   price: number(),
-  listingTypeId: string(),
-  propertyTypeId: string(),
+  listingType: object({
+    id: string(),
+    name: string(),
+  }),
+  propertyType: object({
+    id: string(),
+    name: string(),
+  }),
   address: string(),
   city: string(),
   province: string(),
@@ -24,16 +30,24 @@ export const propertySchema = object({
   lng: number(),
   status: z.enum(PropertyStatus),
   active: boolean(),
+  standOut: boolean(),
   userId: string(),
   createdAt: date(),
   updatedAt: date(),
-  features: array(object({
-    id: string(),
-    value: string(),
-    feature: object({
+  features: array(
+    object({
       id: string(),
-      name: string(),
+      value: string(),
+      feature: object({
+        id: string(),
+        name: string(),
+      }),
     }),
+  ),
+  video: string(),
+  images: array(object({
+    id: string(),
+    url: string(),
   }))
 });
 export type PropertyZod = z.infer<typeof propertySchema>;
@@ -57,8 +71,13 @@ export const propertyFormSchema = object({
   lng: number(),
   status: z.enum(PropertyStatus),
   active: boolean(),
+  standOut: boolean(),
   userId: string("Usuario requerido").min(1, "Usuario requerido"),
   features: array(string()),
+  video: string(),
+  images: array(object({ url: string(), order: number() })).optional(),
+  deletedImages: array(string()).optional(),
+  existingImages: array(object({ id: string(), order: number() })).optional(),
 });
 
 export type PropertyFormZod = z.infer<typeof propertyFormSchema>;
@@ -67,4 +86,34 @@ export type FormPropertyProps = {
   setOpenModalForm?: Dispatch<SetStateAction<boolean>>;
   property?: PropertyZod;
   toast: React.RefObject<ToastType | null>;
+};
+
+export const PROPERTY_STATUS: Record<
+  PropertyStatus,
+  {
+    label: string;
+    icon: string;
+    severity: "secondary" | "info" | "success" | "warning" | "danger";
+  }
+> = {
+  AVAILABLE: {
+    label: "Disponible",
+    icon: "✅",
+    severity: "success",
+  },
+  RESERVED: {
+    label: "Reservado",
+    icon: "⚠️",
+    severity: "info",
+  },
+  SOLD: {
+    label: "Vendido",
+    icon: "❌",
+    severity: "danger",
+  },
+  RENTED: {
+    label: "Alquilado",
+    icon: "⚠️",
+    severity: "warning",
+  },
 };

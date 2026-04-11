@@ -21,12 +21,10 @@ export default function Footer() {
           {/* Logo + descripción */}
           <div className="space-y-4">
             <Link href="/">
-              <Image
+              <img
                 src="/img/logo.svg"
                 alt="Hornez Inmobiliaria"
-                width={140}
-                height={40}
-                className="brightness-0 invert"
+                className="brightness-0 invert h-20"
               />
             </Link>
             <p className="text-sm leading-relaxed text-gray-400">

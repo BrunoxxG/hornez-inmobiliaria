@@ -22,6 +22,7 @@ export async function createProperty(values: PropertyFormZod) {
       city,
       province,
       zipCode,
+      totalRooms,
       bedrooms,
       bathrooms,
       area,
@@ -30,7 +31,11 @@ export async function createProperty(values: PropertyFormZod) {
       lng,
       status,
       active,
+      standOut,
       userId,
+      video,
+      features,
+      images,
     } = data;
     await prisma.property.create({
       data: {
@@ -43,6 +48,7 @@ export async function createProperty(values: PropertyFormZod) {
         city,
         province,
         zipCode,
+        totalRooms,
         bedrooms,
         bathrooms,
         area,
@@ -51,7 +57,20 @@ export async function createProperty(values: PropertyFormZod) {
         lng,
         status,
         active,
+        standOut,
         userId,
+        video,
+        features: {
+          create: features.map((featureId) => ({
+            featureId,
+          })),
+        },
+        images: {
+          create: images?.map((image) => ({
+            url: image.url,
+            order: image.order,
+          })),
+        },
       },
     });
 
@@ -80,6 +99,7 @@ export async function updateProperty(values: PropertyFormZod, propertyId: string
       city,
       province,
       zipCode,
+      totalRooms,
       bedrooms,
       bathrooms,
       area,
@@ -88,28 +108,68 @@ export async function updateProperty(values: PropertyFormZod, propertyId: string
       lng,
       status,
       active,
+      standOut,
+      video,
+      features,
+      images,
+      deletedImages,
+      existingImages,
     } = data;
-    await prisma.property.update({
-      where: { id: propertyId },
-      data: {
-        title,
-        description,
-        price: new Prisma.Decimal(price),
-        listingTypeId,
-        propertyTypeId,
-        address,
-        city,
-        province,
-        zipCode,
-        bedrooms,
-        bathrooms,
-        area,
-        currency,
-        lat,
-        lng,
-        status,
-        active,
-      },
+
+    await prisma.$transaction(async (tx) => {
+      await tx.property.update({
+        where: { id: propertyId },
+        data: {
+          title,
+          description,
+          price: new Prisma.Decimal(price),
+          listingTypeId,
+          propertyTypeId,
+          address,
+          city,
+          province,
+          zipCode,
+          totalRooms,
+          bedrooms,
+          bathrooms,
+          area,
+          currency,
+          lat,
+          lng,
+          status,
+          active,
+          standOut,
+          video,
+          features: {
+            deleteMany: {},
+            create: features.map((featureId) => ({
+              featureId,
+            })),
+          },
+          images: {
+            deleteMany: {
+              id: {
+                in: deletedImages,
+              },
+            },
+            create: images?.map((img) => ({
+              url: img.url,
+              order: img.order,
+            })),
+          },
+        },
+      });
+
+      if (existingImages) {
+        await Promise.all(
+          existingImages.map((img) =>
+            tx.image.update({
+              where: { id: img.id },
+              data: { order: img.order },
+            }),
+          ),
+        );
+      }
     });
 
     revalidatePath("/dashboard/propiedades");

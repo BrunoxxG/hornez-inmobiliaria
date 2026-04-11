@@ -2,7 +2,14 @@
 
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
-import { featureFormSchema, FeatureFormZod, listingTypeFormSchema, ListingTypeFormZod, propertyTypeFormSchema, PropertyTypeFormZod } from "../lib/zodConfig";
+import {
+  featureFormSchema,
+  FeatureFormZod,
+  listingTypeFormSchema,
+  ListingTypeFormZod,
+  propertyTypeFormSchema,
+  PropertyTypeFormZod,
+} from "../lib/zodConfig";
 import { slugify } from "@/lib/utils";
 
 export async function createFeature(values: FeatureFormZod) {
@@ -12,9 +19,20 @@ export async function createFeature(values: FeatureFormZod) {
   }
 
   try {
+    const slug = slugify(data.name);
+
+    const existingFeature = await prisma.feature.findUnique({
+      where: { slug },
+    });
+
+    if (existingFeature) {
+      return { success: false, error: "Ya existe una caracteristica con ese nombre" };
+    }
+
     await prisma.feature.create({
       data: {
         name: data.name,
+        slug,
       },
     });
 
@@ -33,10 +51,20 @@ export async function updateFeature(values: FeatureFormZod, featureId: string) {
   }
 
   try {
+    const slug = slugify(data.name);
+
+    const existingFeature = await prisma.feature.findUnique({
+      where: { slug, NOT: { id: featureId } },
+    });
+
+    if (existingFeature) {
+      return { success: false, error: "Ya existe una caracteristica con ese nombre" };
+    }
     await prisma.feature.update({
       where: { id: featureId },
       data: {
         name: data.name,
+        slug,
       },
     });
 
