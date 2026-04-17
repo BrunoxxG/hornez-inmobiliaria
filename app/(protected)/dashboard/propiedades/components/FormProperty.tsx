@@ -108,8 +108,8 @@ export default function FormProperty(props: FormPropertyProps) {
 
         const formData = new FormData();
         formData.append("file", img.file);
-        formData.append("folder", `HORNEZ/properties/${title}`);
-        formData.append("publicName", `${title}-${Date.now()}-${Math.random()}`);
+        formData.append("folder", `HORNEZ/properties/${title.trim()}`);
+        formData.append("publicName", `${title.trim()}-${Date.now()}-${Math.random()}`);
 
         const res = await fetch("/api/upload", {
           method: "POST",
