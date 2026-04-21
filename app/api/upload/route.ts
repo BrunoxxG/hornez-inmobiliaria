@@ -14,6 +14,8 @@ export const POST = privateRoute(async (req) => {
   const folder = formData.get("folder") as string;
   const publicName = formData.get("publicName") as string;
 
+  const isPDF = file.type === "application/pdf";
+
   if (!file || !folder || !publicName) {
     return NextResponse.json({ error: "Invalid data" }, { status: 400 });
   }
@@ -25,7 +27,7 @@ export const POST = privateRoute(async (req) => {
       {
         folder,
         public_id: publicName,
-        resource_type: "auto",
+        resource_type: isPDF ? "raw" : "image",
       },
       (err, res) => (err ? reject(err) : resolve(res)),
     );

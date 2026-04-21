@@ -109,6 +109,13 @@ export async function getPropertiesView(filters: any): Promise<PropertyZod[]> {
             url: true,
           },
         },
+        documents: {
+          select: {
+            id: true,
+            url: true,
+            name: true,
+          },
+        },
       },
     });
 
@@ -189,6 +196,13 @@ export async function getPropertiesStand(): Promise<PropertyZod[]> {
             url: true,
           },
         },
+        documents: {
+          select: {
+            id: true,
+            url: true,
+            name: true,
+          },
+        },
       },
     });
 
@@ -259,6 +273,13 @@ export async function getPropertyById(propertyId: string): Promise<PropertyZod |
             id: true,
             order: true,
             url: true,
+          },
+        },
+        documents: {
+          select: {
+            id: true,
+            url: true,
+            name: true,
           },
         },
       },

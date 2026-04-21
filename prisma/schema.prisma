@@ -99,8 +99,9 @@ model Property {
   userId String
   user   User   @relation(fields: [userId], references: [id])
 
-  images Image[]
-  video  String  @default("-")
+  images    Image[]
+  documents Document[]
+  video     String     @default("-")
 
   features PropertyFeature[]
 
@@ -151,4 +152,16 @@ model Image {
 
   @@index([propertyId, order])
   @@map("property_images")
+}
+
+model Document {
+  id         String   @id @default(cuid())
+  url        String
+  name       String
+  
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

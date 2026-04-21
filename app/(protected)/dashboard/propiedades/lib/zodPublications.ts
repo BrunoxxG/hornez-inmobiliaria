@@ -48,6 +48,11 @@ export const propertySchema = object({
   images: array(object({
     id: string(),
     url: string(),
+  })),
+  documents: array(object({
+    id: string(),
+    url: string(),
+    name: string(),
   }))
 });
 export type PropertyZod = z.infer<typeof propertySchema>;
@@ -78,6 +83,9 @@ export const propertyFormSchema = object({
   images: array(object({ url: string(), order: number() })).optional(),
   deletedImages: array(string()).optional(),
   existingImages: array(object({ id: string(), order: number() })).optional(),
+  documents: array(object({ url: string(), name: string() })).optional(),
+  deletedDocuments: array(string()).optional(),
+  existingDocuments: array(object({ id: string(), name: string() })).optional(),
 });
 
 export type PropertyFormZod = z.infer<typeof propertyFormSchema>;

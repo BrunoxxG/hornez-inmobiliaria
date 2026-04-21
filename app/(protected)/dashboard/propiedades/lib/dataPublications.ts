@@ -55,6 +55,7 @@ export async function getProperties(): Promise<PropertyZod[]> {
           }
         },
         images: true,
+        documents: true,
       },
     });
 

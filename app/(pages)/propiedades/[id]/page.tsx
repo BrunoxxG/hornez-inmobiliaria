@@ -80,6 +80,25 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                   </ul>
                 </div>
               )}
+
+              {/* Documentos */}
+              {property.documents.length > 0 && (
+                <div className="bg-white rounded-xl p-6 shadow-sm">
+                  <h2 className="text-lg font-semibold mb-4">Documentos</h2>
+                  <div className="flex flex-col items-start gap-2">
+                    {property.documents.map((doc) => (
+                      <a
+                        href={doc.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm bg-black/50 text-white px-2 py-1 rounded hover:bg-gray-900"
+                      >
+                        {doc.name}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Columna derecha: ficha + contacto */}

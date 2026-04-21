@@ -36,6 +36,7 @@ export async function createProperty(values: PropertyFormZod) {
       video,
       features,
       images,
+      documents,
     } = data;
     await prisma.property.create({
       data: {
@@ -66,10 +67,18 @@ export async function createProperty(values: PropertyFormZod) {
           })),
         },
         images: {
-          create: images?.map((image) => ({
-            url: image.url,
-            order: image.order,
-          })),
+          create:
+            images?.map((image) => ({
+              url: image.url,
+              order: image.order,
+            })) ?? [],
+        },
+        documents: {
+          create:
+            documents?.map((doc) => ({
+              url: doc.url,
+              name: doc.name,
+            })) ?? [],
         },
       },
     });
@@ -114,6 +123,9 @@ export async function updateProperty(values: PropertyFormZod, propertyId: string
       images,
       deletedImages,
       existingImages,
+      documents,
+      deletedDocuments,
+      existingDocuments,
     } = data;
 
     await prisma.$transaction(async (tx) => {
@@ -152,10 +164,23 @@ export async function updateProperty(values: PropertyFormZod, propertyId: string
                 in: deletedImages,
               },
             },
-            create: images?.map((img) => ({
-              url: img.url,
-              order: img.order,
-            })),
+            create:
+              images?.map((img) => ({
+                url: img.url,
+                order: img.order,
+              })) ?? [],
+          },
+          documents: {
+            deleteMany: {
+              id: {
+                in: deletedDocuments,
+              },
+            },
+            create:
+              documents?.map((doc) => ({
+                url: doc.url,
+                name: doc.name,
+              })) ?? [],
           },
         },
       });
@@ -166,6 +191,17 @@ export async function updateProperty(values: PropertyFormZod, propertyId: string
             tx.image.update({
               where: { id: img.id },
               data: { order: img.order },
+            }),
+          ),
+        );
+      }
+
+      if (existingDocuments) {
+        await Promise.all(
+          existingDocuments.map((doc) =>
+            tx.document.update({
+              where: { id: doc.id },
+              data: { name: doc.name },
             }),
           ),
         );

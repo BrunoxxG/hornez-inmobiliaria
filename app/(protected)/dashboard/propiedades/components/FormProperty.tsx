@@ -22,24 +22,45 @@ type ImageItem = {
   order?: number;
 };
 
+type DocumentItem = {
+  id?: string;
+  url: string;
+  file?: File;
+  name: string;
+  existing: boolean;
+};
+
 export default function FormProperty(props: FormPropertyProps) {
   const { property, setOpenModalForm, toast } = props;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [existingImages, setExistingImages] = useState<ImageItem[]>([]);
   const [newImages, setNewImages] = useState<ImageItem[]>([]);
   const [deletedImages, setDeletedImages] = useState<string[]>([]);
+  const [existingDocuments, setExistingDocuments] = useState<DocumentItem[]>([]);
+  const [newDocuments, setNewDocuments] = useState<DocumentItem[]>([]);
+  const [deletedDocuments, setDeletedDocuments] = useState<string[]>([]);
 
   const { listingTypes, propertyTypes, features, isLoading } = usePropertyFormData();
 
   useEffect(() => {
     if (property?.images) {
-      const mapped = property.images.map((img) => ({
+      const mappedImages = property.images.map((img) => ({
         id: img.id,
         url: img.url,
         existing: true,
       }));
 
-      setExistingImages(mapped);
+      setExistingImages(mappedImages);
+    }
+    if (property?.documents) {
+      const mappedDocuments = property.documents.map((doc) => ({
+        id: doc.id,
+        url: doc.url,
+        name: doc.name,
+        existing: true,
+      }));
+
+      setExistingDocuments(mappedDocuments);
     }
   }, [property]);
 
@@ -88,6 +109,8 @@ export default function FormProperty(props: FormPropertyProps) {
 
   const allImages = [...existingImages, ...newImages];
 
+  const allDocuments = [...existingDocuments, ...newDocuments];
+
   const handleAddFeature = (featureId: string) => {
     if (!selectedFeatures.includes(featureId)) {
       form.setValue("features", [...selectedFeatures, featureId]);
@@ -108,7 +131,7 @@ export default function FormProperty(props: FormPropertyProps) {
 
         const formData = new FormData();
         formData.append("file", img.file);
-        formData.append("folder", `HORNEZ/properties/${title.trim()}`);
+        formData.append("folder", `HORNEZ/properties/${title.trim()}/images`);
         formData.append("publicName", `${title.trim()}-${Date.now()}-${Math.random()}`);
 
         const res = await fetch("/api/upload", {
@@ -127,9 +150,49 @@ export default function FormProperty(props: FormPropertyProps) {
       }),
     );
 
-    console.log(uploads)
-
     return uploads.filter((img): img is { url: string; order: number } => img !== null);
+  };
+
+  const uploadDocuments = async (documents: DocumentItem[], title: string) => {
+    const uploads = await Promise.all(
+      documents.map(async (doc) => {
+        if (!doc.file) return null;
+
+        const extension = doc.file.name.split(".").pop();
+
+        const formData = new FormData();
+        formData.append("file", doc.file);
+        formData.append("folder", `HORNEZ/properties/${title.trim()}/documents`);
+        formData.append("publicName", `${title.trim()}-${Date.now()}-${Math.random()}.${extension}`);
+
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await res.json();
+
+        if (!data?.url) return null;
+
+        return {
+          url: data.url,
+          name: doc.name,
+        };
+      }),
+    );
+
+    return uploads.filter((doc): doc is { url: string; name: string } => doc !== null);
+  };
+
+  const handleRemoveDocument = (index: number) => {
+    const doc = allDocuments[index];
+
+    if (doc.existing && doc.id) {
+      setDeletedDocuments((prev) => [...prev, doc.id!]);
+      setExistingDocuments((prev) => prev.filter((d) => d.id !== doc.id));
+    } else {
+      setNewDocuments((prev) => prev.filter((d) => d.file?.name !== doc.file?.name));
+    }
   };
 
   const handleDragStart = (index: number) => {
@@ -164,9 +227,19 @@ export default function FormProperty(props: FormPropertyProps) {
     setIsSubmitting(true);
 
     try {
+      if (newDocuments.some((d) => !d.name?.trim())) {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Todos los documentos deben tener nombre",
+        });
+        setIsSubmitting(false);
+        return;
+      }
       const newImagesOrdered = allImages.map((img, index) => ({ ...img, order: index })).filter((img) => !img.existing);
 
       const uploaded = await uploadImages(newImagesOrdered, values.title);
+      const uploadedDocuments = await uploadDocuments(newDocuments, values.title);
 
       const payload = {
         ...values,
@@ -177,6 +250,14 @@ export default function FormProperty(props: FormPropertyProps) {
           .map((img) => ({
             id: img.id,
             order: allImages.findIndex((i) => i.id === img.id),
+          })),
+        documents: uploadedDocuments,
+        deletedDocuments,
+        existingDocuments: existingDocuments
+          .filter((doc): doc is DocumentItem & { id: string } => !!doc.id)
+          .map((doc) => ({
+            id: doc.id,
+            name: allDocuments.find((d) => d.id === doc.id)?.name || "",
           })),
       };
 
@@ -606,6 +687,88 @@ export default function FormProperty(props: FormPropertyProps) {
                   ))}
                 </div>
               )}
+            </div>
+
+            <div className="w-full col-span-2">
+              <label className="block text-sm font-semibold mb-2">Documentos (PDF)</label>
+
+              <FileUpload
+                mode="advanced"
+                multiple
+                customUpload
+                uploadOptions={{ className: "hidden" }}
+                chooseLabel="Seleccionar PDFs"
+                accept="application/pdf"
+                auto={false}
+                onSelect={(e) => {
+                  const mapped = e.files.map((file: File) => ({
+                    file,
+                    url: URL.createObjectURL(file),
+                    existing: false,
+                    name: file.name,
+                  }));
+
+                  setNewDocuments((prev) => {
+                    const existingNames = prev.map((doc) => doc.file?.name);
+
+                    const filtered = mapped.filter((doc) => !existingNames.includes(doc.file.name));
+
+                    return [...prev, ...filtered];
+                  });
+                }}
+                onRemove={(e) => {
+                  setNewDocuments((prev) => prev.filter((doc) => doc.file?.name !== e.file.name));
+                }}
+                onClear={() => setNewDocuments([])}
+              />
+
+              <div className="mt-4 flex flex-col gap-2">
+                {allDocuments.map((doc, index) => (
+                  <div
+                    key={doc.id || `${doc.name}-${index}`}
+                    className="flex items-center justify-between gap-3 bg-gray-100 px-3 py-2 rounded"
+                  >
+                    <div className="flex items-center gap-3 flex-1">
+                      <span className="text-xs bg-black/50 text-white px-2 py-1 rounded">
+                        {doc.existing ? "SUBIDO" : "NUEVO"}
+                      </span>
+
+                      <InputText
+                        value={doc.name}
+                        onChange={(e) => {
+                          const value = e.target.value;
+
+                          if (doc.existing) {
+                            setExistingDocuments((prev) =>
+                              prev.map((d) => (d.id === doc.id ? { ...d, name: value } : d)),
+                            );
+                          } else {
+                            setNewDocuments((prev) =>
+                              prev.map((d) => (d.file?.name === doc.file?.name ? { ...d, name: value } : d)),
+                            );
+                          }
+                        }}
+                        className="w-full"
+                      />
+
+                      {doc.existing && (
+                        <a
+                          href={doc.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-blue-600 underline whitespace-nowrap"
+                        >
+                          Ver PDF
+                        </a>
+                      )}
+                    </div>
+
+                    <button type="button" onClick={() => handleRemoveDocument(index)} className="text-red-500 text-xs">
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div>
