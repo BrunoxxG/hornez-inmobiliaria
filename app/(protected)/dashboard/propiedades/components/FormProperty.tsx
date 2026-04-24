@@ -1,5 +1,7 @@
 "use client";
 
+import dynamic from "next/dynamic";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { InputText } from "primereact/inputtext";
@@ -13,6 +15,10 @@ import { Dropdown } from "primereact/dropdown";
 import { InputTextarea } from "primereact/inputtextarea";
 import { InputNumber } from "primereact/inputnumber";
 import { FileUpload } from "primereact/fileupload";
+
+const MapPicker = dynamic(() => import("./MapPicker"), {
+  ssr: false,
+});
 
 type ImageItem = {
   id?: string;
@@ -311,6 +317,76 @@ export default function FormProperty(props: FormPropertyProps) {
     setOpenModalForm?.(false);
   };
 
+  const geocodeAddress = async () => {
+    const address = form.getValues("address");
+    const city = form.getValues("city");
+    const zip = form.getValues("zipCode");
+    const province = form.getValues("province");
+
+    if (!city || !province) {
+      toast.current?.show({
+        severity: "warn",
+        summary: "Faltan datos",
+        detail: "Completá ciudad y provincia",
+      });
+      return;
+    }
+
+    const fullQuery = `${address}, ${city}, ${province}, Argentina`;
+
+    try {
+      let res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullQuery)}&countrycodes=ar`,
+      );
+
+      let data = await res.json();
+
+      if (data.length > 0) {
+        const { lat, lon } = data[0];
+
+        form.setValue("lat", Number(lat));
+        form.setValue("lng", Number(lon));
+
+        return;
+      }
+
+      const cityQuery = `${city}, ${province}, Argentina`;
+
+      res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cityQuery)}&countrycodes=ar`,
+      );
+
+      data = await res.json();
+
+      if (data.length > 0) {
+        const { lat, lon } = data[0];
+
+        form.setValue("lat", Number(lat));
+        form.setValue("lng", Number(lon));
+
+        toast.current?.show({
+          severity: "warn",
+          summary: "Aproximado",
+          detail: "No se encontró la dirección exacta, se centró en la ciudad",
+        });
+
+        return;
+      }
+
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "No se pudo encontrar la ubicación",
+      });
+    } catch (error) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Error al buscar ubicación",
+      });
+    }
+  };
+
   return (
     <div>
       {isLoading && <Loader />}
@@ -483,6 +559,25 @@ export default function FormProperty(props: FormPropertyProps) {
                   </>
                 )}
               />
+            </div>
+
+            <div className="col-span-2">
+              <div className="flex items-end justify-between mb-2">
+                <label className="block text-sm font-semibold">Ubicación *</label>
+                <Button type="button" label="Buscar en mapa" onClick={geocodeAddress} className="p-button-secondary" />
+              </div>
+              <MapPicker
+                lat={form.watch("lat") || -34.6037}
+                lng={form.watch("lng") || -58.3816}
+                onChange={(lat, lng) => {
+                  form.setValue("lat", lat);
+                  form.setValue("lng", lng);
+                }}
+              />
+
+              <div className="text-xs mt-2 text-gray-500">
+                Lat: {form.watch("lat")} | Lng: {form.watch("lng")}
+              </div>
             </div>
 
             <div className="w-full">

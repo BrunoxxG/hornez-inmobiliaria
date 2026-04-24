@@ -4,6 +4,8 @@ import Navbar from "../../components/Navbar";
 import PropertyGallery from "./components/PropertyGallery";
 import { getPropertyById } from "../lib/dataPropertiesView";
 import { BedDouble, Maximize, Toilet } from "lucide-react";
+import PropertyUbication from "./components/PropertyUbication";
+
 
 const currencyFormat = (price: number, currency: string) =>
   new Intl.NumberFormat("es-AR", {
@@ -63,6 +65,9 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                 <p className="text-gray-600 leading-relaxed whitespace-pre-line">{property.description}</p>
               </div>
 
+              {/* Ubicación */}
+              {property.lat && property.lng && <PropertyUbication lat={property.lat} lng={property.lng} />}
+
               {/* Características */}
               {property.features.length > 0 && (
                 <div className="bg-white rounded-xl p-6 shadow-sm">
@@ -86,8 +91,9 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                 <div className="bg-white rounded-xl p-6 shadow-sm">
                   <h2 className="text-lg font-semibold mb-4">Documentos</h2>
                   <div className="flex flex-col items-start gap-2">
-                    {property.documents.map((doc) => (
+                    {property.documents.map((doc, index) => (
                       <a
+                        key={index}
                         href={doc.url}
                         target="_blank"
                         rel="noopener noreferrer"
