@@ -1,7 +1,5 @@
 "use client";
 
-import dynamic from "next/dynamic";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { InputText } from "primereact/inputtext";
@@ -15,10 +13,7 @@ import { Dropdown } from "primereact/dropdown";
 import { InputTextarea } from "primereact/inputtextarea";
 import { InputNumber } from "primereact/inputnumber";
 import { FileUpload } from "primereact/fileupload";
-
-const MapPicker = dynamic(() => import("./MapPicker"), {
-  ssr: false,
-});
+import MapPicker from "./MapPickerGoogle";
 
 type ImageItem = {
   id?: string;
