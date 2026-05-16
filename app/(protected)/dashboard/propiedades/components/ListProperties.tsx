@@ -15,13 +15,14 @@ import FormProperty from "./FormProperty";
 import { formatCurrency } from "@/app/(protected)/lib/utils";
 import { Tag } from "primereact/tag";
 import { classNames } from "primereact/utils";
+import { Session } from "next-auth";
 
 const initialFilters: DataTableFilterMeta = {
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   title: { value: null, matchMode: FilterMatchMode.CONTAINS },
 };
 
-export function ListProperties({ properties }: { properties: PropertyZod[] }) {
+export function ListProperties({ properties, session }: { properties: PropertyZod[], session: Session }) {
   const [showNewPropertyModal, setShowNewPropertyModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<PropertyZod | undefined>(undefined);
@@ -181,7 +182,7 @@ export function ListProperties({ properties }: { properties: PropertyZod[] }) {
         modal
         dismissableMask
       >
-        <FormProperty setOpenModalForm={setShowNewPropertyModal} toast={toast} />
+        <FormProperty setOpenModalForm={setShowNewPropertyModal} toast={toast} session={session}/>
       </Dialog>
 
       <Dialog
@@ -196,7 +197,7 @@ export function ListProperties({ properties }: { properties: PropertyZod[] }) {
         dismissableMask
       >
         {selectedProperty && (
-          <FormProperty property={selectedProperty} setOpenModalForm={setShowDetailModal} toast={toast} />
+          <FormProperty property={selectedProperty} setOpenModalForm={setShowDetailModal} toast={toast} session={session}/>
         )}
       </Dialog>
     </div>

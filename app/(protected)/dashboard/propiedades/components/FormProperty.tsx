@@ -37,7 +37,7 @@ type DocumentItem = {
 };
 
 export default function FormProperty(props: FormPropertyProps) {
-  const { property, setOpenModalForm, toast } = props;
+  const { property, setOpenModalForm, toast, session } = props;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [existingImages, setExistingImages] = useState<ImageItem[]>([]);
   const [newImages, setNewImages] = useState<ImageItem[]>([]);
@@ -103,7 +103,7 @@ export default function FormProperty(props: FormPropertyProps) {
       status: property?.status || "AVAILABLE",
       active: property?.active ?? true,
       standOut: property?.standOut ?? false,
-      userId: property?.userId || "",
+      userId: property?.userId || session.user.id,
       features: property?.features?.map((f) => f.feature.id) || [],
       video: property?.video || "",
     },

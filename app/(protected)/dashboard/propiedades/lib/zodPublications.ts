@@ -3,6 +3,7 @@ import { Dispatch, SetStateAction } from "react";
 import type { Toast as ToastType } from "primereact/toast";
 
 import { Currency, PropertyStatus } from "@prisma/client";
+import { Session } from "next-auth";
 
 export const propertySchema = object({
   id: string(),
@@ -94,6 +95,7 @@ export type FormPropertyProps = {
   setOpenModalForm?: Dispatch<SetStateAction<boolean>>;
   property?: PropertyZod;
   toast: React.RefObject<ToastType | null>;
+  session: Session;
 };
 
 export const PROPERTY_STATUS: Record<
