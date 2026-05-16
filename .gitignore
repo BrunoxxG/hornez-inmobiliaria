@@ -45,3 +45,7 @@ prisma/migrations
 
 #scripts
 prisma/scripts
+
+#pnpm
+pnpm-lock.yaml
+pnpm-workspace.yaml

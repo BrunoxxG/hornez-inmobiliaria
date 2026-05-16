@@ -2,8 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 
 const SERVICIOS = [
-  { label: "Propiedades en Venta", href: "/propiedades?tipo=venta" },
-  { label: "Propiedades en Alquiler", href: "/propiedades?tipo=alquiler" },
+  { label: "Propiedades en Venta", href: "/propiedades?operacion=venta" },
+  { label: "Propiedades en Alquiler", href: "/propiedades?operacion=alquiler" },
 ];
 
 const EMPRESA = [

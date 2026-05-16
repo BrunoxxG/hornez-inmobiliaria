@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate",
-    "db:reset": "rm -rf prisma/migrations && npx prisma migrate reset --force && npx prisma migrate dev --name init && npx prisma generate && npx prisma db seed"
+    "db:reset": "rimraf prisma/migrations && pnpm prisma migrate reset --force && pnpm prisma migrate dev --name init && pnpm prisma generate && pnpm prisma db seed"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
