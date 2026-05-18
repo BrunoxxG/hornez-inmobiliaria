@@ -57,7 +57,7 @@ export default async function Home() {
             <div className="space-y-6">
               <span className="text-hornez-red font-semibold text-sm uppercase tracking-widest">Quiénes somos</span>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
-                Tu inmobiliaria de confianza en Villa de Merlo
+                Tu inmobiliaria de confianza en La Paz, Córdoba.
               </h2>
               <p className="text-gray-600 leading-relaxed">
                 En Hornez Inmobiliaria te acompañamos en cada etapa del proceso, ya sea que estés buscando comprar,

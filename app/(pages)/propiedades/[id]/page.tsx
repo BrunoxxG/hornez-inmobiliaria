@@ -183,7 +183,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               <div className="bg-white rounded-xl p-6 shadow-sm">
                 <h2 className="text-lg font-semibold mb-4">¿Te interesa?</h2>
                 <a
-                  href={`https://wa.me/549XXXXXXXXX?text=Hola, me interesa la propiedad: ${encodeURIComponent(property.title)}`}
+                  href={`https://wa.me/5493544400903?text=Hola, me interesa la propiedad: ${encodeURIComponent(property.title)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-semibold transition-colors"

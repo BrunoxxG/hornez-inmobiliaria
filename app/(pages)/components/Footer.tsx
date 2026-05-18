@@ -14,8 +14,8 @@ const EMPRESA = [
 
 export default function Footer() {
   return (
-    <footer id="contacto" className="bg-gray-900 text-gray-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <footer id="contacto" className="mt-auto bg-gray-900 text-gray-300">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
 
           {/* Logo + descripción */}
@@ -32,13 +32,31 @@ export default function Footer() {
               para encontrar la propiedad que estás buscando.
             </p>
             <div className="flex gap-4 pt-2">
-              <a href="#" aria-label="Instagram" className="hover:text-white transition-colors">
+              <a
+                href="https://www.instagram.com/hornezinmobiliaria?igsh=dWM5NXdpYjZqczhm&utm_source=qr"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="hover:text-white transition-colors"
+              >
                 <i className="pi pi-instagram text-xl" />
               </a>
-              <a href="#" aria-label="Facebook" className="hover:text-white transition-colors">
+              <a
+                href="https://www.facebook.com/share/1QngV9yJAU/?mibextid=wwXIfr"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook"
+                className="hover:text-white transition-colors"
+              >
                 <i className="pi pi-facebook text-xl" />
               </a>
-              <a href="#" aria-label="WhatsApp" className="hover:text-white transition-colors">
+              <a
+                href="https://wa.me/5493544400903"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="WhatsApp"
+                className="hover:text-white transition-colors"
+              >
                 <i className="pi pi-whatsapp text-xl" />
               </a>
             </div>
@@ -83,19 +101,19 @@ export default function Footer() {
             <div className="space-y-2 text-sm text-gray-400">
               <p className="flex items-center gap-2">
                 <i className="pi pi-phone" />
-                <a href="tel:+549XXXXXXXXX" className="hover:text-white transition-colors">
-                  +54 9 XXX XXX XXXX
+                <a href="tel:+5493544400903" className="hover:text-white transition-colors">
+                  +54 9 3544 400903
                 </a>
               </p>
               <p className="flex items-center gap-2">
                 <i className="pi pi-envelope" />
-                <a href="mailto:info@hornez.com" className="hover:text-white transition-colors">
-                  info@hornez.com
+                <a href="mailto:hornezinmobiliaria@gmail.com" className="hover:text-white transition-colors">
+                  hornezinmobiliaria@gmail.com
                 </a>
               </p>
               <p className="flex items-center gap-2">
                 <i className="pi pi-map-marker" />
-                Villa de Merlo, San Luis
+                La Paz, Córdoba
               </p>
             </div>
           </div>
