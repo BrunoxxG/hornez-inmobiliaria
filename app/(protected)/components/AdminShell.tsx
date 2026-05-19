@@ -9,7 +9,7 @@ import { usePathname } from "next/navigation";
 import { MENU_ITEMS } from "../lib/utils";
 import { Session } from "next-auth";
 
-export default function AdminShell({ children, session }: { children: React.ReactNode, session: Session }) {
+export default function AdminShell({ children, session }: { children: React.ReactNode; session: Session }) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const pathname = usePathname();
@@ -25,7 +25,11 @@ export default function AdminShell({ children, session }: { children: React.Reac
 
   return (
     <div className="flex min-h-screen bg-speed-gray-50">
-      <div className="hidden md:block">
+      <div
+        className={`hidden md:block ${
+          isSidebarCollapsed ? "w-20" : "w-65"
+        }`}
+      >
         <Sidebar isCollapsed={isSidebarCollapsed} />
       </div>
 
@@ -55,13 +59,7 @@ export default function AdminShell({ children, session }: { children: React.Reac
         </div>
       </PrimeSidebar>
 
-      <div
-        className={`
-          flex flex-col flex-1 min-h-screen transition-all duration-300
-          ${isSidebarCollapsed ? "ml-20" : "ml-65"}
-          max-md:ml-0
-        `}
-      >
+      <div className="flex flex-col flex-1 min-w-0 min-h-screen">
         <Topbar
           session={session}
           isCollapsed={isSidebarCollapsed}
@@ -69,7 +67,7 @@ export default function AdminShell({ children, session }: { children: React.Reac
           onToggleMobile={() => setIsSidebarOpen((v) => !v)}
         />
 
-        <div className="flex-1 p-4 md:p-8">{children}</div>
+        <div className="flex-1 p-4 md:p-8 overflow-x-hidden">{children}</div>
       </div>
     </div>
   );

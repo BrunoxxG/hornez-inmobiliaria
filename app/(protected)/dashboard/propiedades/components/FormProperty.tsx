@@ -103,7 +103,7 @@ export default function FormProperty(props: FormPropertyProps) {
       video: property?.video || "",
     },
   });
-  const { isValid } = form.formState;
+
   const { reset } = form;
 
   const selectedFeatures = form.watch("features") || [];
@@ -385,7 +385,15 @@ export default function FormProperty(props: FormPropertyProps) {
   return (
     <div>
       {isLoading && <Loader />}
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit, () => {
+          toast.current?.show({
+            severity: "error",
+            summary: "Formulario inválido",
+            detail: "Revisá los campos marcados",
+          });
+        })}
+      >
         <div className="p-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="mb-3 col-span-2">
@@ -395,7 +403,7 @@ export default function FormProperty(props: FormPropertyProps) {
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <>
-                    <InputText {...field} placeholder="Título" className="w-full" />
+                    <InputText {...field} placeholder="Título" className={`w-full ${fieldState.error ? "p-invalid" : ""}`} />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                   </>
                 )}
@@ -409,7 +417,7 @@ export default function FormProperty(props: FormPropertyProps) {
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <>
-                    <InputTextarea {...field} rows={4} placeholder="Descripción" className="w-full" />
+                    <InputTextarea {...field} rows={4} placeholder="Descripción" className={`w-full ${fieldState.error ? "p-invalid" : ""}`} />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                   </>
                 )}
@@ -428,7 +436,7 @@ export default function FormProperty(props: FormPropertyProps) {
                       onChange={(e) => field.onChange(e.value ?? 0)}
                       mode="currency"
                       currency="USD"
-                      className="w-full"
+                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
                     />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                   </>
@@ -449,7 +457,7 @@ export default function FormProperty(props: FormPropertyProps) {
                         { label: "USD", value: "USD" },
                         { label: "ARS", value: "ARS" },
                       ]}
-                      className="w-full"
+                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
                       placeholder="Seleccionar Moneda"
                     />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
@@ -470,7 +478,7 @@ export default function FormProperty(props: FormPropertyProps) {
                       options={listingTypes}
                       optionLabel="name"
                       optionValue="id"
-                      className="w-full"
+                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
                       placeholder="Seleccionar Listado"
                     />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
@@ -491,7 +499,7 @@ export default function FormProperty(props: FormPropertyProps) {
                       options={propertyTypes}
                       optionLabel="name"
                       optionValue="id"
-                      className="w-full"
+                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
                       placeholder="Seleccionar Tipo"
                     />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
@@ -507,7 +515,7 @@ export default function FormProperty(props: FormPropertyProps) {
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <>
-                    <InputText {...field} placeholder="Dirección" className="w-full" />
+                    <InputText {...field} placeholder="Dirección" className={`w-full ${fieldState.error ? "p-invalid" : ""}`} />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                   </>
                 )}
@@ -521,7 +529,7 @@ export default function FormProperty(props: FormPropertyProps) {
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <>
-                    <InputText {...field} placeholder="Ciudad" className="w-full" />
+                    <InputText {...field} placeholder="Ciudad" className={`w-full ${fieldState.error ? "p-invalid" : ""}`} />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                   </>
                 )}
@@ -535,7 +543,7 @@ export default function FormProperty(props: FormPropertyProps) {
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <>
-                    <InputText {...field} placeholder="Provincia" className="w-full" />
+                    <InputText {...field} placeholder="Provincia" className={`w-full ${fieldState.error ? "p-invalid" : ""}`} />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                   </>
                 )}
@@ -549,7 +557,7 @@ export default function FormProperty(props: FormPropertyProps) {
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <>
-                    <InputText {...field} placeholder="Código Postal" className="w-full" />
+                    <InputText {...field} placeholder="Código Postal" className={`w-full ${fieldState.error ? "p-invalid" : ""}`} />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                   </>
                 )}
@@ -585,7 +593,7 @@ export default function FormProperty(props: FormPropertyProps) {
                     <InputNumber
                       value={field.value}
                       onChange={(e) => field.onChange(e.value ?? 0)}
-                      className="w-full"
+                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
                     />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                   </>
@@ -603,7 +611,7 @@ export default function FormProperty(props: FormPropertyProps) {
                     <InputNumber
                       value={field.value}
                       onChange={(e) => field.onChange(e.value ?? 0)}
-                      className="w-full"
+                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
                     />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                   </>
@@ -621,7 +629,7 @@ export default function FormProperty(props: FormPropertyProps) {
                     <InputNumber
                       value={field.value}
                       onChange={(e) => field.onChange(e.value ?? 0)}
-                      className="w-full"
+                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
                     />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                   </>
@@ -639,7 +647,7 @@ export default function FormProperty(props: FormPropertyProps) {
                     <InputNumber
                       value={field.value}
                       onChange={(e) => field.onChange(e.value ?? 0)}
-                      className="w-full"
+                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
                     />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                   </>
@@ -654,7 +662,7 @@ export default function FormProperty(props: FormPropertyProps) {
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <>
-                    <InputText {...field} placeholder="URL Video" className="w-full" />
+                    <InputText {...field} placeholder="URL Video" className={`w-full ${fieldState.error ? "p-invalid" : ""}`} />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                   </>
                 )}
@@ -674,7 +682,7 @@ export default function FormProperty(props: FormPropertyProps) {
                         label: config.label,
                         value: value,
                       }))}
-                      className="w-full"
+                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
                       placeholder="Seleccionar estado"
                     />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
@@ -874,7 +882,7 @@ export default function FormProperty(props: FormPropertyProps) {
                         { label: "SI", value: true },
                         { label: "NO", value: false },
                       ]}
-                      className="w-full"
+                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
                       placeholder="Mostrar Propiedad"
                     />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
@@ -896,7 +904,7 @@ export default function FormProperty(props: FormPropertyProps) {
                         { label: "SI", value: true },
                         { label: "NO", value: false },
                       ]}
-                      className="w-full"
+                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
                       placeholder="Destacar Propiedad"
                     />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
@@ -911,7 +919,7 @@ export default function FormProperty(props: FormPropertyProps) {
               label="Guardar Propiedad"
               className="p-button-danger"
               type="submit"
-              disabled={!isValid || isSubmitting}
+              disabled={isSubmitting}
             />
           </div>
         </div>
