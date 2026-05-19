@@ -45,7 +45,7 @@ export default async function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-              <span className="text-hornez-red font-semibold text-sm uppercase tracking-widest">Quiénes somos</span>
+              <span className="text-hornez-orange font-semibold text-sm uppercase tracking-widest">Quiénes somos</span>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
                 Tu inmobiliaria de confianza en La Paz, Córdoba.
               </h2>
@@ -62,14 +62,14 @@ export default async function Home() {
                   "Proceso simple y transparente",
                 ].map((item) => (
                   <li key={item} className="flex items-center gap-3 text-gray-700">
-                    <i className="pi pi-check-circle text-hornez-red" />
+                    <i className="pi pi-check-circle text-hornez-orange" />
                     {item}
                   </li>
                 ))}
               </ul>
               <a
                 href="#contacto"
-                className="inline-block bg-hornez-red text-white px-8 py-3 rounded-md font-semibold hover:bg-red-700 transition-colors"
+                className="inline-block bg-hornez-orange text-white px-8 py-3 rounded-md font-semibold hover:bg-orange-600 transition-colors"
               >
                 Contactanos
               </a>

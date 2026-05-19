@@ -21,7 +21,7 @@ export default function Navbar() {
             <img
               src="/img/logo.svg"
               alt="Hornez Inmobiliaria"
-              className="h-16"
+              className="h-[5.2rem]"
             />
           </Link>
 

@@ -17,10 +17,10 @@ export default function Footer() {
               <img
                 src="/img/logo.svg"
                 alt="Hornez Inmobiliaria"
-                className="brightness-0 invert h-[7.26rem] w-auto"
+                className="brightness-0 invert h-[7.26rem] w-auto transition duration-300 hover:[filter:brightness(0)_saturate(100%)_invert(52%)_sepia(96%)_saturate(1750%)_hue-rotate(2deg)_brightness(102%)_contrast(103%)]"
               />
             </Link>
-            <p className="text-[0.96rem] leading-relaxed text-gray-400">
+            <p className="text-[0.96rem] leading-relaxed text-gray-400 transition-colors hover:text-hornez-orange">
               Tu inmobiliaria de confianza. Te acompañamos en cada paso
               para encontrar la propiedad que estás buscando.
             </p>
@@ -30,7 +30,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
-                className="hover:text-white transition-colors"
+                className="transition-colors hover:text-hornez-orange"
               >
                 <i className="pi pi-instagram text-xl" />
               </a>
@@ -39,7 +39,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
-                className="hover:text-white transition-colors"
+                className="transition-colors hover:text-hornez-orange"
               >
                 <i className="pi pi-facebook text-xl" />
               </a>
@@ -48,7 +48,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="WhatsApp"
-                className="hover:text-white transition-colors"
+                className="transition-colors hover:text-hornez-orange"
               >
                 <i className="pi pi-whatsapp text-xl" />
               </a>
@@ -65,7 +65,7 @@ export default function Footer() {
                 <li key={s.href}>
                   <Link
                     href={s.href}
-                    className="text-[0.96rem] text-gray-400 hover:text-white transition-colors"
+                    className="text-[0.96rem] text-gray-400 transition-colors hover:text-hornez-orange"
                   >
                     {s.label}
                   </Link>
@@ -81,26 +81,26 @@ export default function Footer() {
             </h3>
             <ul className="space-y-3 text-[0.96rem] text-gray-400">
               <li className="flex items-center gap-3">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-gray-300">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-gray-300 transition-colors hover:bg-hornez-orange/15 hover:text-hornez-orange">
                   <i className="pi pi-phone" />
                 </span>
-                <a href="tel:+5493544400903" className="hover:text-white transition-colors">
+                <a href="tel:+5493544400903" className="transition-colors hover:text-hornez-orange">
                   +54 9 3544 400903
                 </a>
               </li>
               <li className="flex items-center gap-3">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-gray-300">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-gray-300 transition-colors hover:bg-hornez-orange/15 hover:text-hornez-orange">
                   <i className="pi pi-envelope" />
                 </span>
-                <a href="mailto:hornezinmobiliaria@gmail.com" className="break-all hover:text-white transition-colors">
+                <a href="mailto:hornezinmobiliaria@gmail.com" className="break-all transition-colors hover:text-hornez-orange">
                   hornezinmobiliaria@gmail.com
                 </a>
               </li>
               <li className="flex items-center gap-3">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-gray-300">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-gray-300 transition-colors hover:bg-hornez-orange/15 hover:text-hornez-orange">
                   <i className="pi pi-map-marker" />
                 </span>
-                <span>La Paz, Córdoba</span>
+                <span className="transition-colors hover:text-hornez-orange">La Paz, Córdoba</span>
               </li>
             </ul>
           </div>
@@ -109,20 +109,41 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div className="border-t border-gray-800">
-        <div className="w-full px-4 sm:px-6 lg:px-12 py-4 text-left text-[0.825rem] text-gray-500">
-          © {new Date().getFullYear()} Hornez Inmobiliaria. Todos los derechos reservados.
+        <div className="grid w-full items-center gap-4 px-4 py-4 text-[0.825rem] text-gray-500 sm:px-6 md:grid-cols-3 lg:px-12">
+          <div className="flex items-center justify-center gap-3 md:justify-start">
+            <img
+              src="/img/logo-MAT-8394.jpeg"
+              alt="CPI Córdoba Matrícula 8394"
+              className="h-9 w-auto rounded-md"
+            />
+            <span className="max-w-xs leading-snug">
+              Bruno Nehuen Gimenez Martillero y Corredor Publico Matricula N°8394.
+            </span>
+          </div>
+          <div className="text-center md:col-start-2">
+            © {new Date().getFullYear()} Hornez Inmobiliaria. Todos los derechos reservados.
+          </div>
+          <div className="hidden md:block" />
         </div>
       </div>
 
-      <a
-        href="https://wa.me/5493544400903"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Contactar por WhatsApp"
-        className="fixed bottom-5 right-5 z-50 flex h-[3.85rem] w-[3.85rem] items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition-transform hover:scale-110"
-      >
-        <i className="pi pi-whatsapp text-3xl" />
-      </a>
+      <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-3">
+        <div className="relative max-w-[18rem] rounded-2xl bg-white px-4 py-3 text-sm font-medium leading-snug text-gray-800 shadow-lg">
+          Hola! Si estás buscando comprar o poner a la venta tu propiedad,
+          <br />
+          ¡Estoy acá para ayudarte con eso!
+          <span className="absolute -bottom-2 right-6 h-4 w-4 rotate-45 bg-white" />
+        </div>
+        <a
+          href="https://wa.me/5493544400903"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Contactar por WhatsApp"
+          className="flex h-[3.85rem] w-[3.85rem] items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition-transform hover:scale-110"
+        >
+          <i className="pi pi-whatsapp text-3xl" />
+        </a>
+      </div>
     </footer>
   );
 }
