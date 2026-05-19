@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const SLIDES = [
+  { src: "/img/lomaBolaLaCruz.jpeg", alt: "Vista panorámica de La Paz, Córdoba" },
   { src: "/img/vaca.jpeg", alt: "Propiedad en las sierras" },
   { src: "/img/arroyo.jpeg", alt: "Arroyo en Villa de Merlo" },
   { src: "/img/foto-tranqui.jpeg", alt: "Paisaje serrano" },
@@ -25,7 +26,7 @@ export default function HeroSlider() {
         <div
           key={slide.src}
           className={`absolute inset-0 transition-opacity duration-1000 ${
-            index === current ? "opacity-40" : "opacity-0"
+            index === current ? "opacity-45" : "opacity-0"
           }`}
         >
           <Image
@@ -43,6 +44,8 @@ export default function HeroSlider() {
         {SLIDES.map((_, index) => (
           <button
             key={index}
+            type="button"
+            aria-label={`Ver imagen ${index + 1}`}
             onClick={() => setCurrent(index)}
             className={`w-2.5 h-2.5 rounded-full transition-all ${
               index === current ? "bg-white scale-125" : "bg-white/50"

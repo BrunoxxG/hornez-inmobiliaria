@@ -18,10 +18,12 @@
   -webkit-text-size-adjust: 100%;
 
   --hornez-red: #E31E24;
+  --hornez-orange: #ef7d00;
 }
 
 @theme inline {
   --color-hornez-red: var(--hornez-red);
+  --color-hornez-orange: var(--hornez-orange);
 }
 
 body {
