@@ -19,9 +19,9 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
             <img
-              src="/img/logo.svg"
+              src="/img/logoColor.png"
               alt="Hornez Inmobiliaria"
-              className="h-[5.2rem]"
+              className="h-8"
             />
           </Link>
 
@@ -31,7 +31,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-gray-700 hover:text-hornez-red font-medium transition-colors"
+                className="text-gray-700 hover:text-hornez-blue font-medium transition-colors"
               >
                 {link.label}
               </Link>
@@ -62,7 +62,7 @@ export default function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              className="block py-3 text-gray-700 hover:text-hornez-red font-medium"
+              className="block py-3 text-gray-700 hover:text-hornez-blue font-medium"
               onClick={() => setMenuOpen(false)}
             >
               {link.label}

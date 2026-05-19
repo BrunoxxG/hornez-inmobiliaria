@@ -17,13 +17,15 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 
-  --hornez-red: #E31E24;
+  --hornez-blue: #221657;
   --hornez-orange: #ef7d00;
+  --hornez-red: #c00d0d
 }
 
 @theme inline {
-  --color-hornez-red: var(--hornez-red);
+  --color-hornez-blue: var(--hornez-blue);
   --color-hornez-orange: var(--hornez-orange);
+  --color-hornez-red: var(--hornez-red);
 }
 
 body {

@@ -5,6 +5,7 @@ import PropertyGallery from "./components/PropertyGallery";
 import { getPropertyById } from "../lib/dataPropertiesView";
 import { BedDouble, Maximize, Toilet } from "lucide-react";
 import PropertyUbication from "./components/PropertyUbication";
+import Footer from "../../components/Footer";
 
 
 const currencyFormat = (price: number, currency: string) =>
@@ -42,11 +43,11 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6">
-            <Link href="/" className="hover:text-hornez-red transition-colors">
+            <Link href="/" className="hover:text-hornez-blue transition-colors">
               Inicio
             </Link>
             <i className="pi pi-chevron-right text-xs" />
-            <Link href="/propiedades" className="hover:text-hornez-red transition-colors">
+            <Link href="/propiedades" className="hover:text-hornez-blue transition-colors">
               Propiedades
             </Link>
             <i className="pi pi-chevron-right text-xs" />
@@ -57,7 +58,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
             {/* Columna izquierda: galería + descripción */}
             <div className="lg:col-span-2 space-y-6">
               {/* Galería */}
-              <PropertyGallery images={property.images} />
+              <PropertyGallery images={property.images} operation={property.listingType.name}/>
 
               {/* Descripción */}
               <div className="bg-white rounded-xl p-6 shadow-sm">
@@ -75,7 +76,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                   <ul className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {property.features.map(({ feature, value }) => (
                       <li key={feature.id} className="flex items-center gap-2 text-gray-600 text-sm">
-                        <i className="pi pi-check-circle text-hornez-red text-sm" />
+                        <i className="pi pi-check-circle text-hornez-blue text-sm" />
                         <span>
                           {feature.name}
                           {value && value !== "-" ? `: ${value}` : ""}
@@ -112,7 +113,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               {/* Ficha */}
               <div className="bg-white rounded-xl p-6 shadow-sm">
                 <div className="flex items-start justify-between gap-2 mb-4">
-                  <span className="bg-hornez-red text-white text-xs font-semibold px-3 py-1 rounded-full">
+                  <span className="bg-hornez-blue text-white text-xs font-semibold px-3 py-1 rounded-full">
                     {property.listingType.name}
                   </span>
                   <span className={`text-xs font-semibold px-3 py-1 rounded-full ${STATUS_COLOR[property.status]}`}>
@@ -123,15 +124,15 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                 <h1 className="text-xl font-bold text-gray-900 mb-1">{property.title}</h1>
 
                 <p className="text-sm text-gray-500 flex items-center gap-1 mb-4">
-                  <i className="pi pi-map-marker text-xs" />
+                  <img src="/img/ubicacionIcon.png" alt="ubicacion icon" className="h-5"/>
                   {property.address}, {property.city}, {property.province}
                 </p>
 
                 <div className="flex items-end mb-5 gap-2">
-                  <p className="text-3xl font-bold text-hornez-red m-0">
-                    {currencyFormat(property.price, property.currency)}
+                  <p className="text-3xl font-bold text-hornez-blue m-0">
+                    {property.price === 0 ? "Consultar precio" : currencyFormat(property.price, property.currency)}
                   </p>
-                  <span className="text-hornez-red font-bold">{property.currency}</span>
+                  <span className="text-hornez-blue font-bold">{property.currency}</span>
                 </div>
 
                 {/* Stats */}
@@ -139,7 +140,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                   {property.bedrooms != 0 && (
                     <div className="bg-gray-50 rounded-lg py-3 flex flex-col justify-center items-center">
                       <div className="flex items-center gap-2">
-                        <BedDouble size={20} />
+                        <img src="/img/camaIcon.png" alt="cama icon" className="h-5"/>
                         <span className="text-sm font-semibold">{property.bedrooms}</span>
                       </div>
                       <p className="text-xs text-gray-400">Dorm.</p>
@@ -148,7 +149,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                   {property.bathrooms != 0 && (
                     <div className="bg-gray-50 rounded-lg py-3 flex flex-col justify-center items-center">
                       <div className="flex items-center gap-2">
-                        <Toilet size={20} />
+                        <img src="/img/bañoIcon.png" alt="baño icon" className="h-6"/>
                         <span className="text-sm font-semibold">{property.bathrooms}</span>
                       </div>
                       <p className="text-xs text-gray-400">Baños</p>
@@ -193,7 +194,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                 </a>
                 <Link
                   href="/#contacto"
-                  className="flex items-center justify-center gap-2 w-full mt-3 border-2 border-hornez-red text-hornez-red hover:bg-hornez-red hover:text-white py-3 rounded-lg font-semibold transition-colors"
+                  className="flex items-center justify-center gap-2 w-full mt-3 border-2 border-hornez-blue text-hornez-blue hover:bg-hornez-blue hover:text-white py-3 rounded-lg font-semibold transition-colors"
                 >
                   <i className="pi pi-envelope" />
                   Enviar consulta
@@ -203,6 +204,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
           </div>
         </div>
       </main>
+      <Footer />
     </>
   );
 }

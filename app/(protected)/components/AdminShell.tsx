@@ -48,7 +48,7 @@ export default function AdminShell({ children, session }: { children: React.Reac
                 href={item.path}
                 onClick={() => setIsSidebarOpen(false)}
                 className={`flex items-center px-4 py-3 rounded ${
-                  isActive ? "bg-[rgba(227,30,36,0.1)] text-hornez-red font-semibold" : "text-gray-700"
+                  isActive ? "bg-[rgba(227,30,36,0.1)] text-hornez-blue font-semibold" : "text-gray-700"
                 }`}
               >
                 <i className={`${item.icon} mr-2`} />

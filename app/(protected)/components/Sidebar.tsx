@@ -37,7 +37,7 @@ export default function Sidebar({
               href={item.path}
               className={`flex items-center cursor-pointer transition-all duration-200 border-l-[3px] ${
                 isActive
-                  ? "bg-[rgba(227,30,36,0.1)] text-hornez-red border-hornez-red font-semibold"
+                  ? "bg-[rgba(227,30,36,0.1)] text-hornez-blue border-hornez-blue font-semibold"
                   : "border-transparent text-gray-700 hover:bg-gray-50 hover:text-gray-900"
               } ${isCollapsed ? "justify-center px-2 py-3.5" : "px-6 py-3.5"}`}
             >

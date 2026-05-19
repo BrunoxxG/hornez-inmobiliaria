@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 
-export default function PropertyGallery({ images }: { images: { url: string; id: string }[] }) {
+export default function PropertyGallery({ images, operation }: { images: { url: string; id: string }[], operation: string }) {
   const [active, setActive] = useState(0);
 
   if (images.length === 0) {
     return (
-      <div className="flex items-center justify-center h-80 bg-gray-100 rounded-xl text-gray-400">
+      <div className="relative flex items-center justify-center h-80 bg-gray-100 rounded-xl text-gray-400">
+        <img src="/img/vendeLogo.png" alt="venta logo" className={`h-15 absolute top-3 left-3 ${operation !== "Venta" ? "hidden" : "" }`} />
+        <img src="/img/alquilaLogo.png" alt="alquiler logo" className={`h-15 absolute top-3 left-3 ${operation !== "Alquiler" ? "hidden" : "" }`} />
         <i className="pi pi-image text-6xl" />
       </div>
     );
@@ -17,6 +19,8 @@ export default function PropertyGallery({ images }: { images: { url: string; id:
     <div className="space-y-3">
       {/* Imagen principal */}
       <div className="relative h-80 md:h-120 bg-gray-100 rounded-xl overflow-hidden">
+        <img src="/img/vendeLogo.png" alt="venta logo" className={`h-15 absolute top-3 left-3 ${operation !== "Venta" ? "hidden" : "" }`} />
+        <img src="/img/alquilaLogo.png" alt="alquiler logo" className={`h-15 absolute top-3 left-3 ${operation !== "Alquiler" ? "hidden" : "" }`} />
         <img
           src={images[active].url}
           alt="Imagen de la propiedad"
@@ -54,7 +58,7 @@ export default function PropertyGallery({ images }: { images: { url: string; id:
               key={img.id}
               onClick={() => setActive(i)}
               className={`relative shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition-colors ${
-                i === active ? "border-hornez-red" : "border-transparent"
+                i === active ? "border-hornez-blue" : "border-transparent"
               }`}
             >
               <img src={img.url} alt="" className="object-cover" sizes="80px" />

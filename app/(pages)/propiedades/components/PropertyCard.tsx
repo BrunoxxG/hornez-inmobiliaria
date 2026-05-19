@@ -11,6 +11,7 @@ const currencyFormat = (price: number, currency: string) =>
 
 export default function PropertyCard({ property }: { property: PropertyZod }) {
   const image = property.images[0]?.url;
+  const operation = property.listingType.name;
 
   return (
     <Link
@@ -24,14 +25,16 @@ export default function PropertyCard({ property }: { property: PropertyZod }) {
           alt={property.title}
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
-        <span className="absolute top-3 left-3 bg-hornez-red text-white text-xs font-semibold px-3 py-1 rounded-full">
-          {property.listingType.name}
-        </span>
+        <div className="absolute top-3 left-3 bg-white text-hornez-orange rounded-full flex gap-2 items-center px-3 py-1">
+          <img src="/img/ventaIcon.png" alt="venta logo" className={`h-5 ${operation !== "Venta" ? "hidden" : "" }`} />
+          <img src="/img/alquilerIcon.png" alt="alquiler logo" className={`h-5 ${operation !== "Alquiler" ? "hidden" : "" }`} />
+          <span className=" text-xs font-semibold">{property.listingType.name}</span>
+        </div>
       </div>
 
       {/* Content */}
       <div className="p-4">
-        <h3 className="font-semibold text-gray-900 text-base mb-1 truncate group-hover:text-hornez-red transition-colors">
+        <h3 className="font-semibold text-gray-900 text-base mb-1 truncate group-hover:text-hornez-blue transition-colors">
           {property.title}
         </h3>
 
@@ -40,31 +43,33 @@ export default function PropertyCard({ property }: { property: PropertyZod }) {
           {property.city}, {property.province}
         </p>
 
-        <p className="text-lg font-bold text-hornez-red mb-3">{currencyFormat(property.price, property.currency)}</p>
+        <p className="text-lg font-bold text-hornez-blue mb-3">
+          {property.price === 0 ? "Consultar precio" : currencyFormat(property.price, property.currency)}
+        </p>
 
         {/* Stats */}
         <div className="flex items-center gap-4 text-sm text-gray-500">
           {property.totalRooms != 0 && (
             <span className="flex items-center gap-1">
-              <LayoutDashboard size={20}/>
+              <LayoutDashboard size={20} />
               {property.totalRooms}
             </span>
           )}
           {property.bedrooms != 0 && (
             <span className="flex items-center gap-1">
-              <BedDouble size={20}/>
+              <BedDouble size={20} />
               {property.bedrooms}
             </span>
           )}
           {property.bathrooms != 0 && (
             <span className="flex items-center gap-1">
-              <Toilet size={20}/>
+              <Toilet size={20} />
               {property.bathrooms}
             </span>
           )}
           {property.area != 0 && (
             <span className="flex items-center gap-1">
-              <Maximize size={20}/>
+              <Maximize size={20} />
               {property.area} m²
             </span>
           )}

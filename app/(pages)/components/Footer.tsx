@@ -15,9 +15,9 @@ export default function Footer() {
           <div className="space-y-4 md:justify-self-end md:max-w-sm md:-mt-6">
             <Link href="/">
               <img
-                src="/img/logo.svg"
+                src="/img/logoBlanco.png"
                 alt="Hornez Inmobiliaria"
-                className="brightness-0 invert h-[7.26rem] w-auto transition duration-300 hover:[filter:brightness(0)_saturate(100%)_invert(52%)_sepia(96%)_saturate(1750%)_hue-rotate(2deg)_brightness(102%)_contrast(103%)]"
+                className=" h-15 m-4"
               />
             </Link>
             <p className="text-[0.96rem] leading-relaxed text-gray-400 transition-colors hover:text-hornez-orange">
