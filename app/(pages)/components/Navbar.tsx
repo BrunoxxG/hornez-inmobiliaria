@@ -21,7 +21,7 @@ export default function Navbar() {
             <img
               src="/img/logo.svg"
               alt="Hornez Inmobiliaria"
-              className="h-16"
+              className="h-[5.2rem]"
             />
           </Link>
 
@@ -38,7 +38,7 @@ export default function Navbar() {
             ))}
             <Link
               href="/login"
-              className="bg-hornez-red text-white px-5 py-2 rounded-md font-medium hover:bg-red-700 transition-colors"
+              className="border-2 border-hornez-orange bg-transparent px-[1.375rem] py-[0.55rem] text-[1.1rem] font-medium text-hornez-orange rounded-md transition-colors hover:bg-hornez-orange hover:text-white"
             >
               Ingresar
             </Link>
@@ -70,7 +70,7 @@ export default function Navbar() {
           ))}
           <Link
             href="/login"
-            className="block mt-2 text-center bg-hornez-red text-white px-5 py-2 rounded-md font-medium hover:bg-red-700 transition-colors"
+            className="block mt-2 text-center border-2 border-hornez-orange bg-transparent px-[1.375rem] py-[0.55rem] text-[1.1rem] font-medium text-hornez-orange rounded-md transition-colors hover:bg-hornez-orange hover:text-white"
             onClick={() => setMenuOpen(false)}
           >
             Ingresar

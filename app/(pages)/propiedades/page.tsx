@@ -25,12 +25,14 @@ export default async function PropertiesPage(props: {
   const features = await getFeatures();
 
   return (
-    <div className="bg-gray-50">
+    <div className="bg-gray-50 min-h-screen flex flex-col">
       <Navbar />
 
-      <PropertiesFilters listingTypes={listingTypes} propertyTypes={propertyTypes} features={features} />
+      <div className="flex-1">
+        <PropertiesFilters listingTypes={listingTypes} propertyTypes={propertyTypes} features={features} />
+        <PropertiesGrid properties={properties} />
+      </div>
 
-      <PropertiesGrid properties={properties} />
       <Footer />
     </div>
   );
