@@ -1,9 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function PropertyGallery({ images, operation }: { images: { url: string; id: string }[], operation: string }) {
   const [active, setActive] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isModalOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsModalOpen(false);
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isModalOpen]);
 
   if (images.length === 0) {
     return (
@@ -24,8 +36,9 @@ export default function PropertyGallery({ images, operation }: { images: { url: 
         <img
           src={images[active].url}
           alt="Imagen de la propiedad"
-          className="object-cover"
+          className="cursor-zoom-in object-cover"
           sizes="(max-width: 768px) 100vw, 60vw"
+          onClick={() => setIsModalOpen(true)}
         />
         {images.length > 1 && (
           <>
@@ -64,6 +77,57 @@ export default function PropertyGallery({ images, operation }: { images: { url: 
               <img src={img.url} alt="" className="object-cover" sizes="80px" />
             </button>
           ))}
+        </div>
+      )}
+
+      {isModalOpen && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Imagen ampliada de la propiedad"
+          onClick={() => setIsModalOpen(false)}
+        >
+          <button
+            type="button"
+            className="absolute right-4 top-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/15 text-2xl text-white transition-colors hover:bg-white/30"
+            aria-label="Cerrar imagen ampliada"
+            onClick={() => setIsModalOpen(false)}
+          >
+            <i className="pi pi-times" />
+          </button>
+          {images.length > 1 && (
+            <>
+              <button
+                type="button"
+                className="absolute left-4 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-xl text-white transition-colors hover:bg-white/30"
+                aria-label="Imagen anterior"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setActive((prev) => (prev - 1 + images.length) % images.length);
+                }}
+              >
+                <i className="pi pi-chevron-left" />
+              </button>
+              <button
+                type="button"
+                className="absolute right-4 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-xl text-white transition-colors hover:bg-white/30"
+                aria-label="Imagen siguiente"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setActive((prev) => (prev + 1) % images.length);
+                }}
+              >
+                <i className="pi pi-chevron-right" />
+              </button>
+            </>
+          )}
+          <img
+            src={images[active].url}
+            alt="Imagen ampliada de la propiedad"
+            className="max-h-[90vh] max-w-full object-contain"
+            onClick={(event) => event.stopPropagation()}
+          />
         </div>
       )}
     </div>

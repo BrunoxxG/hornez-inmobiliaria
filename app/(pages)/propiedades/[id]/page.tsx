@@ -35,6 +35,10 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
 
   if (!property) notFound();
 
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const propertyUrl = `${appUrl.replace(/\/$/, "")}/propiedades/${property.id}`;
+  const whatsappMessage = `Hola, me interesa la propiedad: ${property.title}. Link: ${propertyUrl}`;
+
   return (
     <>
       <Navbar />
@@ -184,7 +188,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               <div className="bg-white rounded-xl p-6 shadow-sm">
                 <h2 className="text-lg font-semibold mb-4">¿Te interesa?</h2>
                 <a
-                  href={`https://wa.me/5493544400903?text=Hola, me interesa la propiedad: ${encodeURIComponent(property.title)}`}
+                  href={`https://wa.me/5493544400903?text=${encodeURIComponent(whatsappMessage)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-semibold transition-colors"
