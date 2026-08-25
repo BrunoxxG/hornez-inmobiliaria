@@ -12,7 +12,7 @@ export default async function Config() {
 
   return (
     <>
-      <div className="flex flex-col gap-2 md:flex-row justify-between items-start">
+      <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-2">
         <ListListingTypes listingTypes={listingTypes} />
         <ListPropertyTypes propertyTypes={propertyTypes} />
         <ListFeatures features={features} category="SERVICE" />

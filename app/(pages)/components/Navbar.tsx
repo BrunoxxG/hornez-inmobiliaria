@@ -2,11 +2,19 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { Music2 } from "lucide-react";
 
 const NAV_LINKS = [
   { href: "/", label: "Inicio" },
   { href: "/propiedades", label: "Propiedades" },
   { href: "/#contacto", label: "Contacto" },
+];
+
+const SOCIAL_LINKS = [
+  { href: "https://www.instagram.com/hornezinmobiliaria?igsh=dWM5NXdpYjZqczhm&utm_source=qr", label: "Instagram", icon: "pi-instagram" },
+  { href: "https://www.facebook.com/share/1QngV9yJAU/?mibextid=wwXIfr", label: "Facebook", icon: "pi-facebook" },
+  { href: "https://www.tiktok.com/", label: "TikTok", icon: "music" },
+  { href: "https://wa.me/5493544400903", label: "WhatsApp", icon: "pi-whatsapp" },
 ];
 
 export default function Navbar() {
@@ -36,12 +44,21 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <Link
-              href="/login"
-              className="border-2 border-hornez-orange bg-transparent px-[1.375rem] py-[0.55rem] text-[1.1rem] font-medium text-hornez-orange rounded-md transition-colors hover:bg-hornez-orange hover:text-white"
-            >
-              Ingresar
-            </Link>
+            <div className="flex items-center gap-3 border-l border-gray-200 pl-5">
+              {SOCIAL_LINKS.map((social) => (
+                <a
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={social.label}
+                  title={social.label}
+                  className="text-gray-700 transition-colors hover:text-hornez-orange"
+                >
+                  {social.icon === "music" ? <Music2 size={20} /> : <i className={`pi ${social.icon} text-xl`} />}
+                </a>
+              ))}
+            </div>
           </div>
 
           {/* Mobile toggle */}
@@ -68,13 +85,21 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-          <Link
-            href="/login"
-            className="block mt-2 text-center border-2 border-hornez-orange bg-transparent px-[1.375rem] py-[0.55rem] text-[1.1rem] font-medium text-hornez-orange rounded-md transition-colors hover:bg-hornez-orange hover:text-white"
-            onClick={() => setMenuOpen(false)}
-          >
-            Ingresar
-          </Link>
+          <div className="flex items-center justify-center gap-5 border-t border-gray-200 pt-4">
+            {SOCIAL_LINKS.map((social) => (
+              <a
+                key={social.label}
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={social.label}
+                title={social.label}
+                className="text-gray-700 transition-colors hover:text-hornez-orange"
+              >
+                {social.icon === "music" ? <Music2 size={21} /> : <i className={`pi ${social.icon} text-xl`} />}
+              </a>
+            ))}
+          </div>
         </div>
       )}
     </nav>

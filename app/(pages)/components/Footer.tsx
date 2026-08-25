@@ -24,35 +24,6 @@ export default function Footer() {
               Tu inmobiliaria de confianza. Te acompañamos en cada paso
               para encontrar la propiedad que estás buscando.
             </p>
-            <div className="flex gap-4 pt-2">
-              <a
-                href="https://www.instagram.com/hornezinmobiliaria?igsh=dWM5NXdpYjZqczhm&utm_source=qr"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Instagram"
-                className="transition-colors hover:text-hornez-orange"
-              >
-                <i className="pi pi-instagram text-xl" />
-              </a>
-              <a
-                href="https://www.facebook.com/share/1QngV9yJAU/?mibextid=wwXIfr"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Facebook"
-                className="transition-colors hover:text-hornez-orange"
-              >
-                <i className="pi pi-facebook text-xl" />
-              </a>
-              <a
-                href="https://wa.me/5493544400903"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="WhatsApp"
-                className="transition-colors hover:text-hornez-orange"
-              >
-                <i className="pi pi-whatsapp text-xl" />
-              </a>
-            </div>
           </div>
 
           {/* Servicios */}
@@ -122,6 +93,14 @@ export default function Footer() {
           </div>
           <div className="text-center md:col-start-2">
             © {new Date().getFullYear()} Hornez Inmobiliaria. Todos los derechos reservados.
+          </div>
+          <div className="flex justify-center md:justify-end md:pr-10">
+            <Link
+              href="/login"
+              className="rounded-md border-2 border-gray-700 bg-gray-900 px-[1.375rem] py-[0.55rem] text-[1.1rem] font-medium text-gray-300 transition-colors hover:bg-gray-800 hover:text-white"
+            >
+              Ingresar
+            </Link>
           </div>
           <div className="hidden md:block" />
         </div>
