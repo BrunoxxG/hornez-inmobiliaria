@@ -36,10 +36,10 @@
 
 "use client";
 
-import {
-  Map,
-  AdvancedMarker,
-} from "@vis.gl/react-google-maps";
+// import {
+//   Map,
+//   AdvancedMarker,
+// } from "@vis.gl/react-google-maps";
 
 type Props = {
   lat: number;
@@ -50,19 +50,22 @@ export default function MapView({
   lat,
   lng,
 }: Props) {
+  // return (
+  //   <div className="h-80 w-full rounded-xl overflow-hidden">
+  //     <Map
+  //       defaultCenter={{ lat, lng }}
+  //       zoom={15}
+  //       gestureHandling="greedy"
+  //       disableDefaultUI={false}
+  //       mapId={process.env.NEXT_PUBLIC_GOOGLE_MAP_ID}
+  //     >
+  //       <AdvancedMarker position={{ lat, lng }} />
+  //     </Map>
+  //   </div>
+  // );
   return (
-    <div className="h-80 w-full rounded-xl overflow-hidden">
-      <Map
-        defaultCenter={{ lat, lng }}
-        zoom={15}
-        gestureHandling="greedy"
-        disableDefaultUI={false}
-        mapId={process.env.NEXT_PUBLIC_GOOGLE_MAP_ID}
-      >
-        <AdvancedMarker
-          position={{ lat, lng }}
-        />
-      </Map>
+    <div className="flex h-80 w-full items-center justify-center rounded-xl bg-gray-100 text-gray-500">
+      Mapa temporalmente desactivado
     </div>
   );
 }
