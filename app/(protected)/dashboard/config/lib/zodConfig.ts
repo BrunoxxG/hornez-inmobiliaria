@@ -38,14 +38,17 @@ export const featureSchema = object({
   id: string(),
   name: string(),
   slug: string(),
+  category: z.enum(["SERVICE", "ADDITIONAL"]),
 });
 export type FeatureZod = z.infer<typeof featureSchema>;
 export const featureFormSchema = object({
   name: string("Nombre requirido").min(1, "Nombre requerido"),
+  category: z.enum(["SERVICE", "ADDITIONAL"]),
 });
 export type FeatureFormZod = z.infer<typeof featureFormSchema>;
 export type FormFeatureProps = {
   setOpenModalForm?: Dispatch<SetStateAction<boolean>>;
   feature?: FeatureZod;
+  category: "SERVICE" | "ADDITIONAL";
   toast: React.RefObject<ToastType | null>;
 };

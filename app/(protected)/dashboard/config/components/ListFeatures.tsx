@@ -12,18 +12,23 @@ import type { Toast as ToastType } from "primereact/toast";
 import { FeatureZod } from "../lib/zodConfig";
 import { useDataTableFilters } from "@/app/lib/hooks/useDataTableFilters";
 import FormFeature from "./FormFeature";
+import { deleteFeature } from "../actions/actionsConfig";
 
 const initialFilters: DataTableFilterMeta = {
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   name: { value: null, matchMode: FilterMatchMode.CONTAINS },
 };
 
-export function ListFeatures({ features }: { features: FeatureZod[] }) {
+export function ListFeatures({ features, category }: { features: FeatureZod[]; category: FeatureZod["category"] }) {
   const [showNewFeatureModal, setShowNewFeatureModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState<FeatureZod | undefined>(undefined);
   const toast = useRef<ToastType | null>(null);
-  const [filteredFeatures, setFilteredFeatures] = useState<FeatureZod[]>(features);
+  const [filteredFeatures, setFilteredFeatures] = useState<FeatureZod[]>(
+    features.filter((feature) => feature.category === category),
+  );
+  const title = category === "SERVICE" ? "Servicio" : "Adicional";
+  const titlePlural = category === "SERVICE" ? "Servicios" : "Adicionales";
 
   const {
     filters,
@@ -42,6 +47,19 @@ export function ListFeatures({ features }: { features: FeatureZod[] }) {
   };
 
   const actionsBodyTemplate = (rowData: FeatureZod) => {
+    const handleDelete = async () => {
+      if (!window.confirm(`¿Eliminar el servicio "${rowData.name}"?`)) return;
+
+      const result = await deleteFeature(rowData.id);
+      if (!result.success) {
+        toast.current?.show({ severity: "error", summary: "Error", detail: result.error });
+        return;
+      }
+
+      setFilteredFeatures((current) => current.filter((feature) => feature.id !== rowData.id));
+      toast.current?.show({ severity: "success", summary: "OK", detail: `${title} eliminado` });
+    };
+
     return (
       <div className="flex gap-2">
         <Button
@@ -61,6 +79,24 @@ export function ListFeatures({ features }: { features: FeatureZod[] }) {
             e.stopPropagation();
             setSelectedFeature(rowData);
             setShowDetailModal(true);
+          }}
+        />
+        <Button
+          icon="pi pi-trash"
+          className="p-button-text"
+          style={{
+            backgroundColor: "#F7F7F7",
+            border: "1px solid #F9F9F9",
+            color: "#6B7280",
+            borderRadius: "8px",
+            minHeight: "40px",
+            minWidth: "40px",
+          }}
+          tooltip="Eliminar"
+          tooltipOptions={{ position: "top" }}
+          onClick={(e) => {
+            e.stopPropagation();
+            void handleDelete();
           }}
         />
       </div>
@@ -91,7 +127,7 @@ export function ListFeatures({ features }: { features: FeatureZod[] }) {
           )}
         </div>
         <Button
-          label="Nueva Característica"
+          label={`Nuevo ${title}`}
           icon="pi pi-plus"
           onClick={() => setShowNewFeatureModal(true)}
           className="p-button-danger"
@@ -103,7 +139,7 @@ export function ListFeatures({ features }: { features: FeatureZod[] }) {
     <div className="border">
       <Toast ref={toast} />
       <DataTable
-        value={features}
+        value={filteredFeatures}
         onValueChange={(e) => setFilteredFeatures(e)}
         paginator
         rows={10}
@@ -112,7 +148,7 @@ export function ListFeatures({ features }: { features: FeatureZod[] }) {
         filters={filters}
         globalFilterFields={["name"]}
         header={header}
-        emptyMessage="No se encontraron características"
+        emptyMessage={`No se encontraron ${titlePlural.toLowerCase()}`}
         className="datatable-responsive"
       >
         <Column field="name" header="Nombre" body={nameBodyTemplate} sortable style={{ minWidth: "200px" }} />
@@ -122,12 +158,12 @@ export function ListFeatures({ features }: { features: FeatureZod[] }) {
       <Dialog
         visible={showNewFeatureModal}
         onHide={() => setShowNewFeatureModal(false)}
-        header="Nueva Característica"
+        header={`Nuevo ${title}`}
         style={{ width: "700px" }}
         modal
         dismissableMask
       >
-        <FormFeature setOpenModalForm={setShowNewFeatureModal} toast={toast} />
+        <FormFeature category={category} setOpenModalForm={setShowNewFeatureModal} toast={toast} />
       </Dialog>
 
       <Dialog
@@ -136,12 +172,12 @@ export function ListFeatures({ features }: { features: FeatureZod[] }) {
           setShowDetailModal(false);
           setSelectedFeature(undefined);
         }}
-        header="Característica"
+        header={category === "SERVICE" ? "Servicio" : "Adicional"}
         style={{ width: "700px" }}
         modal
         dismissableMask
       >
-        {selectedFeature && <FormFeature feature={selectedFeature} setOpenModalForm={setShowDetailModal} toast={toast} />}
+        {selectedFeature && <FormFeature category={category} feature={selectedFeature} setOpenModalForm={setShowDetailModal} toast={toast} />}
       </Dialog>
     </div>
   );

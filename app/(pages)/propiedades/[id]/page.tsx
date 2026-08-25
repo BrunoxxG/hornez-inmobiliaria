@@ -64,6 +64,32 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               {/* Galería */}
               <PropertyGallery images={property.images} operation={property.listingType.name}/>
 
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                {(["SERVICE", "ADDITIONAL"] as const).map((category) => {
+                  const items = property.features.filter(({ feature }) => feature.category === category);
+                  if (items.length === 0) return null;
+
+                  return (
+                    <div key={category} className="rounded-xl bg-white p-6 shadow-sm">
+                      <h2 className="mb-5 text-2xl font-bold text-hornez-orange">
+                        {category === "SERVICE" ? "Servicios" : "Adicionales"}
+                      </h2>
+                      <div className="flex flex-wrap gap-3">
+                        {items.map(({ feature, value }) => (
+                          <span
+                            key={feature.id}
+                            className="rounded-full bg-hornez-orange px-5 py-2 text-base font-medium text-white"
+                          >
+                            {feature.name}
+                            {value && value !== "-" ? `: ${value}` : ""}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
               {/* Descripción */}
               <div className="bg-white rounded-xl p-6 shadow-sm">
                 <h2 className="text-lg font-semibold mb-3">Descripción</h2>
@@ -72,24 +98,6 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
 
               {/* Ubicación */}
               {property.lat && property.lng && <PropertyUbication lat={property.lat} lng={property.lng} />}
-
-              {/* Características */}
-              {property.features.length > 0 && (
-                <div className="bg-white rounded-xl p-6 shadow-sm">
-                  <h2 className="text-lg font-semibold mb-4">Características</h2>
-                  <ul className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {property.features.map(({ feature, value }) => (
-                      <li key={feature.id} className="flex items-center gap-2 text-gray-600 text-sm">
-                        <i className="pi pi-check-circle text-hornez-blue text-sm" />
-                        <span>
-                          {feature.name}
-                          {value && value !== "-" ? `: ${value}` : ""}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
 
               {/* Documentos */}
               {property.documents.length > 0 && (

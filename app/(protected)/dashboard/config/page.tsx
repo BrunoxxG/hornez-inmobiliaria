@@ -15,7 +15,8 @@ export default async function Config() {
       <div className="flex flex-col gap-2 md:flex-row justify-between items-start">
         <ListListingTypes listingTypes={listingTypes} />
         <ListPropertyTypes propertyTypes={propertyTypes} />
-        <ListFeatures features={features} />
+        <ListFeatures features={features} category="SERVICE" />
+        <ListFeatures features={features} category="ADDITIONAL" />
       </div>
     </>
   );

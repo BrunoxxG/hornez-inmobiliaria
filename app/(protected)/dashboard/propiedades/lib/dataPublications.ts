@@ -50,6 +50,7 @@ export async function getProperties(): Promise<PropertyZod[]> {
               select: {
                 id: true,
                 name: true,
+                category: true,
               },
             },
           }

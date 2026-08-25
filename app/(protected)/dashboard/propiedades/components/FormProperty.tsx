@@ -692,33 +692,47 @@ export default function FormProperty(props: FormPropertyProps) {
             </div>
 
             <div className="w-full col-span-2">
-              <label className="block text-sm font-semibold mb-2">Características *</label>
-              <Dropdown
-                options={features.filter((f) => !selectedFeatures.includes(f.id))}
-                optionLabel="name"
-                optionValue="id"
-                onChange={(e) => handleAddFeature(e.value)}
-                className="w-full"
-                placeholder="Seleccionar Características"
-              />
-              {isLoading ? (
-                <span>Cargando características...</span>
-              ) : (
-                <div className="flex flex-wrap gap-2 mt-4">
-                  {selectedFeatures.map((id) => {
-                    const feature = features.find((f) => f.id === id);
-
-                    return (
-                      <div key={id} className="flex items-center gap-2 bg-gray-200 px-3 py-1 rounded-full">
-                        <span>{feature?.name}</span>
-                        <button type="button" onClick={() => handleRemoveFeature(id)} className="text-red-500">
-                          ✕
-                        </button>
+              <div className="flex flex-col gap-4">
+                {(["SERVICE", "ADDITIONAL"] as const).map((category) => (
+                  <div key={category}>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      {category === "SERVICE" ? "Servicios" : "Adicionales"}
+                    </label>
+                    <Dropdown
+                      options={features.filter((feature) => feature.category === category && !selectedFeatures.includes(feature.id))}
+                      optionLabel="name"
+                      optionValue="id"
+                      onChange={(e) => handleAddFeature(e.value)}
+                      className="w-full"
+                      placeholder={category === "SERVICE" ? "Seleccionar servicios" : "Seleccionar adicionales"}
+                    />
+                    {!isLoading && (
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {selectedFeatures
+                          .flatMap((id) => {
+                            const feature = features.find((item) => item.id === id);
+                            return feature?.category === category ? [feature] : [];
+                          })
+                          .map((feature) => (
+                            <div key={feature.id} className="flex items-center gap-2 rounded-full bg-gray-200 px-3 py-1">
+                              <span>{feature.name}</span>
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveFeature(feature.id)}
+                                className="text-red-500"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          ))}
                       </div>
-                    );
-                  })}
-                </div>
-              )}
+                    )}
+                  </div>
+                ))}
+              </div>
+              {isLoading ? (
+                <span>Cargando servicios y adicionales...</span>
+              ) : null}
             </div>
 
             <div className="w-full col-span-2">

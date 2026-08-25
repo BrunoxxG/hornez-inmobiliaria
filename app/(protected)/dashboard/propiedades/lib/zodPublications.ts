@@ -42,6 +42,7 @@ export const propertySchema = object({
       feature: object({
         id: string(),
         name: string(),
+        category: z.enum(["SERVICE", "ADDITIONAL"]),
       }),
     }),
   ),

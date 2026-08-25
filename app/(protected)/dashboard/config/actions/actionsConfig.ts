@@ -33,6 +33,7 @@ export async function createFeature(values: FeatureFormZod) {
       data: {
         name: data.name,
         slug,
+        category: data.category,
       },
     });
 
@@ -65,9 +66,31 @@ export async function updateFeature(values: FeatureFormZod, featureId: string) {
       data: {
         name: data.name,
         slug,
+        category: data.category,
       },
     });
 
+    revalidatePath("/dashboard/config");
+    return { success: true };
+  } catch (error) {
+    console.error(error);
+    return { success: false, error: "Ocurrio un error" };
+  }
+}
+
+export async function deleteFeature(featureId: string) {
+  try {
+    const feature = await prisma.feature.findUnique({
+      where: { id: featureId },
+      select: { properties: { select: { id: true }, take: 1 } },
+    });
+
+    if (!feature) return { success: false, error: "La característica no existe" };
+    if (feature.properties.length > 0) {
+      return { success: false, error: "No se puede eliminar una característica en uso" };
+    }
+
+    await prisma.feature.delete({ where: { id: featureId } });
     revalidatePath("/dashboard/config");
     return { success: true };
   } catch (error) {
@@ -141,6 +164,27 @@ export async function updateListingType(values: ListingTypeFormZod, listingTypeI
   }
 }
 
+export async function deleteListingType(listingTypeId: string) {
+  try {
+    const listingType = await prisma.listingType.findUnique({
+      where: { id: listingTypeId },
+      select: { properties: { select: { id: true }, take: 1 } },
+    });
+
+    if (!listingType) return { success: false, error: "El tipo de listado no existe" };
+    if (listingType.properties.length > 0) {
+      return { success: false, error: "No se puede eliminar un tipo de listado en uso" };
+    }
+
+    await prisma.listingType.delete({ where: { id: listingTypeId } });
+    revalidatePath("/dashboard/config");
+    return { success: true };
+  } catch (error) {
+    console.error(error);
+    return { success: false, error: "Ocurrio un error" };
+  }
+}
+
 export async function createPropertyType(values: PropertyTypeFormZod) {
   const { data, success } = propertyTypeFormSchema.safeParse(values);
   if (!success) {
@@ -198,6 +242,27 @@ export async function updatePropertyType(values: PropertyTypeFormZod, propertyTy
       },
     });
 
+    revalidatePath("/dashboard/config");
+    return { success: true };
+  } catch (error) {
+    console.error(error);
+    return { success: false, error: "Ocurrio un error" };
+  }
+}
+
+export async function deletePropertyType(propertyTypeId: string) {
+  try {
+    const propertyType = await prisma.propertyType.findUnique({
+      where: { id: propertyTypeId },
+      select: { properties: { select: { id: true }, take: 1 } },
+    });
+
+    if (!propertyType) return { success: false, error: "El tipo de propiedad no existe" };
+    if (propertyType.properties.length > 0) {
+      return { success: false, error: "No se puede eliminar un tipo de propiedad en uso" };
+    }
+
+    await prisma.propertyType.delete({ where: { id: propertyTypeId } });
     revalidatePath("/dashboard/config");
     return { success: true };
   } catch (error) {

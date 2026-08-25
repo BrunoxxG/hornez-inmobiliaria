@@ -65,6 +65,11 @@ enum PropertyStatus {
   RENTED    @map("Alquilado")
 }
 
+enum FeatureCategory {
+  SERVICE
+  ADDITIONAL
+}
+
 model Property {
   id          String  @id @default(cuid())
   title       String
@@ -122,6 +127,7 @@ model Feature {
   id   String @id @default(cuid())
   name String
   slug String @unique
+  category FeatureCategory @default(SERVICE)
 
   properties PropertyFeature[]
 
