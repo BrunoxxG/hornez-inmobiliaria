@@ -5,11 +5,9 @@ import { useEffect, useState } from "react";
 export default function PropertyGallery({
   images,
   operation,
-  documentation,
 }: {
   images: { url: string; id: string }[];
   operation: string;
-  documentation: "POSSESSORY_RIGHTS" | "DEED";
 }) {
   const [active, setActive] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -30,11 +28,6 @@ export default function PropertyGallery({
       <div className="relative flex items-center justify-center h-80 bg-gray-100 rounded-xl text-gray-400">
         <img src="/img/vendeLogo.png" alt="venta logo" className={`h-15 absolute top-3 left-3 ${operation !== "Venta" ? "hidden" : "" }`} />
         <img src="/img/alquilaLogo.png" alt="alquiler logo" className={`h-15 absolute top-3 left-3 ${operation !== "Alquiler" ? "hidden" : "" }`} />
-        {active === 0 && (
-          <span className="absolute right-0 top-0 z-10 rounded-bl-lg bg-black/70 px-4 py-2 text-xs font-semibold text-white shadow-sm">
-            {documentation === "DEED" ? "Escritura" : "Derechos posesorios"}
-          </span>
-        )}
         <i className="pi pi-image text-6xl" />
       </div>
     );

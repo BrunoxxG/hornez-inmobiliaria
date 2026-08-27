@@ -65,7 +65,6 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               <PropertyGallery
                 images={property.images}
                 operation={property.listingType.name}
-                documentation={property.documentation}
               />
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">

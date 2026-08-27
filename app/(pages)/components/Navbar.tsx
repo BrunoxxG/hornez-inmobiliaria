@@ -13,7 +13,7 @@ const NAV_LINKS = [
 const SOCIAL_LINKS = [
   { href: "https://www.instagram.com/hornezinmobiliaria?igsh=dWM5NXdpYjZqczhm&utm_source=qr", label: "Instagram", icon: "pi-instagram" },
   { href: "https://www.facebook.com/share/1QngV9yJAU/?mibextid=wwXIfr", label: "Facebook", icon: "pi-facebook" },
-  { href: "https://www.tiktok.com/", label: "TikTok", icon: "music" },
+  { href: "https://www.tiktok.com/@inmobiliariahornez?_r=1&_t=ZS-99EgEg1vBYX", label: "TikTok", icon: "music" },
   { href: "https://wa.me/5493544400903", label: "WhatsApp", icon: "pi-whatsapp" },
 ];
 
