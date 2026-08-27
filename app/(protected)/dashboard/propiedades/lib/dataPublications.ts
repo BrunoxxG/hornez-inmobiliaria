@@ -36,6 +36,7 @@ export async function getProperties(): Promise<PropertyZod[]> {
         lat: true,
         lng: true,
         status: true,
+        documentation: true,
         active: true,
         standOut: true,
         userId: true,

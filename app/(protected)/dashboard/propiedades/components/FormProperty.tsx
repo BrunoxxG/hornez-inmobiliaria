@@ -96,6 +96,7 @@ export default function FormProperty(props: FormPropertyProps) {
       lat: property?.lat ?? 0,
       lng: property?.lng ?? 0,
       status: property?.status || "AVAILABLE",
+      documentation: property?.documentation || "DEED",
       active: property?.active ?? true,
       standOut: property?.standOut ?? false,
       userId: property?.userId || session.user.id,
@@ -684,6 +685,28 @@ export default function FormProperty(props: FormPropertyProps) {
                       }))}
                       className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
                       placeholder="Seleccionar estado"
+                    />
+                    {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
+                  </>
+                )}
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="block text-sm font-semibold mb-2">Documentación *</label>
+              <Controller
+                name="documentation"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <>
+                    <Dropdown
+                      {...field}
+                      options={[
+                        { label: "Escritura", value: "DEED" },
+                        { label: "Derechos posesorios", value: "POSSESSORY_RIGHTS" },
+                      ]}
+                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
+                      placeholder="Seleccionar documentación"
                     />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                   </>

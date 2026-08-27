@@ -30,6 +30,9 @@ export default function PropertyCard({ property }: { property: PropertyZod }) {
           <img src="/img/alquilerIcon.png" alt="alquiler logo" className={`h-5 ${operation !== "Alquiler" ? "hidden" : "" }`} />
           <span className=" text-xs font-semibold">{property.listingType.name}</span>
         </div>
+        <span className="absolute top-3 right-3 rounded-full bg-white px-3 py-1 text-xs font-semibold text-hornez-orange shadow-sm">
+          {property.documentation === "DEED" ? "Escritura" : "Derechos posesorios"}
+        </span>
       </div>
 
       {/* Content */}

@@ -62,7 +62,11 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
             {/* Columna izquierda: galería + descripción */}
             <div className="lg:col-span-2 space-y-6">
               {/* Galería */}
-              <PropertyGallery images={property.images} operation={property.listingType.name}/>
+              <PropertyGallery
+                images={property.images}
+                operation={property.listingType.name}
+                documentation={property.documentation}
+              />
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 {(["SERVICE", "ADDITIONAL"] as const).map((category) => {
@@ -78,7 +82,9 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                         {items.map(({ feature, value }) => (
                           <span
                             key={feature.id}
-                            className="rounded-full bg-hornez-orange px-5 py-2 text-base font-medium text-white"
+                            className={`rounded-full px-4 py-[0.4rem] text-[0.8rem] font-medium text-white ${
+                              category === "SERVICE" ? "bg-hornez-orange" : "bg-gray-500"
+                            }`}
                           >
                             {feature.name}
                             {value && value !== "-" ? `: ${value}` : ""}

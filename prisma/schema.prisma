@@ -65,6 +65,11 @@ enum PropertyStatus {
   RENTED    @map("Alquilado")
 }
 
+enum PropertyDocumentation {
+  POSSESSORY_RIGHTS @map("Derechos posesorios")
+  DEED              @map("Escritura")
+}
+
 enum FeatureCategory {
   SERVICE
   ADDITIONAL
@@ -98,6 +103,7 @@ model Property {
   lng Float
 
   status   PropertyStatus @default(AVAILABLE)
+  documentation PropertyDocumentation @default(DEED)
   active   Boolean        @default(true)
   standOut Boolean        @default(false)
 
