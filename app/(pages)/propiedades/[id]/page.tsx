@@ -170,13 +170,22 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
 
                 <div className="mt-4 border-t border-gray-100 pt-4">
                   <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Contacto</p>
-                  <a
-                    href="tel:+5493544400903"
-                    className="flex items-center gap-2 rounded-lg bg-green-500 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-600"
-                  >
-                    <i className="pi pi-phone" />
-                    +54 9 3544 400903
-                  </a>
+                  <div className="space-y-2 text-sm font-semibold text-gray-800">
+                    <a
+                      href="tel:+5493544400903"
+                      className="flex items-center gap-2 rounded-lg bg-green-500 px-3 py-2 text-white transition-colors hover:bg-esmerald-600"
+                    >
+                      <i className="pi pi-phone" />
+                      3544400903 - Oficina
+                    </a>
+                    <a
+                      href="tel:+5493544548602"
+                      className="flex items-center gap-2 rounded-lg bg-green-500 px-3 py-2 text-white transition-colors hover:bg-esmerald-600"
+                    >
+                      <i className="pi pi-phone" />
+                      3544548602 - Bruno
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
