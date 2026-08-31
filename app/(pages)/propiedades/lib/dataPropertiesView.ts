@@ -221,6 +221,111 @@ export async function getPropertiesStand(): Promise<PropertyZod[]> {
   }
 }
 
+export async function getRelatedProperties(
+  propertyId: string,
+  city: string,
+  propertyTypeId: string,
+  limit = 3,
+): Promise<PropertyZod[]> {
+  try {
+    const relatedProperties = await prisma.property.findMany({
+      where: {
+        active: true,
+        status: "AVAILABLE",
+        id: {
+          not: propertyId,
+        },
+        OR: [
+          {
+            city: {
+              contains: city,
+              mode: "insensitive",
+            },
+          },
+          {
+            propertyTypeId,
+          },
+        ],
+      },
+      take: limit,
+      orderBy: {
+        updatedAt: "desc",
+      },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        price: true,
+        listingType: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        propertyType: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        address: true,
+        city: true,
+        province: true,
+        zipCode: true,
+        totalRooms: true,
+        bedrooms: true,
+        bathrooms: true,
+        area: true,
+        currency: true,
+        lat: true,
+        lng: true,
+        status: true,
+        documentation: true,
+        active: true,
+        standOut: true,
+        userId: true,
+        createdAt: true,
+        updatedAt: true,
+        video: true,
+        features: {
+          select: {
+            id: true,
+            value: true,
+            feature: {
+              select: {
+                id: true,
+                name: true,
+                category: true,
+              },
+            },
+          },
+        },
+        images: {
+          select: {
+            id: true,
+            order: true,
+            url: true,
+          },
+        },
+        documents: {
+          select: {
+            id: true,
+            url: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    return relatedProperties.map((property) => ({
+      ...property,
+      price: Number(property.price),
+    }));
+  } catch (error) {
+    return [];
+  }
+}
+
 export async function getPropertyById(propertyId: string): Promise<PropertyZod | null> {
   try {
     const property = await prisma.property.findUnique({

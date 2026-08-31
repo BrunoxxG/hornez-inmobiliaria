@@ -2,10 +2,11 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Navbar from "../../components/Navbar";
 import PropertyGallery from "./components/PropertyGallery";
-import { getPropertyById } from "../lib/dataPropertiesView";
+import { getPropertyById, getRelatedProperties } from "../lib/dataPropertiesView";
 import { BedDouble, Maximize, Toilet } from "lucide-react";
 import PropertyUbication from "./components/PropertyUbication";
 import Footer from "../../components/Footer";
+import PropertyCard from "../components/PropertyCard";
 
 
 const currencyFormat = (price: number, currency: string) =>
@@ -38,6 +39,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const propertyUrl = `${appUrl.replace(/\/$/, "")}/propiedades/${property.id}`;
   const whatsappMessage = `Hola, me interesa la propiedad: ${property.title}. Link: ${propertyUrl}`;
+  const relatedProperties = await getRelatedProperties(property.id, property.city, property.propertyType.id, 3);
 
   return (
     <>
@@ -198,6 +200,20 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
 
             {/* Ubicación */}
             {property.lat && property.lng && <PropertyUbication lat={property.lat} lng={property.lng} />}
+
+            <div className="bg-white rounded-xl p-6 shadow-sm">
+              <h2 className="mb-5 text-2xl font-bold text-hornez-orange">Búsquedas relacionadas</h2>
+
+              {relatedProperties.length > 0 ? (
+                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                  {relatedProperties.map((relatedProperty) => (
+                    <PropertyCard key={relatedProperty.id} property={relatedProperty} />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">No hay propiedades relacionadas por el momento.</p>
+              )}
+            </div>
 
             {/* Documentos */}
             {property.documents.length > 0 && (
