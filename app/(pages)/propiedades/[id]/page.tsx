@@ -119,7 +119,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               </div>
 
               <div className="rounded-xl bg-white p-5 shadow-sm">
-                <h2 className="mb-4 text-xl font-bold text-gray-900">Datos de la propiedad</h2>
+                <h2 className="mb-4 text-xl font-bold text-hornez-orange">Datos de la propiedad</h2>
 
                 <div className="space-y-3 text-sm text-gray-600">
                   <div className="flex items-center justify-between gap-3">
