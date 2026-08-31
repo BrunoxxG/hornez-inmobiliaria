@@ -58,166 +58,157 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
             <span className="text-gray-900 font-medium truncate max-w-xs">{property.title}</span>
           </nav>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Columna izquierda: galería + descripción */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Galería */}
-              <PropertyGallery
-                images={property.images}
-                operation={property.listingType.name}
-              />
+          <div className="space-y-8">
+            {/* Galería principal */}
+            <PropertyGallery
+              images={property.images}
+              operation={property.listingType.name}
+            />
 
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                {(["SERVICE", "ADDITIONAL"] as const).map((category) => {
-                  const items = property.features.filter(({ feature }) => feature.category === category);
-                  if (items.length === 0) return null;
-
-                  return (
-                    <div key={category} className="rounded-xl bg-white p-6 shadow-sm">
-                      <h2 className="mb-5 text-2xl font-bold text-hornez-orange">
-                        {category === "SERVICE" ? "Servicios" : "Adicionales"}
-                      </h2>
-                      <div className="flex flex-wrap gap-3">
-                        {items.map(({ feature, value }) => (
-                          <span
-                            key={feature.id}
-                            className={`rounded-full px-4 py-[0.4rem] text-[0.8rem] font-medium text-white ${
-                              category === "SERVICE" ? "bg-hornez-orange" : "bg-gray-500"
-                            }`}
-                          >
+            <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_1.1fr_1.3fr]">
+              <div className="rounded-xl bg-white p-5 shadow-sm">
+                <h2 className="mb-4 text-xl font-bold text-hornez-orange">Servicios</h2>
+                <div className="space-y-2">
+                  {property.features.filter(({ feature }) => feature.category === "SERVICE").length > 0 ? (
+                    property.features
+                      .filter(({ feature }) => feature.category === "SERVICE")
+                      .map(({ feature, value }) => (
+                        <div
+                          key={feature.id}
+                          className="flex items-center gap-2 rounded-lg border border-orange-100 bg-orange-50/60 px-3 py-2 text-xs font-medium text-gray-700 shadow-sm"
+                        >
+                          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white shadow-sm">
+                            ✓
+                          </span>
+                          <span>
                             {feature.name}
                             {value && value !== "-" ? `: ${value}` : ""}
                           </span>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
+                        </div>
+                      ))
+                  ) : (
+                    <p className="text-sm text-gray-500">No hay servicios cargados.</p>
+                  )}
+                </div>
               </div>
 
-              {/* Descripción */}
-              <div className="bg-white rounded-xl p-6 shadow-sm">
-                <h2 className="text-lg font-semibold mb-3">Descripción</h2>
-                <p className="text-gray-600 leading-relaxed whitespace-pre-line">{property.description}</p>
+              <div className="rounded-xl bg-white p-5 shadow-sm">
+                <h2 className="mb-4 text-xl font-bold text-hornez-orange">Adicionales</h2>
+                <div className="space-y-2">
+                  {property.features.filter(({ feature }) => feature.category === "ADDITIONAL").length > 0 ? (
+                    property.features
+                      .filter(({ feature }) => feature.category === "ADDITIONAL")
+                      .map(({ feature, value }) => (
+                        <div
+                          key={feature.id}
+                          className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium text-gray-700 shadow-sm"
+                        >
+                          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-300 text-[10px] font-bold text-gray-700 shadow-sm">
+                            ✓
+                          </span>
+                          <span>
+                            {feature.name}
+                            {value && value !== "-" ? `: ${value}` : ""}
+                          </span>
+                        </div>
+                      ))
+                  ) : (
+                    <p className="text-sm text-gray-500">No hay adicionales cargados.</p>
+                  )}
+                </div>
               </div>
 
-              {/* Ubicación */}
-              {property.lat && property.lng && <PropertyUbication lat={property.lat} lng={property.lng} />}
+              <div className="rounded-xl bg-white p-5 shadow-sm">
+                <h2 className="mb-4 text-xl font-bold text-gray-900">Datos de la propiedad</h2>
 
-              {/* Documentos */}
-              {property.documents.length > 0 && (
-                <div className="bg-white rounded-xl p-6 shadow-sm">
-                  <h2 className="text-lg font-semibold mb-4">Documentos</h2>
-                  <div className="flex flex-col items-start gap-2">
-                    {property.documents.map((doc, index) => (
-                      <a
-                        key={index}
-                        href={doc.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm bg-black/50 text-white px-2 py-1 rounded hover:bg-gray-900"
-                      >
-                        {doc.name}
-                      </a>
-                    ))}
+                <div className="space-y-3 text-sm text-gray-600">
+                  <div className="flex items-center justify-between gap-3">
+                    <span>Precio</span>
+                    <span className="font-semibold text-hornez-blue">
+                      {property.price === 0 ? "Consultar" : currencyFormat(property.price, property.currency)}
+                    </span>
                   </div>
-                </div>
-              )}
-            </div>
 
-            {/* Columna derecha: ficha + contacto */}
-            <div className="space-y-6">
-              {/* Ficha */}
-              <div className="bg-white rounded-xl p-6 shadow-sm">
-                <div className="flex items-start justify-between gap-2 mb-4">
-                  <span className="bg-hornez-blue text-white text-xs font-semibold px-3 py-1 rounded-full">
-                    {property.listingType.name}
-                  </span>
-                  <span className={`text-xs font-semibold px-3 py-1 rounded-full ${STATUS_COLOR[property.status]}`}>
-                    {STATUS_LABEL[property.status]}
-                  </span>
-                </div>
+                  <div className="flex items-center justify-between gap-3">
+                    <span>Ubicación</span>
+                    <span className="text-right font-medium text-gray-800">{property.city}</span>
+                  </div>
 
-                <h1 className="text-xl font-bold text-gray-900 mb-1">{property.title}</h1>
-
-                <p className="text-sm text-gray-500 flex items-center gap-1 mb-4">
-                  <img src="/img/ubicacionIcon.png" alt="ubicacion icon" className="h-5"/>
-                  {property.address}, {property.city}, {property.province}
-                </p>
-
-                <div className="flex items-end mb-5 gap-2">
-                  <p className="text-3xl font-bold text-hornez-blue m-0">
-                    {property.price === 0 ? "Consultar precio" : currencyFormat(property.price, property.currency)}
-                  </p>
-                  <span className="text-hornez-blue font-bold">{property.currency}</span>
-                </div>
-
-                {/* Stats */}
-                <div className="grid grid-cols-3 gap-3 text-center">
-                  {property.bedrooms != 0 && (
-                    <div className="bg-gray-50 rounded-lg py-3 flex flex-col justify-center items-center">
-                      <div className="flex items-center gap-2">
-                        <img src="/img/camaIcon.png" alt="cama icon" className="h-5"/>
-                        <span className="text-sm font-semibold">{property.bedrooms}</span>
-                      </div>
-                      <p className="text-xs text-gray-400">Dorm.</p>
-                    </div>
-                  )}
-                  {property.bathrooms != 0 && (
-                    <div className="bg-gray-50 rounded-lg py-3 flex flex-col justify-center items-center">
-                      <div className="flex items-center gap-2">
-                        <img src="/img/bañoIcon.png" alt="baño icon" className="h-6"/>
-                        <span className="text-sm font-semibold">{property.bathrooms}</span>
-                      </div>
-                      <p className="text-xs text-gray-400">Baños</p>
-                    </div>
-                  )}
-                  {property.area != 0 && (
-                    <div className="bg-gray-50 rounded-lg py-3 flex flex-col justify-center items-center">
-                      <div className="flex items-center gap-2">
-                        <Maximize size={20} />
-                        <span className="text-sm font-semibold">{property.area}</span>
-                      </div>
-                      <p className="text-xs text-gray-400">m²</p>
-                    </div>
-                  )}
-                </div>
-
-                <div className="mt-4 pt-4 border-t text-sm text-gray-500 space-y-2">
-                  <div className="flex justify-between">
+                  <div className="flex items-center justify-between gap-3">
                     <span>Tipo</span>
-                    <span className="font-medium text-gray-700">{property.propertyType.name}</span>
+                    <span className="font-medium text-gray-800">{property.propertyType.name}</span>
                   </div>
+
+                  {property.bedrooms != 0 && (
+                    <div className="flex items-center justify-between gap-3">
+                      <span>Dormitorios</span>
+                      <span className="font-medium text-gray-800">{property.bedrooms}</span>
+                    </div>
+                  )}
+
+                  {property.bathrooms != 0 && (
+                    <div className="flex items-center justify-between gap-3">
+                      <span>Baños</span>
+                      <span className="font-medium text-gray-800">{property.bathrooms}</span>
+                    </div>
+                  )}
+
+                  {property.area != 0 && (
+                    <div className="flex items-center justify-between gap-3">
+                      <span>Superficie</span>
+                      <span className="font-medium text-gray-800">{property.area} m²</span>
+                    </div>
+                  )}
+
                   {property.zipCode && (
-                    <div className="flex justify-between">
+                    <div className="flex items-center justify-between gap-3">
                       <span>Código postal</span>
-                      <span className="font-medium text-gray-700">{property.zipCode}</span>
+                      <span className="font-medium text-gray-800">{property.zipCode}</span>
                     </div>
                   )}
                 </div>
-              </div>
 
-              {/* Contacto */}
-              <div className="bg-white rounded-xl p-6 shadow-sm">
-                <h2 className="text-lg font-semibold mb-4">¿Te interesa?</h2>
-                <a
-                  href={`https://wa.me/5493544400903?text=${encodeURIComponent(whatsappMessage)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-semibold transition-colors"
-                >
-                  <i className="pi pi-whatsapp text-lg" />
-                  Consultar por WhatsApp
-                </a>
-                <Link
-                  href="/#contacto"
-                  className="flex items-center justify-center gap-2 w-full mt-3 border-2 border-hornez-blue text-hornez-blue hover:bg-hornez-blue hover:text-white py-3 rounded-lg font-semibold transition-colors"
-                >
-                  <i className="pi pi-envelope" />
-                  Enviar consulta
-                </Link>
+                <div className="mt-4 border-t border-gray-100 pt-4">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Contacto</p>
+                  <a
+                    href="tel:+5493544400903"
+                    className="flex items-center gap-2 rounded-lg bg-green-500 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-600"
+                  >
+                    <i className="pi pi-phone" />
+                    +54 9 3544 400903
+                  </a>
+                </div>
               </div>
             </div>
+
+            {/* Descripción */}
+            <div className="bg-white rounded-xl p-6 shadow-sm">
+              <h2 className="text-lg font-semibold mb-3">Descripción</h2>
+              <p className="text-gray-600 leading-relaxed whitespace-pre-line">{property.description}</p>
+            </div>
+
+            {/* Ubicación */}
+            {property.lat && property.lng && <PropertyUbication lat={property.lat} lng={property.lng} />}
+
+            {/* Documentos */}
+            {property.documents.length > 0 && (
+              <div className="bg-white rounded-xl p-6 shadow-sm">
+                <h2 className="text-lg font-semibold mb-4">Documentos</h2>
+                <div className="flex flex-col items-start gap-2">
+                  {property.documents.map((doc, index) => (
+                    <a
+                      key={index}
+                      href={doc.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm bg-black/50 text-white px-2 py-1 rounded hover:bg-gray-900"
+                    >
+                      {doc.name}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </main>

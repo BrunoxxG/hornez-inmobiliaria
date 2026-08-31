@@ -34,9 +34,10 @@ export default function PropertyGallery({
   }
 
   return (
-    <div className="space-y-3">
-      {/* Imagen principal */}
-      <div className="relative h-80 md:h-120 bg-gray-100 rounded-xl overflow-hidden">
+    <div className="flex flex-col gap-3 md:flex-row">
+      <div className="order-1 min-w-0 flex-1 md:order-1">
+        {/* Imagen principal */}
+        <div className="relative h-80 overflow-hidden rounded-xl bg-gray-100 md:h-120">
         <img src="/img/vendeLogo.png" alt="venta logo" className={`h-15 absolute top-3 left-3 ${operation !== "Venta" ? "hidden" : "" }`} />
         <img src="/img/alquilaLogo.png" alt="alquiler logo" className={`h-15 absolute top-3 left-3 ${operation !== "Alquiler" ? "hidden" : "" }`} />
         <img
@@ -67,20 +68,21 @@ export default function PropertyGallery({
             </span>
           </>
         )}
+        </div>
       </div>
 
       {/* Miniaturas */}
       {images.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          {images.map((img, i) => (
+        <div className="order-2 flex gap-2 overflow-x-auto pb-1 md:order-2 md:flex md:h-120 md:w-56 md:flex-col md:overflow-y-hidden">
+          {images.slice(0, 2).map((img, i) => (
             <button
               key={img.id}
               onClick={() => setActive(i)}
-              className={`relative shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition-colors ${
+              className={`relative h-24 w-30 shrink-0 overflow-hidden rounded-lg border-2 transition-colors md:h-auto md:w-full md:flex-1 ${
                 i === active ? "border-hornez-blue" : "border-transparent"
               }`}
             >
-              <img src={img.url} alt="" className="object-cover" sizes="80px" />
+              <img src={img.url} alt="" className="h-full w-full object-cover" sizes="224px" />
             </button>
           ))}
         </div>
