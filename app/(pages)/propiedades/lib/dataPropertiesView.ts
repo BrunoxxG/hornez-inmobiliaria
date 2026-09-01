@@ -227,7 +227,43 @@ export async function getRelatedProperties(
   limit = 3,
 ): Promise<PropertyZod[]> {
   try {
-    const sameTypeProperties = await prisma.property.findMany({
+    const selectConfig = {
+      id: true,
+      title: true,
+      description: true,
+      price: true,
+      listingType: { select: { id: true, name: true } },
+      propertyType: { select: { id: true, name: true } },
+      address: true,
+      city: true,
+      province: true,
+      totalRooms: true,
+      bedrooms: true,
+      bathrooms: true,
+      area: true,
+      currency: true,
+      lat: true,
+      lng: true,
+      status: true,
+      documentation: true,
+      active: true,
+      standOut: true,
+      userId: true,
+      createdAt: true,
+      updatedAt: true,
+      video: true,
+      features: {
+        select: {
+          id: true,
+          value: true,
+          feature: { select: { id: true, name: true, category: true } },
+        },
+      },
+      images: { select: { id: true, order: true, url: true } },
+      documents: { select: { id: true, url: true, name: true } },
+    } as const;
+
+    const sameTypeCityProperties = await prisma.property.findMany({
       where: {
         active: true,
         status: "AVAILABLE",
@@ -240,53 +276,22 @@ export async function getRelatedProperties(
       },
       take: limit * 2,
       orderBy: { updatedAt: "desc" },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        price: true,
-        listingType: { select: { id: true, name: true } },
-        propertyType: { select: { id: true, name: true } },
-        address: true,
-        city: true,
-        province: true,
-        totalRooms: true,
-        bedrooms: true,
-        bathrooms: true,
-        area: true,
-        currency: true,
-        lat: true,
-        lng: true,
-        status: true,
-        documentation: true,
-        active: true,
-        standOut: true,
-        userId: true,
-        createdAt: true,
-        updatedAt: true,
-        video: true,
-        features: {
-          select: {
-            id: true,
-            value: true,
-            feature: { select: { id: true, name: true, category: true } },
-          },
-        },
-        images: { select: { id: true, order: true, url: true } },
-        documents: { select: { id: true, url: true, name: true } },
-      },
+      select: selectConfig,
     });
 
-    const relatedProperties = sameTypeProperties.map((property) => ({
-      ...property,
-      price: Number(property.price),
-    }));
+    const sameTypeProperties = await prisma.property.findMany({
+      where: {
+        active: true,
+        status: "AVAILABLE",
+        id: { not: propertyId },
+        propertyTypeId,
+      },
+      take: limit * 3,
+      orderBy: { updatedAt: "desc" },
+      select: selectConfig,
+    });
 
-    if (relatedProperties.length >= limit) {
-      return relatedProperties;
-    }
-
-    const fallbackProperties = await prisma.property.findMany({
+    const sameCityProperties = await prisma.property.findMany({
       where: {
         active: true,
         status: "AVAILABLE",
@@ -298,58 +303,29 @@ export async function getRelatedProperties(
       },
       take: limit * 3,
       orderBy: { updatedAt: "desc" },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        price: true,
-        listingType: { select: { id: true, name: true } },
-        propertyType: { select: { id: true, name: true } },
-        address: true,
-        city: true,
-        province: true,
-        totalRooms: true,
-        bedrooms: true,
-        bathrooms: true,
-        area: true,
-        currency: true,
-        lat: true,
-        lng: true,
-        status: true,
-        documentation: true,
-        active: true,
-        standOut: true,
-        userId: true,
-        createdAt: true,
-        updatedAt: true,
-        video: true,
-        features: {
-          select: {
-            id: true,
-            value: true,
-            feature: { select: { id: true, name: true, category: true } },
-          },
-        },
-        images: { select: { id: true, order: true, url: true } },
-        documents: { select: { id: true, url: true, name: true } },
-      },
+      select: selectConfig,
     });
 
-    const mergedProperties = [...relatedProperties, ...fallbackProperties]
-      .filter((property, index, array) => array.findIndex((item) => item.id === property.id) === index)
-      .slice(0, limit * 2);
+    const generalProperties = await prisma.property.findMany({
+      where: {
+        active: true,
+        status: "AVAILABLE",
+        id: { not: propertyId },
+      },
+      take: limit * 4,
+      orderBy: { updatedAt: "desc" },
+      select: selectConfig,
+    });
 
-    if (mergedProperties.length > 0) {
-      return mergedProperties.map((property) => ({
+    const mergedProperties = [...sameTypeCityProperties, ...sameTypeProperties, ...sameCityProperties, ...generalProperties]
+      .filter((property, index, array) => array.findIndex((item) => item.id === property.id) === index)
+      .slice(0, limit * 4)
+      .map((property) => ({
         ...property,
         price: Number(property.price),
       }));
-    }
 
-    return relatedProperties.map((property) => ({
-      ...property,
-      price: Number(property.price),
-    }));
+    return mergedProperties;
   } catch (error) {
     return [];
   }
