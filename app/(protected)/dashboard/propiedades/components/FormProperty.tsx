@@ -88,7 +88,6 @@ export default function FormProperty(props: FormPropertyProps) {
       address: property?.address || "",
       city: property?.city || "",
       province: property?.province || "",
-      zipCode: property?.zipCode || "",
       totalRooms: property?.totalRooms ?? 0,
       bedrooms: property?.bedrooms ?? 0,
       bathrooms: property?.bathrooms ?? 0,
@@ -316,7 +315,6 @@ export default function FormProperty(props: FormPropertyProps) {
   const geocodeAddress = async () => {
     const address = form.getValues("address");
     const city = form.getValues("city");
-    const zip = form.getValues("zipCode");
     const province = form.getValues("province");
 
     if (!city || !province) {
@@ -545,20 +543,6 @@ export default function FormProperty(props: FormPropertyProps) {
                 render={({ field, fieldState }) => (
                   <>
                     <InputText {...field} placeholder="Provincia" className={`w-full ${fieldState.error ? "p-invalid" : ""}`} />
-                    {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
-                  </>
-                )}
-              />
-            </div>
-
-            <div className="mb-3">
-              <label className="block text-sm font-semibold mb-2">Código Postal *</label>
-              <Controller
-                name="zipCode"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <>
-                    <InputText {...field} placeholder="Código Postal" className={`w-full ${fieldState.error ? "p-invalid" : ""}`} />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                   </>
                 )}

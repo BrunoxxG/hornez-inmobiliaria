@@ -90,7 +90,6 @@ model Property {
   address  String
   city     String
   province String
-  zipCode  String
 
   totalRooms Int
   bedrooms   Int

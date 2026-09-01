@@ -163,12 +163,6 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                     </div>
                   )}
 
-                  {property.zipCode && (
-                    <div className="flex items-center justify-between gap-3">
-                      <span>Código postal</span>
-                      <span className="font-medium text-gray-800">{property.zipCode}</span>
-                    </div>
-                  )}
                 </div>
 
                 <div className="mt-4 border-t border-gray-100 pt-4">

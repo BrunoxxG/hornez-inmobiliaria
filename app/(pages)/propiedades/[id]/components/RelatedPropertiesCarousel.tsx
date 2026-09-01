@@ -19,20 +19,17 @@ export default function RelatedPropertiesCarousel({ properties }: { properties: 
     return chunks;
   }, [properties]);
 
+  const hasMultiplePages = pages.length > 1;
   const currentPage = pages[pageIndex] ?? [];
-  const hasNextPage = pageIndex < pages.length - 1;
-  const hasPrevPage = pageIndex > 0;
 
   const goNext = () => {
-    if (hasNextPage) {
-      setPageIndex((current) => current + 1);
-    }
+    if (!hasMultiplePages) return;
+    setPageIndex((current) => (current + 1) % pages.length);
   };
 
   const goPrev = () => {
-    if (hasPrevPage) {
-      setPageIndex((current) => current - 1);
-    }
+    if (!hasMultiplePages) return;
+    setPageIndex((current) => (current - 1 + pages.length) % pages.length);
   };
 
   if (!properties.length) {
@@ -47,7 +44,7 @@ export default function RelatedPropertiesCarousel({ properties }: { properties: 
         <button
           type="button"
           onClick={goPrev}
-          disabled={!hasPrevPage}
+          disabled={!hasMultiplePages}
           className="absolute left-0 top-1/2 z-10 flex h-16 w-16 -translate-y-1/2 items-center justify-center rounded-full bg-hornez-orange text-3xl font-bold text-white shadow-lg transition-transform hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40"
           aria-label="Propiedades anteriores"
         >
@@ -57,7 +54,7 @@ export default function RelatedPropertiesCarousel({ properties }: { properties: 
         <button
           type="button"
           onClick={goNext}
-          disabled={!hasNextPage}
+          disabled={!hasMultiplePages}
           className="absolute right-0 top-1/2 z-10 flex h-16 w-16 -translate-y-1/2 items-center justify-center rounded-full bg-hornez-orange text-3xl font-bold text-white shadow-lg transition-transform hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40"
           aria-label="Siguiente grupo de propiedades"
         >
@@ -71,7 +68,7 @@ export default function RelatedPropertiesCarousel({ properties }: { properties: 
           >
             {pages.map((page, pageIndexValue) => (
               <div key={`page-${pageIndexValue}`} className="w-full flex-shrink-0">
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                   {page.map((relatedProperty) => (
                     <PropertyCard key={relatedProperty.id} property={relatedProperty} compact />
                   ))}
