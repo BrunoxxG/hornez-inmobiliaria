@@ -2,6 +2,7 @@ import { PropertyZod } from "@/app/(protected)/dashboard/propiedades/lib/zodPubl
 import prisma from "@/lib/prisma";
 import { number } from "zod";
 
+// Servicios de consulta de propiedades para la vista pública: listado, destacados y detalle.
 const getRange = (range?: string) => {
   if (!range) return {};
 
@@ -221,6 +222,7 @@ export async function getPropertiesStand(): Promise<PropertyZod[]> {
   }
 }
 
+// Trae propiedades relacionadas por ciudad/tipo para usar en el detalle de la propiedad.
 export async function getRelatedProperties(
   propertyId: string,
   city: string,

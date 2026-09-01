@@ -6,7 +6,7 @@ import { getPropertyById, getRelatedProperties } from "../lib/dataPropertiesView
 import { BedDouble, Maximize, Toilet } from "lucide-react";
 import PropertyUbication from "./components/PropertyUbication";
 import Footer from "../../components/Footer";
-import PropertyCard from "../components/PropertyCard";
+import RelatedPropertiesCarousel from "./components/RelatedPropertiesCarousel";
 
 
 const currencyFormat = (price: number, currency: string) =>
@@ -30,6 +30,7 @@ const STATUS_COLOR: Record<string, string> = {
   RENTED: "bg-blue-100 text-blue-800",
 };
 
+// Detalle de propiedad: render principal del producto inmobiliario y sus secciones complementarias.
 export default async function PropertyDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const property = await getPropertyById(id);
@@ -201,18 +202,9 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
             {/* Ubicación */}
             {property.lat && property.lng && <PropertyUbication lat={property.lat} lng={property.lng} />}
 
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <h2 className="mb-5 text-2xl font-bold text-hornez-orange">Búsquedas relacionadas</h2>
-
-              {relatedProperties.length > 0 ? (
-                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                  {relatedProperties.map((relatedProperty) => (
-                    <PropertyCard key={relatedProperty.id} property={relatedProperty} />
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-gray-500">No hay propiedades relacionadas por el momento.</p>
-              )}
+            {/* Carrusel de propiedades relacionadas: mantiene al usuario navegando sin volver al listado. */}
+            <div className="rounded-xl bg-white p-6 shadow-sm">
+              <RelatedPropertiesCarousel properties={relatedProperties} />
             </div>
 
             {/* Documentos */}

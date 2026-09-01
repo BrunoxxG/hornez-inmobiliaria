@@ -17,6 +17,7 @@ const SOCIAL_LINKS = [
   { href: "https://wa.me/5493544400903", label: "WhatsApp", icon: "pi-whatsapp" },
 ];
 
+// Navegación global del sitio público: menú, logo y acceso a redes sociales.
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 

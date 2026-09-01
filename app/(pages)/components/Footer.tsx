@@ -5,6 +5,7 @@ const SERVICIOS = [
   { label: "Propiedades en Alquiler", href: "/propiedades?operacion=alquiler" },
 ];
 
+// Footer institucional: servicios, contacto y acceso al panel administrativo.
 export default function Footer() {
   return (
     <footer id="contacto" className="mt-auto bg-gray-900 text-gray-300">

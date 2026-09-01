@@ -5,6 +5,7 @@ import HeroActions from "./components/HeroActions";
 import HeroSlider from "./components/HeroSlider";
 import { getPropertiesStand } from "./(pages)/propiedades/lib/dataPropertiesView";
 
+// Landing page principal: hero, propiedades destacadas y sección institucional.
 export default async function Home() {
   const properties = await getPropertiesStand();
 
