@@ -20,16 +20,17 @@ export default function RelatedPropertiesCarousel({ properties }: { properties: 
   }, [properties]);
 
   const hasMultiplePages = pages.length > 1;
-  const currentPage = pages[pageIndex] ?? [];
+  const isFirstPage = pageIndex === 0;
+  const isLastPage = pageIndex === pages.length - 1;
 
   const goNext = () => {
-    if (!hasMultiplePages) return;
-    setPageIndex((current) => (current + 1) % pages.length);
+    if (!hasMultiplePages || isLastPage) return;
+    setPageIndex((current) => Math.min(current + 1, pages.length - 1));
   };
 
   const goPrev = () => {
-    if (!hasMultiplePages) return;
-    setPageIndex((current) => (current - 1 + pages.length) % pages.length);
+    if (!hasMultiplePages || isFirstPage) return;
+    setPageIndex((current) => Math.max(current - 1, 0));
   };
 
   if (!properties.length) {
@@ -44,35 +45,28 @@ export default function RelatedPropertiesCarousel({ properties }: { properties: 
         <button
           type="button"
           onClick={goPrev}
-          disabled={!hasMultiplePages}
-          className="absolute left-0 top-1/2 z-10 flex h-16 w-16 -translate-y-1/2 items-center justify-center rounded-full bg-hornez-orange text-3xl font-bold text-white shadow-lg transition-transform hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40"
+          disabled={!hasMultiplePages || isFirstPage}
+          className="absolute left-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white transition-colors hover:bg-black/70 disabled:cursor-not-allowed disabled:opacity-40"
           aria-label="Propiedades anteriores"
         >
-          ‹
+          <i className="pi pi-chevron-left" />
         </button>
 
         <button
           type="button"
           onClick={goNext}
-          disabled={!hasMultiplePages}
-          className="absolute right-0 top-1/2 z-10 flex h-16 w-16 -translate-y-1/2 items-center justify-center rounded-full bg-hornez-orange text-3xl font-bold text-white shadow-lg transition-transform hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40"
+          disabled={!hasMultiplePages || isLastPage}
+          className="absolute right-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white transition-colors hover:bg-black/70 disabled:cursor-not-allowed disabled:opacity-40"
           aria-label="Siguiente grupo de propiedades"
         >
-          ›
+          <i className="pi pi-chevron-right" />
         </button>
 
         <div className="overflow-hidden px-16 pb-2">
-          <div
-            className="flex w-full transition-transform duration-300 ease-out"
-            style={{ transform: `translateX(-${pageIndex * 100}%)` }}
-          >
-            {pages.map((page, pageIndexValue) => (
-              <div key={`page-${pageIndexValue}`} className="w-full flex-shrink-0">
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                  {page.map((relatedProperty) => (
-                    <PropertyCard key={relatedProperty.id} property={relatedProperty} compact />
-                  ))}
-                </div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            {pages[pageIndex].map((relatedProperty) => (
+              <div key={relatedProperty.id} className="min-w-0">
+                <PropertyCard property={relatedProperty} compact />
               </div>
             ))}
           </div>
