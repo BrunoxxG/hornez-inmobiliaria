@@ -533,8 +533,8 @@ export default function FormProperty(props: FormPropertyProps) {
                 <Button type="button" label="Buscar en mapa" onClick={geocodeAddress} className="p-button-secondary" />
               </div>
               <MapPicker
-                lat={form.watch("lat") || -34.6037}
-                lng={form.watch("lng") || -58.3816}
+                lat={form.watch("lat") || 0}
+                lng={form.watch("lng") || 0}
                 onChange={(lat, lng) => {
                   form.setValue("lat", lat);
                   form.setValue("lng", lng);

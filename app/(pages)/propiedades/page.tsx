@@ -11,6 +11,7 @@ export default async function PropertiesPage(props: {
     currency?: "USD" | "ARS";
     minPrice?: string;
     maxPrice?: string;
+    documentation?: "POSSESSORY_RIGHTS" | "DEED";
     bedrooms?: string;
     tipo?: string;
     features?: string;

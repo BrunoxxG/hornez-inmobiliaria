@@ -35,6 +35,10 @@ export async function getPropertiesView(filters: any): Promise<PropertyZod[]> {
             }
           : undefined,
         currency: filters.currency || undefined,
+        documentation:
+          filters.documentation === "DEED" || filters.documentation === "POSSESSORY_RIGHTS"
+            ? filters.documentation
+            : undefined,
         price: getRange(filters.minPrice, filters.maxPrice),
         bedrooms: filters.bedrooms ? { gte: Number(filters.bedrooms) } : undefined,
         area: getRange(...(filters.areaRange?.split("-") || [])),

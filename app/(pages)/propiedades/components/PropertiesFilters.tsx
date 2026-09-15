@@ -42,7 +42,7 @@ export default function PropertiesFilters({
       if (value) params.set(key, value);
       else params.delete(key);
 
-      router.push(`?${params.toString()}`);
+      router.push(`/propiedades?${params.toString()}`);
     },
     [router, searchParams],
   );
@@ -171,19 +171,17 @@ export default function PropertiesFilters({
           </div>
 
           <select
-            value={searchParams.get("bedrooms") || ""}
-            onChange={(event) => updateParam("bedrooms", event.target.value)}
+            value={searchParams.get("documentation") || ""}
+            onChange={(event) => updateParam("documentation", event.target.value)}
             className={`min-w-48 flex-1 rounded border p-2 focus:border-hornez-orange focus:ring-1 focus:ring-hornez-orange ${
-              searchParams.get("bedrooms") ? "border-hornez-orange bg-orange-50" : ""
+              searchParams.get("documentation") ? "border-hornez-orange bg-orange-50" : ""
             }`}
           >
-            <option value="">Dormitorios</option>
-            {[1, 2, 3, 4, 5].map((number) => (
-              <option key={number} value={number}>
-                {number}+
-              </option>
-            ))}
+            <option value="">Documentación</option>
+            <option value="POSSESSORY_RIGHTS">Derechos posesorios</option>
+            <option value="DEED">Escritura</option>
           </select>
+
           <select
             value={searchParams.get("areaRange") || ""}
             onChange={(event) => updateParam("areaRange", event.target.value)}
@@ -197,6 +195,21 @@ export default function PropertiesFilters({
             <option value="100-200">100 - 200 m²</option>
             <option value="200-500">200 - 500 m²</option>
             <option value="500-">500+ m²</option>
+          </select>
+
+          <select
+            value={searchParams.get("bedrooms") || ""}
+            onChange={(event) => updateParam("bedrooms", event.target.value)}
+            className={`min-w-48 flex-1 rounded border p-2 focus:border-hornez-orange focus:ring-1 focus:ring-hornez-orange ${
+              searchParams.get("bedrooms") ? "border-hornez-orange bg-orange-50" : ""
+            }`}
+          >
+            <option value="">Dormitorios</option>
+            {[1, 2, 3, 4, 5].map((number) => (
+              <option key={number} value={number}>
+                {number}+
+              </option>
+            ))}
           </select>
 
           <button

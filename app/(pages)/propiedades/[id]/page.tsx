@@ -4,7 +4,6 @@ import Navbar from "../../components/Navbar";
 import PropertyGallery from "./components/PropertyGallery";
 import { getPropertyById, getRelatedProperties } from "../lib/dataPropertiesView";
 import { BedDouble, Maximize, Toilet } from "lucide-react";
-import PropertyUbication from "./components/PropertyUbication";
 import Footer from "../../components/Footer";
 import RelatedPropertiesCarousel from "./components/RelatedPropertiesCarousel";
 
@@ -133,11 +132,6 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                   </div>
 
                   <div className="flex items-center justify-between gap-3">
-                    <span>Ubicación</span>
-                    <span className="text-right font-medium text-gray-800">{property.city}</span>
-                  </div>
-
-                  <div className="flex items-center justify-between gap-3">
                     <span>Tipo</span>
                     <span className="font-medium text-gray-800">{property.propertyType.name}</span>
                   </div>
@@ -199,9 +193,6 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               <h2 className="text-lg font-semibold mb-3">Descripción</h2>
               <p className="text-gray-600 leading-relaxed whitespace-pre-line">{property.description}</p>
             </div>
-
-            {/* Ubicación */}
-            {property.lat && property.lng && <PropertyUbication lat={property.lat} lng={property.lng} />}
 
             {/* Carrusel de propiedades relacionadas: mantiene al usuario navegando sin volver al listado. */}
             <div className="rounded-xl bg-white p-6 shadow-sm">
