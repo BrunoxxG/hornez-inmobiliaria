@@ -46,21 +46,21 @@ export default function ContactPage() {
     <div className="flex min-h-screen flex-col bg-gray-50">
       <Navbar />
 
-      <main className="flex-1 px-4 pb-16 pt-28 sm:px-6 lg:px-8">
+      <main className="flex-1 px-4 pb-16 pt-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl">
           <section
             className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-cover bg-center px-4 py-8 shadow-sm sm:px-8"
             style={{ backgroundImage: "url('/img/lomaBolaLaCruz.jpeg')" }}
           >
-            <div className="absolute inset-0 bg-white/35" />
-            <div className="relative mx-auto w-full max-w-3xl rounded-2xl bg-white/80 p-6 shadow-xl backdrop-blur-sm sm:w-[35%] sm:p-8">
+            <div className="absolute inset-0 bg-transparent" />
+            <div className="relative mx-auto w-full max-w-3xl rounded-2xl bg-white/60 p-6 shadow-xl sm:w-[35%] sm:p-8">
               <p className="mb-6 text-center text-lg font-medium leading-relaxed text-gray-800">
                 Déjanos tus datos y nos comunicaremos a la brevedad.
               </p>
               <form noValidate onSubmit={handleSubmit} className="space-y-5">
                 <div className="space-y-5">
                   <label className="block space-y-2 text-center text-sm font-semibold text-gray-700">
-                    Nombre
+                    NOMBRE
                     <input required
                      name="name" 
                      type="text" 
@@ -69,7 +69,7 @@ export default function ContactPage() {
                      className="w-full rounded-md border border-gray-300 bg-white/90 px-3 py-2 text-center font-normal outline-none transition-colors focus:border-hornez-orange focus:ring-1 focus:ring-hornez-orange" />
                   </label>
                   <label className="block space-y-2 text-center text-sm font-semibold text-gray-700">
-                    Email
+                    EMAIL
                     <input
                       required
                       name="email"
@@ -86,7 +86,7 @@ export default function ContactPage() {
                     {emailError && <span className="block text-xs font-medium text-red-600">{emailError}</span>}
                   </label>
                   <label className="block space-y-2 text-center text-sm font-semibold text-gray-700">
-                    Teléfono
+                    TELÉFONO
                     <input
                       required
                       name="phone"
@@ -104,7 +104,7 @@ export default function ContactPage() {
                     />
                   </label>
                   <label className="block space-y-2 text-center text-sm font-semibold text-gray-700">
-                    Motivo
+                    MOTIVO
                     <select required name="reason" defaultValue="" className="w-full rounded-md border border-gray-300 bg-white/90 px-3 py-2 text-center font-normal outline-none transition-colors focus:border-hornez-orange focus:ring-1 focus:ring-hornez-orange">
                       <option value="" disabled>Seleccionar motivo</option>
                       <option value="tasacion">Tasación</option>
@@ -114,7 +114,7 @@ export default function ContactPage() {
                   </label>
                 </div>
                 <label className="block space-y-2 text-center text-sm font-semibold text-gray-700">
-                  Mensaje
+                  MENSAJE
                   <textarea required 
                   name="message" 
                   rows={5} 
@@ -133,10 +133,22 @@ export default function ContactPage() {
 
           <section className="mt-10 text-center">
             <h2 className="mb-5 text-xl font-bold text-hornez-blue">Seguinos en redes</h2>
-            <div className="flex justify-center gap-5">
+            <div className="flex flex-wrap justify-center gap-6 sm:gap-10">
               {SOCIAL_LINKS.map((social) => (
-                <a key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={social.label} title={social.label} className="flex h-[5.1rem] w-[5.1rem] items-center justify-center rounded-full text-[2rem] text-gray-500 transition-colors hover:text-hornez-orange">
-                  {social.icon === "music" ? <Music2 size={38} /> : <i className={`pi ${social.icon}`} />}
+                <a
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={social.label}
+                  title={social.label}
+                  className="flex h-32 w-32 items-center justify-center rounded-full bg-gray-500 text-[5rem] leading-none text-white transition-colors hover:bg-hornez-orange"
+                >
+                  {social.icon === "music" ? (
+                    <Music2 size={80} />
+                  ) : (
+                    <i className={`pi ${social.icon} inline-block leading-none`} style={{ fontSize: "4rem" }} />
+                  )}
                 </a>
               ))}
             </div>
