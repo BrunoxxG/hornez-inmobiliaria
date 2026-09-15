@@ -5,6 +5,7 @@ import { FormEvent, useState } from "react";
 import { Music2 } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { createContactInquiry } from "@/lib/contactInquiries";
 
 const SOCIAL_LINKS = [
   { href: "https://www.instagram.com/hornezinmobiliaria?igsh=dWM5NXdpYjZqczhm&utm_source=qr", label: "Instagram", icon: "pi-instagram" },
@@ -22,8 +23,9 @@ const CONTACT_PHONES = [
 export default function ContactPage() {
   const [sent, setSent] = useState(false);
   const [emailError, setEmailError] = useState("");
+  const [submitError, setSubmitError] = useState("");
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
     const emailInput = form.elements.namedItem("email");
@@ -37,7 +39,22 @@ export default function ContactPage() {
       }
     }
 
+    const formData = new FormData(form);
+    const result = await createContactInquiry({
+      name: String(formData.get("name") || ""),
+      email: String(formData.get("email") || ""),
+      phone: String(formData.get("phone") || ""),
+      reason: String(formData.get("reason") || ""),
+      message: String(formData.get("message") || ""),
+    });
+
+    if (!result.success) {
+      setSubmitError(result.error || "No se pudo enviar la consulta");
+      return;
+    }
+
     setEmailError("");
+    setSubmitError("");
     setSent(true);
     form.reset();
   };
@@ -126,6 +143,7 @@ export default function ContactPage() {
                     Enviar
                   </button>
                   {sent && <p className="text-sm font-medium text-green-700">Mensaje enviado correctamente.</p>}
+                  {submitError && <p className="text-sm font-medium text-red-600">{submitError}</p>}
                 </div>
               </form>
             </div>

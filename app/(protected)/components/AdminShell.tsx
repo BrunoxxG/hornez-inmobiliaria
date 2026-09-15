@@ -9,7 +9,15 @@ import { usePathname } from "next/navigation";
 import { MENU_ITEMS } from "../lib/utils";
 import { Session } from "next-auth";
 
-export default function AdminShell({ children, session }: { children: React.ReactNode; session: Session }) {
+export default function AdminShell({
+  children,
+  session,
+  unreadInquiries,
+}: {
+  children: React.ReactNode;
+  session: Session;
+  unreadInquiries: number;
+}) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const pathname = usePathname();
@@ -62,6 +70,7 @@ export default function AdminShell({ children, session }: { children: React.Reac
       <div className="flex flex-col flex-1 min-w-0 min-h-screen">
         <Topbar
           session={session}
+          unreadInquiries={unreadInquiries}
           isCollapsed={isSidebarCollapsed}
           onToggleCollapse={() => setIsSidebarCollapsed((v) => !v)}
           onToggleMobile={() => setIsSidebarOpen((v) => !v)}
