@@ -25,9 +25,9 @@ export default function PropertiesFilters({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPriceOpen, setIsPriceOpen] = useState(false);
-  const [priceCurrency, setPriceCurrency] = useState(searchParams.get("currency") || "");
-  const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") || "");
-  const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") || "");
+  const [priceCurrency, setPriceCurrency] = useState("");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
 
   useEffect(() => {
     setPriceCurrency(searchParams.get("currency") || "");
@@ -63,6 +63,16 @@ export default function PropertiesFilters({
 
   const applyPriceFilters = () => {
     const params = new URLSearchParams(searchParams.toString());
+    const minimum = minPrice ? Number(minPrice) : undefined;
+    const maximum = maxPrice ? Number(maxPrice) : undefined;
+
+    if (
+      (minimum !== undefined && !Number.isFinite(minimum)) ||
+      (maximum !== undefined && !Number.isFinite(maximum)) ||
+      (minimum !== undefined && maximum !== undefined && minimum > maximum)
+    ) {
+      return;
+    }
 
     if (priceCurrency) params.set("currency", priceCurrency);
     else params.delete("currency");
@@ -74,7 +84,7 @@ export default function PropertiesFilters({
     else params.delete("maxPrice");
 
     params.delete("priceRange");
-    router.push(`?${params.toString()}`);
+    router.push(`/propiedades?${params.toString()}`);
     setIsPriceOpen(false);
   };
 
@@ -93,11 +103,13 @@ export default function PropertiesFilters({
   return (
     <div className="mt-16 bg-white shadow-sm">
       <div className="mx-auto max-w-7xl space-y-4 p-4">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="flex flex-nowrap items-start gap-4 overflow-x-auto">
           <select
             value={searchParams.get("tipo") || ""}
             onChange={(event) => updateParam("tipo", event.target.value)}
-            className="rounded border p-2"
+            className={`min-w-48 flex-1 rounded border p-2 focus:border-hornez-orange focus:ring-1 focus:ring-hornez-orange ${
+              searchParams.get("tipo") ? "border-hornez-orange bg-orange-50" : ""
+            }`}
           >
             <option value="">Tipo propiedad</option>
             {propertyTypes.map((propertyType) => (
@@ -107,11 +119,13 @@ export default function PropertiesFilters({
             ))}
           </select>
 
-          <div className="relative">
+          <div className="relative min-w-48 flex-1">
             <button
               type="button"
               onClick={() => setIsPriceOpen((open) => !open)}
-              className="w-full rounded border p-2 text-left"
+              className={`w-full rounded border p-2 text-left focus:border-hornez-orange focus:ring-1 focus:ring-hornez-orange ${
+                priceCurrency || minPrice || maxPrice ? "border-hornez-orange bg-orange-50" : ""
+              }`}
             >
               {priceLabel}
             </button>
@@ -122,7 +136,7 @@ export default function PropertiesFilters({
                   <select
                     value={priceCurrency}
                     onChange={(event) => setPriceCurrency(event.target.value)}
-                    className="w-full rounded border p-2"
+                    className="w-full rounded border p-2 focus:border-hornez-orange focus:ring-1 focus:ring-hornez-orange"
                   >
                     <option value="">Moneda</option>
                     <option value="USD">USD</option>
@@ -134,7 +148,7 @@ export default function PropertiesFilters({
                     placeholder="Desde"
                     value={minPrice}
                     onChange={(event) => setMinPrice(event.target.value)}
-                    className="w-full rounded border p-2"
+                    className="w-full rounded border p-2 focus:border-hornez-orange focus:ring-1 focus:ring-hornez-orange"
                   />
                   <input
                     type="number"
@@ -142,7 +156,7 @@ export default function PropertiesFilters({
                     placeholder="Hasta"
                     value={maxPrice}
                     onChange={(event) => setMaxPrice(event.target.value)}
-                    className="w-full rounded border p-2"
+                    className="w-full rounded border p-2 focus:border-hornez-orange focus:ring-1 focus:ring-hornez-orange"
                   />
                   <button
                     type="button"
@@ -159,7 +173,9 @@ export default function PropertiesFilters({
           <select
             value={searchParams.get("bedrooms") || ""}
             onChange={(event) => updateParam("bedrooms", event.target.value)}
-            className="rounded border p-2"
+            className={`min-w-48 flex-1 rounded border p-2 focus:border-hornez-orange focus:ring-1 focus:ring-hornez-orange ${
+              searchParams.get("bedrooms") ? "border-hornez-orange bg-orange-50" : ""
+            }`}
           >
             <option value="">Dormitorios</option>
             {[1, 2, 3, 4, 5].map((number) => (
@@ -168,13 +184,12 @@ export default function PropertiesFilters({
               </option>
             ))}
           </select>
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <select
             value={searchParams.get("areaRange") || ""}
             onChange={(event) => updateParam("areaRange", event.target.value)}
-            className="rounded border p-2"
+            className={`min-w-48 flex-1 rounded border p-2 focus:border-hornez-orange focus:ring-1 focus:ring-hornez-orange ${
+              searchParams.get("areaRange") ? "border-hornez-orange bg-orange-50" : ""
+            }`}
           >
             <option value="">Superficie</option>
             <option value="0-50">Hasta 50 m²</option>
@@ -184,7 +199,11 @@ export default function PropertiesFilters({
             <option value="500-">500+ m²</option>
           </select>
 
-          <button onClick={clearFilters} className="rounded bg-gray-200 px-4 hover:bg-gray-300">
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="shrink-0 rounded border border-gray-300 bg-gray-200 px-4 py-2 text-gray-800 transition-colors hover:bg-gray-300 focus:border-hornez-orange focus:bg-hornez-orange focus:text-white active:border-hornez-orange active:bg-hornez-orange active:text-white"
+          >
             Limpiar
           </button>
         </div>
@@ -199,7 +218,9 @@ export default function PropertiesFilters({
                   key={feature.id}
                   onClick={() => toggleFeature(feature.slug)}
                   className={`rounded-full border px-3 py-1 text-sm ${
-                    active ? "bg-black text-white" : "bg-gray-100 hover:bg-gray-200"
+                    active
+                      ? "border-hornez-orange bg-hornez-orange text-white"
+                      : "bg-gray-100 hover:border-hornez-orange hover:bg-orange-50"
                   }`}
                 >
                   {feature.name}

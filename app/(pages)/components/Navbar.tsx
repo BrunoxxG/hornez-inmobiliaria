@@ -40,7 +40,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-gray-700 hover:text-hornez-blue font-medium transition-colors"
+                className="font-medium text-gray-700 transition-colors hover:text-hornez-orange"
               >
                 {link.label}
               </Link>
@@ -80,7 +80,7 @@ export default function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              className="block py-3 text-gray-700 hover:text-hornez-blue font-medium"
+              className="block py-3 font-medium text-gray-700 transition-colors hover:text-hornez-orange"
               onClick={() => setMenuOpen(false)}
             >
               {link.label}
