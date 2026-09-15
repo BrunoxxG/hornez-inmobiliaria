@@ -59,12 +59,6 @@ export default async function Home() {
                   </li>
                 ))}
               </ul>
-              <a
-                href="#contacto"
-                className="inline-block bg-hornez-orange text-white px-8 py-3 rounded-md font-semibold hover:bg-orange-600 transition-colors"
-              >
-                Contactanos
-              </a>
             </div>
 
             {/* Imagen decorativa / placeholder */}

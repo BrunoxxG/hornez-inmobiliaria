@@ -5,13 +5,13 @@ import PropertiesFilters from "./components/PropertiesFilters";
 import PropertiesGrid from "./components/PropertiesGrid";
 import { getFeatures, getPropertyTypes } from "@/app/(protected)/dashboard/config/lib/dataConfig";
 
-// Listado público de propiedades con filtro por ciudad, tipo y servicios.
+// Listado público de propiedades con filtro por tipo, precio y servicios.
 export default async function PropertiesPage(props: {
   searchParams: Promise<{
-    city?: string;
-    priceRange?: string;
+    currency?: "USD" | "ARS";
+    minPrice?: string;
+    maxPrice?: string;
     bedrooms?: string;
-    bathrooms?: string;
     tipo?: string;
     features?: string;
     areaRange?: string;

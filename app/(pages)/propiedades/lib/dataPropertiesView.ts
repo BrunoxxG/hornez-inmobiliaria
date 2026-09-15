@@ -2,11 +2,7 @@ import { PropertyZod } from "@/app/(protected)/dashboard/propiedades/lib/zodPubl
 import prisma from "@/lib/prisma";
 
 // Servicios de consulta de propiedades para la vista pública: listado, destacados y detalle.
-const getRange = (range?: string) => {
-  if (!range) return {};
-
-  const [min, max] = range.split("-");
-
+const getRange = (min?: string, max?: string) => {
   return {
     gte: min ? Number(min) : undefined,
     lte: max ? Number(max) : undefined,
@@ -30,21 +26,15 @@ export async function getPropertiesView(filters: any): Promise<PropertyZod[]> {
       where: {
         active: true,
         status: "AVAILABLE",
-        city: filters.city
-          ? {
-              contains: filters.city,
-              mode: "insensitive",
-            }
-          : undefined,
         propertyType: filters.tipo
           ? {
               slug: filters.tipo,
             }
           : undefined,
-        price: getRange(filters.priceRange),
+        currency: filters.currency || undefined,
+        price: getRange(filters.minPrice, filters.maxPrice),
         bedrooms: filters.bedrooms ? { gte: Number(filters.bedrooms) } : undefined,
-        bathrooms: filters.bathrooms ? { gte: Number(filters.bathrooms) } : undefined,
-        area: getRange(filters.areaRange),
+        area: getRange(...(filters.areaRange?.split("-") || [])),
         AND: featureFilters,
       },
       orderBy: {
