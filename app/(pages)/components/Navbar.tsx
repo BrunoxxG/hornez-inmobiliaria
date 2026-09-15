@@ -7,7 +7,7 @@ import { Music2 } from "lucide-react";
 const NAV_LINKS = [
   { href: "/", label: "Inicio" },
   { href: "/propiedades", label: "Propiedades" },
-  { href: "/#contacto", label: "Contacto" },
+  { href: "/contacto", label: "Contacto" },
 ];
 
 const SOCIAL_LINKS = [
