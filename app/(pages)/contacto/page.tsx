@@ -48,17 +48,15 @@ export default function ContactPage() {
 
       <main className="flex-1 px-4 pb-16 pt-28 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl">
-          <div className="mb-10 text-center">
-            <p className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-hornez-orange">Contacto</p>
-            <h1 className="text-3xl font-bold text-hornez-blue sm:text-4xl">Estamos para ayudarte</h1>
-          </div>
-
           <section
             className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-cover bg-center px-4 py-8 shadow-sm sm:px-8"
             style={{ backgroundImage: "url('/img/lomaBolaLaCruz.jpeg')" }}
           >
             <div className="absolute inset-0 bg-white/35" />
             <div className="relative mx-auto w-full max-w-3xl rounded-2xl bg-white/80 p-6 shadow-xl backdrop-blur-sm sm:w-[35%] sm:p-8">
+              <p className="mb-6 text-center text-lg font-medium leading-relaxed text-gray-800">
+                Déjanos tus datos y nos comunicaremos a la brevedad.
+              </p>
               <form noValidate onSubmit={handleSubmit} className="space-y-5">
                 <div className="space-y-5">
                   <label className="block space-y-2 text-center text-sm font-semibold text-gray-700">
@@ -146,7 +144,7 @@ export default function ContactPage() {
 
           <section className="mt-10 overflow-hidden rounded-xl bg-white shadow-sm">
             <div className="p-6 text-center">
-              <h2 className="text-xl font-bold text-hornez-blue">Ubicación del pueblo de La Paz</h2>
+              <h2 className="text-xl font-bold text-hornez-blue">Ubicación del pueblo La Paz</h2>
               <p className="mt-2 text-gray-600">La Paz, Córdoba</p>
             </div>
             <iframe
