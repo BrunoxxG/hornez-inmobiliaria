@@ -9,7 +9,7 @@ import { FormPropertyTypeProps, propertyTypeFormSchema, PropertyTypeFormZod } fr
 import { createPropertyType, updatePropertyType } from "../actions/actionsConfig";
 
 export default function FormPropertyType(props: FormPropertyTypeProps) {
-  const { propertyType, setOpenModalForm, toast } = props;
+  const { propertyType, setOpenModalForm, onCreated, toast } = props;
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<PropertyTypeFormZod>({
@@ -27,7 +27,7 @@ export default function FormPropertyType(props: FormPropertyTypeProps) {
     if (propertyType) {
       await onSubmitUpdate(values);
     } else {
-      const { success, error } = await createPropertyType(values);
+      const { success, error, propertyType: createdPropertyType } = await createPropertyType(values);
       if (!success) {
         toast.current?.show({ severity: "error", summary: "Error", detail: error, life: 3000 });
         setIsSubmitting(false);
@@ -39,6 +39,7 @@ export default function FormPropertyType(props: FormPropertyTypeProps) {
         detail: "Tipo de Propiedad creado exitosamente",
         life: 3000,
       });
+      if (createdPropertyType) onCreated?.(createdPropertyType);
       setOpenModalForm?.(false);
     }
     setIsSubmitting(false);

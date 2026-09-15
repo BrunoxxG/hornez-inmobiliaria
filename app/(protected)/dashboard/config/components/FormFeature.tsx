@@ -9,7 +9,7 @@ import { featureFormSchema, FeatureFormZod, FormFeatureProps } from "../lib/zodC
 import { createFeature, updateFeature } from "../actions/actionsConfig";
 
 export default function FormFeature(props: FormFeatureProps) {
-  const { feature, category, setOpenModalForm, toast } = props;
+  const { feature, category, setOpenModalForm, onCreated, toast } = props;
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<FeatureFormZod>({
@@ -28,7 +28,7 @@ export default function FormFeature(props: FormFeatureProps) {
     if (feature) {
       await onSubmitUpdate(values);
     } else {
-      const { success, error } = await createFeature(values);
+      const { success, error, feature: createdFeature } = await createFeature(values);
       if (!success) {
         toast.current?.show({ severity: "error", summary: "Error", detail: error, life: 3000 });
         setIsSubmitting(false);
@@ -40,6 +40,7 @@ export default function FormFeature(props: FormFeatureProps) {
         detail: "Servicio creado exitosamente",
         life: 3000,
       });
+      if (createdFeature) onCreated?.(createdFeature);
       setOpenModalForm?.(false);
     }
     setIsSubmitting(false);

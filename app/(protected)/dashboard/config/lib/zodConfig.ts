@@ -31,6 +31,7 @@ export type PropertyTypeFormZod = z.infer<typeof propertyTypeFormSchema>;
 export type FormPropertyTypeProps = {
   setOpenModalForm?: Dispatch<SetStateAction<boolean>>;
   propertyType?: PropertyTypeZod;
+  onCreated?: (propertyType: PropertyTypeZod) => void;
   toast: React.RefObject<ToastType | null>;
 };
 
@@ -50,5 +51,6 @@ export type FormFeatureProps = {
   setOpenModalForm?: Dispatch<SetStateAction<boolean>>;
   feature?: FeatureZod;
   category: "SERVICE" | "ADDITIONAL";
+  onCreated?: (feature: FeatureZod) => void;
   toast: React.RefObject<ToastType | null>;
 };

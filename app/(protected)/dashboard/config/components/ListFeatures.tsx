@@ -163,7 +163,12 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
         modal
         dismissableMask
       >
-        <FormFeature category={category} setOpenModalForm={setShowNewFeatureModal} toast={toast} />
+        <FormFeature
+          category={category}
+          setOpenModalForm={setShowNewFeatureModal}
+          onCreated={(feature) => setFilteredFeatures((current) => [...current, feature])}
+          toast={toast}
+        />
       </Dialog>
 
       <Dialog

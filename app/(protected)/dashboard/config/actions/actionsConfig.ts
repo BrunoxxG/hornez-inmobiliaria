@@ -29,16 +29,17 @@ export async function createFeature(values: FeatureFormZod) {
       return { success: false, error: "Ya existe una caracteristica con ese nombre" };
     }
 
-    await prisma.feature.create({
+    const feature = await prisma.feature.create({
       data: {
         name: data.name,
         slug,
         category: data.category,
       },
+      select: { id: true, name: true, slug: true, category: true },
     });
 
     revalidatePath("/dashboard/config");
-    return { success: true };
+    return { success: true, feature };
   } catch (error) {
     console.error(error);
     return { success: false, error: "Ocurrio un error" };
@@ -202,15 +203,16 @@ export async function createPropertyType(values: PropertyTypeFormZod) {
       return { success: false, error: "Ya existe un tipo de propiedad con ese nombre" };
     }
 
-    await prisma.propertyType.create({
+    const propertyType = await prisma.propertyType.create({
       data: {
         name: data.name,
         slug,
       },
+      select: { id: true, name: true, slug: true },
     });
 
     revalidatePath("/dashboard/config");
-    return { success: true };
+    return { success: true, propertyType };
   } catch (error) {
     console.error(error);
     return { success: false, error: "Ocurrio un error" };

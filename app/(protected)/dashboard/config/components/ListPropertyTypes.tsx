@@ -159,7 +159,11 @@ export function ListPropertyTypes({ propertyTypes }: { propertyTypes: PropertyTy
         modal
         dismissableMask
       >
-        <FormPropertyType setOpenModalForm={setShowNewPropertyTypeModal} toast={toast} />
+        <FormPropertyType
+          setOpenModalForm={setShowNewPropertyTypeModal}
+          onCreated={(propertyType) => setFilteredPropertyTypes((current) => [...current, propertyType])}
+          toast={toast}
+        />
       </Dialog>
 
       <Dialog
