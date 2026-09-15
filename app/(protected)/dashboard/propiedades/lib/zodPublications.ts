@@ -63,7 +63,6 @@ export const propertyFormSchema = object({
   title: string().trim().min(1, "Título requerido"),
   description: string().trim().min(1, "Descripción requerida"),
   price: number().min(0, "El precio debe ser mayor o igual a 0"),
-  listingTypeId: string().min(1, "Tipo de listado requerido"),
   propertyTypeId: string().min(1, "Tipo de propiedad requerido"),
   address: string().trim().min(1, "Dirección requerida"),
   city: string().trim().min(1, "Ciudad requerida"),

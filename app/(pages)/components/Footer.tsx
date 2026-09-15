@@ -1,8 +1,7 @@
 import Link from "next/link";
 
 const SERVICIOS = [
-  { label: "Propiedades en Venta", href: "/propiedades?operacion=venta" },
-  { label: "Propiedades en Alquiler", href: "/propiedades?operacion=alquiler" },
+  { label: "Propiedades en Venta", href: "/propiedades" },
 ];
 
 // Footer institucional: servicios, contacto y acceso al panel administrativo.

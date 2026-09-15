@@ -16,11 +16,9 @@ type Feature = {
 };
 
 export default function PropertiesFilters({
-  listingTypes = [],
   propertyTypes = [],
   features = [],
 }: {
-  listingTypes?: Option[];
   propertyTypes?: Option[];
   features?: Feature[];
 }) {
@@ -70,20 +68,7 @@ export default function PropertiesFilters({
   return (
     <div className="bg-white shadow-sm mt-16">
       <div className="max-w-7xl mx-auto p-4 space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
-          <select
-            value={searchParams.get("operacion") || ""}
-            onChange={(e) => updateParam("operacion", e.target.value)}
-            className="border p-2 rounded"
-          >
-            <option value="">Operación</option>
-            {listingTypes.map((lt) => (
-              <option key={lt.id} value={lt.slug}>
-                {lt.name}
-              </option>
-            ))}
-          </select>
-
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           <select
             value={searchParams.get("tipo") || ""}
             onChange={(e) => updateParam("tipo", e.target.value)}

@@ -43,9 +43,8 @@ export default async function Home() {
                 Tu inmobiliaria de confianza en La Paz, Córdoba.
               </h2>
               <p className="text-gray-600 leading-relaxed">
-                En Hornez Inmobiliaria te acompañamos en cada etapa del proceso, ya sea que estés buscando comprar,
-                vender o alquilar. Nuestro equipo de profesionales está comprometido con brindarte una experiencia
-                personalizada y transparente.
+                En Hornez Inmobiliaria te acompañamos en cada etapa del proceso de compra y venta. Nuestro equipo de
+                profesionales está comprometido con brindarte una experiencia personalizada y transparente.
               </p>
               <ul className="space-y-3">
                 {[

@@ -16,7 +16,6 @@ export async function createProperty(values: PropertyFormZod) {
       title,
       description,
       price,
-      listingTypeId,
       propertyTypeId,
       address,
       city,
@@ -38,12 +37,21 @@ export async function createProperty(values: PropertyFormZod) {
       images,
       documents,
     } = data;
+    const saleListingType = await prisma.listingType.findUnique({
+      where: { slug: "venta" },
+      select: { id: true },
+    });
+
+    if (!saleListingType) {
+      return { success: false, error: "No se encontró el tipo de listado Venta" };
+    }
+
     await prisma.property.create({
       data: {
         title,
         description,
         price: new Prisma.Decimal(price),
-        listingTypeId,
+        listingTypeId: saleListingType.id,
         propertyTypeId,
         address,
         city,
@@ -102,7 +110,6 @@ export async function updateProperty(values: PropertyFormZod, propertyId: string
       title,
       description,
       price,
-      listingTypeId,
       propertyTypeId,
       address,
       city,
@@ -127,6 +134,14 @@ export async function updateProperty(values: PropertyFormZod, propertyId: string
       deletedDocuments,
       existingDocuments,
     } = data;
+    const saleListingType = await prisma.listingType.findUnique({
+      where: { slug: "venta" },
+      select: { id: true },
+    });
+
+    if (!saleListingType) {
+      return { success: false, error: "No se encontró el tipo de listado Venta" };
+    }
 
     await prisma.$transaction(async (tx) => {
       await tx.property.update({
@@ -135,7 +150,7 @@ export async function updateProperty(values: PropertyFormZod, propertyId: string
           title,
           description,
           price: new Prisma.Decimal(price),
-          listingTypeId,
+          listingTypeId: saleListingType.id,
           propertyTypeId,
           address,
           city,

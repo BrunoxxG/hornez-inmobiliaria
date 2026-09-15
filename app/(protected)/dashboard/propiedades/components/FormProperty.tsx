@@ -41,7 +41,7 @@ export default function FormProperty(props: FormPropertyProps) {
   const [newDocuments, setNewDocuments] = useState<DocumentItem[]>([]);
   const [deletedDocuments, setDeletedDocuments] = useState<string[]>([]);
 
-  const { listingTypes, propertyTypes, features, isLoading } = usePropertyFormData();
+  const { propertyTypes, features, isLoading } = usePropertyFormData();
 
   useEffect(() => {
     if (property?.images) {
@@ -83,7 +83,6 @@ export default function FormProperty(props: FormPropertyProps) {
       description: property?.description || "",
       price: property?.price || 0,
       currency: property?.currency || "USD",
-      listingTypeId: property?.listingType.id || "",
       propertyTypeId: property?.propertyType.id || "",
       address: property?.address || "",
       city: property?.city || "",
@@ -458,27 +457,6 @@ export default function FormProperty(props: FormPropertyProps) {
                       ]}
                       className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
                       placeholder="Seleccionar Moneda"
-                    />
-                    {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
-                  </>
-                )}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-2">Listado *</label>
-              <Controller
-                name="listingTypeId"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <>
-                    <Dropdown
-                      {...field}
-                      options={listingTypes}
-                      optionLabel="name"
-                      optionValue="id"
-                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
-                      placeholder="Seleccionar Listado"
                     />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                   </>

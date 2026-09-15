@@ -3,16 +3,15 @@ import Footer from "../components/Footer";
 import { getPropertiesView } from "./lib/dataPropertiesView";
 import PropertiesFilters from "./components/PropertiesFilters";
 import PropertiesGrid from "./components/PropertiesGrid";
-import { getFeatures, getListingTypes, getPropertyTypes } from "@/app/(protected)/dashboard/config/lib/dataConfig";
+import { getFeatures, getPropertyTypes } from "@/app/(protected)/dashboard/config/lib/dataConfig";
 
-// Listado público de propiedades con filtro por ciudad, operación, tipo y servicios.
+// Listado público de propiedades con filtro por ciudad, tipo y servicios.
 export default async function PropertiesPage(props: {
   searchParams: Promise<{
     city?: string;
     priceRange?: string;
     bedrooms?: string;
     bathrooms?: string;
-    operacion?: string;
     tipo?: string;
     features?: string;
     areaRange?: string;
@@ -21,7 +20,6 @@ export default async function PropertiesPage(props: {
   const searchParams = await props.searchParams;
   const properties = await getPropertiesView(searchParams);
 
-  const listingTypes = await getListingTypes();
   const propertyTypes = await getPropertyTypes();
   const features = await getFeatures();
 
@@ -30,7 +28,7 @@ export default async function PropertiesPage(props: {
       <Navbar />
 
       <div className="flex-1">
-        <PropertiesFilters listingTypes={listingTypes} propertyTypes={propertyTypes} features={features} />
+        <PropertiesFilters propertyTypes={propertyTypes} features={features} />
         <PropertiesGrid properties={properties} />
       </div>
 
