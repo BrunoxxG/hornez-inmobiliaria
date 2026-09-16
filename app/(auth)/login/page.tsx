@@ -2,6 +2,7 @@ import FormLogin from "./components/FormLogin";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 
+// Página de acceso para el panel administrativo.
 export default async function LoginPage() {
   const session = await auth();
   if (session) {

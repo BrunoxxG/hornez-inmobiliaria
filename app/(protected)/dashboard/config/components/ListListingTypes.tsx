@@ -12,6 +12,7 @@ import type { Toast as ToastType } from "primereact/toast";
 import { ListingTypeZod } from "../lib/zodConfig";
 import { useDataTableFilters } from "@/app/lib/hooks/useDataTableFilters";
 import FormListingType from "./FormListingType";
+import { deleteListingType } from "../actions/actionsConfig";
 
 const initialFilters: DataTableFilterMeta = {
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -37,6 +38,19 @@ export function ListListingTypes({ listingTypes }: { listingTypes: ListingTypeZo
   };
 
   const actionsBodyTemplate = (rowData: ListingTypeZod) => {
+    const handleDelete = async () => {
+      if (!window.confirm(`¿Eliminar el tipo de listado "${rowData.name}"?`)) return;
+
+      const result = await deleteListingType(rowData.id);
+      if (!result.success) {
+        toast.current?.show({ severity: "error", summary: "Error", detail: result.error });
+        return;
+      }
+
+      setFilteredListingTypes((current) => current.filter((listingType) => listingType.id !== rowData.id));
+      toast.current?.show({ severity: "success", summary: "OK", detail: "Tipo de listado eliminado" });
+    };
+
     return (
       <div className="flex gap-2">
         <Button
@@ -56,6 +70,24 @@ export function ListListingTypes({ listingTypes }: { listingTypes: ListingTypeZo
             e.stopPropagation();
             setSelectedListingType(rowData);
             setShowDetailModal(true);
+          }}
+        />
+        <Button
+          icon="pi pi-trash"
+          className="p-button-text"
+          style={{
+            backgroundColor: "#F7F7F7",
+            border: "1px solid #F9F9F9",
+            color: "#6B7280",
+            borderRadius: "8px",
+            minHeight: "40px",
+            minWidth: "40px",
+          }}
+          tooltip="Eliminar"
+          tooltipOptions={{ position: "top" }}
+          onClick={(e) => {
+            e.stopPropagation();
+            void handleDelete();
           }}
         />
       </div>
@@ -98,7 +130,7 @@ export function ListListingTypes({ listingTypes }: { listingTypes: ListingTypeZo
     <div className="border">
       <Toast ref={toast} />
       <DataTable
-        value={listingTypes}
+        value={filteredListingTypes}
         onValueChange={(e) => setFilteredListingTypes(e)}
         paginator
         rows={10}

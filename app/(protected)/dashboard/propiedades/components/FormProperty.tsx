@@ -41,7 +41,7 @@ export default function FormProperty(props: FormPropertyProps) {
   const [newDocuments, setNewDocuments] = useState<DocumentItem[]>([]);
   const [deletedDocuments, setDeletedDocuments] = useState<string[]>([]);
 
-  const { listingTypes, propertyTypes, features, isLoading } = usePropertyFormData();
+  const { propertyTypes, features, isLoading } = usePropertyFormData();
 
   useEffect(() => {
     if (property?.images) {
@@ -83,12 +83,10 @@ export default function FormProperty(props: FormPropertyProps) {
       description: property?.description || "",
       price: property?.price || 0,
       currency: property?.currency || "USD",
-      listingTypeId: property?.listingType.id || "",
       propertyTypeId: property?.propertyType.id || "",
       address: property?.address || "",
-      city: property?.city || "",
-      province: property?.province || "",
-      zipCode: property?.zipCode || "",
+      city: property?.city || "La Paz",
+      province: property?.province || "Córdoba",
       totalRooms: property?.totalRooms ?? 0,
       bedrooms: property?.bedrooms ?? 0,
       bathrooms: property?.bathrooms ?? 0,
@@ -96,6 +94,7 @@ export default function FormProperty(props: FormPropertyProps) {
       lat: property?.lat ?? 0,
       lng: property?.lng ?? 0,
       status: property?.status || "AVAILABLE",
+      documentation: property?.documentation || "DEED",
       active: property?.active ?? true,
       standOut: property?.standOut ?? false,
       userId: property?.userId || session.user.id,
@@ -315,7 +314,6 @@ export default function FormProperty(props: FormPropertyProps) {
   const geocodeAddress = async () => {
     const address = form.getValues("address");
     const city = form.getValues("city");
-    const zip = form.getValues("zipCode");
     const province = form.getValues("province");
 
     if (!city || !province) {
@@ -467,27 +465,6 @@ export default function FormProperty(props: FormPropertyProps) {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-2">Listado *</label>
-              <Controller
-                name="listingTypeId"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <>
-                    <Dropdown
-                      {...field}
-                      options={listingTypes}
-                      optionLabel="name"
-                      optionValue="id"
-                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
-                      placeholder="Seleccionar Listado"
-                    />
-                    {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
-                  </>
-                )}
-              />
-            </div>
-
-            <div>
               <label className="block text-sm font-semibold mb-2">Tipo *</label>
               <Controller
                 name="propertyTypeId"
@@ -523,41 +500,13 @@ export default function FormProperty(props: FormPropertyProps) {
             </div>
 
             <div className="mb-3">
-              <label className="block text-sm font-semibold mb-2">Ciudad *</label>
-              <Controller
-                name="city"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <>
-                    <InputText {...field} placeholder="Ciudad" className={`w-full ${fieldState.error ? "p-invalid" : ""}`} />
-                    {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
-                  </>
-                )}
-              />
-            </div>
-
-            <div className="mb-3">
               <label className="block text-sm font-semibold mb-2">Provincia *</label>
               <Controller
                 name="province"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <>
-                    <InputText {...field} placeholder="Provincia" className={`w-full ${fieldState.error ? "p-invalid" : ""}`} />
-                    {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
-                  </>
-                )}
-              />
-            </div>
-
-            <div className="mb-3">
-              <label className="block text-sm font-semibold mb-2">Código Postal *</label>
-              <Controller
-                name="zipCode"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <>
-                    <InputText {...field} placeholder="Código Postal" className={`w-full ${fieldState.error ? "p-invalid" : ""}`} />
+                    <InputText {...field} placeholder="Córdoba" className={`w-full ${fieldState.error ? "p-invalid" : ""}`} />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                   </>
                 )}
@@ -570,8 +519,8 @@ export default function FormProperty(props: FormPropertyProps) {
                 <Button type="button" label="Buscar en mapa" onClick={geocodeAddress} className="p-button-secondary" />
               </div>
               <MapPicker
-                lat={form.watch("lat") || -34.6037}
-                lng={form.watch("lng") || -58.3816}
+                lat={form.watch("lat") || 0}
+                lng={form.watch("lng") || 0}
                 onChange={(lat, lng) => {
                   form.setValue("lat", lat);
                   form.setValue("lng", lng);
@@ -691,34 +640,70 @@ export default function FormProperty(props: FormPropertyProps) {
               />
             </div>
 
-            <div className="w-full col-span-2">
-              <label className="block text-sm font-semibold mb-2">Características *</label>
-              <Dropdown
-                options={features.filter((f) => !selectedFeatures.includes(f.id))}
-                optionLabel="name"
-                optionValue="id"
-                onChange={(e) => handleAddFeature(e.value)}
-                className="w-full"
-                placeholder="Seleccionar Características"
+            <div className="mb-3">
+              <label className="block text-sm font-semibold mb-2">Documentación *</label>
+              <Controller
+                name="documentation"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <>
+                    <Dropdown
+                      {...field}
+                      options={[
+                        { label: "Escritura", value: "DEED" },
+                        { label: "Derechos posesorios", value: "POSSESSORY_RIGHTS" },
+                      ]}
+                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
+                      placeholder="Seleccionar documentación"
+                    />
+                    {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
+                  </>
+                )}
               />
-              {isLoading ? (
-                <span>Cargando características...</span>
-              ) : (
-                <div className="flex flex-wrap gap-2 mt-4">
-                  {selectedFeatures.map((id) => {
-                    const feature = features.find((f) => f.id === id);
+            </div>
 
-                    return (
-                      <div key={id} className="flex items-center gap-2 bg-gray-200 px-3 py-1 rounded-full">
-                        <span>{feature?.name}</span>
-                        <button type="button" onClick={() => handleRemoveFeature(id)} className="text-red-500">
-                          ✕
-                        </button>
+            <div className="w-full col-span-2">
+              <div className="flex flex-col gap-4">
+                {(["SERVICE", "ADDITIONAL"] as const).map((category) => (
+                  <div key={category}>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      {category === "SERVICE" ? "Servicios" : "Adicionales"}
+                    </label>
+                    <Dropdown
+                      options={features.filter((feature) => feature.category === category && !selectedFeatures.includes(feature.id))}
+                      optionLabel="name"
+                      optionValue="id"
+                      onChange={(e) => handleAddFeature(e.value)}
+                      className="w-full"
+                      placeholder={category === "SERVICE" ? "Seleccionar servicios" : "Seleccionar adicionales"}
+                    />
+                    {!isLoading && (
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {selectedFeatures
+                          .flatMap((id) => {
+                            const feature = features.find((item) => item.id === id);
+                            return feature?.category === category ? [feature] : [];
+                          })
+                          .map((feature) => (
+                            <div key={feature.id} className="flex items-center gap-2 rounded-full bg-gray-200 px-3 py-1">
+                              <span>{feature.name}</span>
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveFeature(feature.id)}
+                                className="text-red-500"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          ))}
                       </div>
-                    );
-                  })}
-                </div>
-              )}
+                    )}
+                  </div>
+                ))}
+              </div>
+              {isLoading ? (
+                <span>Cargando servicios y adicionales...</span>
+              ) : null}
             </div>
 
             <div className="w-full col-span-2">

@@ -65,6 +65,16 @@ enum PropertyStatus {
   RENTED    @map("Alquilado")
 }
 
+enum PropertyDocumentation {
+  POSSESSORY_RIGHTS @map("Derechos posesorios")
+  DEED              @map("Escritura")
+}
+
+enum FeatureCategory {
+  SERVICE
+  ADDITIONAL
+}
+
 model Property {
   id          String  @id @default(cuid())
   title       String
@@ -80,7 +90,6 @@ model Property {
   address  String
   city     String
   province String
-  zipCode  String
 
   totalRooms Int
   bedrooms   Int
@@ -93,6 +102,7 @@ model Property {
   lng Float
 
   status   PropertyStatus @default(AVAILABLE)
+  documentation PropertyDocumentation @default(DEED)
   active   Boolean        @default(true)
   standOut Boolean        @default(false)
 
@@ -122,6 +132,7 @@ model Feature {
   id   String @id @default(cuid())
   name String
   slug String @unique
+  category FeatureCategory @default(SERVICE)
 
   properties PropertyFeature[]
 

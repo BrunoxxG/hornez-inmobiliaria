@@ -1,10 +1,11 @@
 import Footer from "./(pages)/components/Footer";
 import Navbar from "./(pages)/components/Navbar";
-import PropertyCard from "./(pages)/propiedades/components/PropertyCard";
 import HeroActions from "./components/HeroActions";
 import HeroSlider from "./components/HeroSlider";
 import { getPropertiesStand } from "./(pages)/propiedades/lib/dataPropertiesView";
+import FeaturedProperties from "./components/FeaturedProperties";
 
+// Landing page principal: hero, propiedades destacadas y sección institucional.
 export default async function Home() {
   const properties = await getPropertiesStand();
 
@@ -15,10 +16,10 @@ export default async function Home() {
       {/* Hero Section */}
       <section className="relative flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white pt-16">
         <HeroSlider />
-        <div className="absolute inset-0 bg-black/35" />
-        <div className="relative z-10 mt-36 text-center px-4 max-w-3xl md:mt-44">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">Encontrá tu lugar en el mundo</h1>
-          <p className="text-lg md:text-xl text-gray-200 mb-10">Te ayudamos a encontrar la propiedad ideal para vos.</p>
+        <div className="absolute inset-0 bg-black/20" />
+        <div className="relative z-10 max-w-3xl translate-y-20 px-4 text-center md:translate-y-28">
+          <h1 className="mb-6 whitespace-nowrap text-4xl font-bold md:text-6xl">Encontrá tu lugar en el mundo</h1>
+          <p className="mb-10 text-lg text-white md:text-xl">Te ayudamos a encontrar la propiedad ideal para vos.</p>
           <HeroActions />
         </div>
       </section>
@@ -28,15 +29,7 @@ export default async function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Propiedades Destacadas</h2>
 
-          {properties.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {properties.map((property) => (
-                <PropertyCard key={property.id} property={property} />
-              ))}
-            </div>
-          ) : (
-            <p className="text-center text-gray-500 text-lg">Próximamente publicaremos propiedades disponibles.</p>
-          )}
+          <FeaturedProperties properties={properties} />
         </div>
       </section>
 
@@ -50,9 +43,8 @@ export default async function Home() {
                 Tu inmobiliaria de confianza en La Paz, Córdoba.
               </h2>
               <p className="text-gray-600 leading-relaxed">
-                En Hornez Inmobiliaria te acompañamos en cada etapa del proceso, ya sea que estés buscando comprar,
-                vender o alquilar. Nuestro equipo de profesionales está comprometido con brindarte una experiencia
-                personalizada y transparente.
+                En Hornez Inmobiliaria te acompañamos en cada etapa del proceso de compra y venta. Nuestro equipo de
+                profesionales está comprometido con brindarte una experiencia personalizada y transparente.
               </p>
               <ul className="space-y-3">
                 {[
@@ -67,12 +59,6 @@ export default async function Home() {
                   </li>
                 ))}
               </ul>
-              <a
-                href="#contacto"
-                className="inline-block bg-hornez-orange text-white px-8 py-3 rounded-md font-semibold hover:bg-orange-600 transition-colors"
-              >
-                Contactanos
-              </a>
             </div>
 
             {/* Imagen decorativa / placeholder */}

@@ -27,7 +27,6 @@ export async function getProperties(): Promise<PropertyZod[]> {
         address: true,
         city: true,
         province: true,
-        zipCode: true,
         totalRooms: true,
         bedrooms: true,
         bathrooms: true,
@@ -36,6 +35,7 @@ export async function getProperties(): Promise<PropertyZod[]> {
         lat: true,
         lng: true,
         status: true,
+        documentation: true,
         active: true,
         standOut: true,
         userId: true,
@@ -50,6 +50,7 @@ export async function getProperties(): Promise<PropertyZod[]> {
               select: {
                 id: true,
                 name: true,
+                category: true,
               },
             },
           }

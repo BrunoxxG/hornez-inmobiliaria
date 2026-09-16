@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { ListingTypeZod, PropertyTypeZod, FeatureZod } from "../../config/lib/zodConfig";
+import { PropertyTypeZod, FeatureZod } from "../../config/lib/zodConfig";
 
 export function usePropertyFormData() {
-  const [listingTypes, setListingTypes] = useState<ListingTypeZod[]>([]);
   const [propertyTypes, setPropertyTypes] = useState<PropertyTypeZod[]>([]);
   const [features, setFeatures] = useState<FeatureZod[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -14,15 +13,13 @@ export function usePropertyFormData() {
       setIsLoading(true);
 
       try {
-        const [listingTypesRes, propertyTypesRes, featuresRes] = await Promise.all([
-          fetch("/api/listing-types").then((r) => r.json()),
+        const [propertyTypesRes, featuresRes] = await Promise.all([
           fetch("/api/property-types").then((r) => r.json()),
           fetch("/api/features").then((r) => r.json()),
         ]);
 
         if (!isMounted) return;
 
-        setListingTypes(listingTypesRes);
         setPropertyTypes(propertyTypesRes);
         setFeatures(featuresRes);
       } catch (error) {
@@ -42,7 +39,6 @@ export function usePropertyFormData() {
   }, []);
 
   return {
-    listingTypes,
     propertyTypes,
     features,
     isLoading,

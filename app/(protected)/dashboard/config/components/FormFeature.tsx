@@ -9,7 +9,7 @@ import { featureFormSchema, FeatureFormZod, FormFeatureProps } from "../lib/zodC
 import { createFeature, updateFeature } from "../actions/actionsConfig";
 
 export default function FormFeature(props: FormFeatureProps) {
-  const { feature, setOpenModalForm, toast } = props;
+  const { feature, category, setOpenModalForm, onCreated, toast } = props;
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<FeatureFormZod>({
@@ -17,6 +17,7 @@ export default function FormFeature(props: FormFeatureProps) {
     mode: "onChange",
     defaultValues: {
       name: feature?.name || "",
+      category: feature?.category || category,
     },
   });
   const { isValid } = form.formState;
@@ -27,7 +28,7 @@ export default function FormFeature(props: FormFeatureProps) {
     if (feature) {
       await onSubmitUpdate(values);
     } else {
-      const { success, error } = await createFeature(values);
+      const { success, error, feature: createdFeature } = await createFeature(values);
       if (!success) {
         toast.current?.show({ severity: "error", summary: "Error", detail: error, life: 3000 });
         setIsSubmitting(false);
@@ -36,9 +37,10 @@ export default function FormFeature(props: FormFeatureProps) {
       toast.current?.show({
         severity: "success",
         summary: "Creada",
-        detail: "Característica creada exitosamente",
+        detail: "Servicio creado exitosamente",
         life: 3000,
       });
+      if (createdFeature) onCreated?.(createdFeature);
       setOpenModalForm?.(false);
     }
     setIsSubmitting(false);
@@ -59,7 +61,7 @@ export default function FormFeature(props: FormFeatureProps) {
     toast.current?.show({
       severity: "success",
       summary: "Actualizada",
-      detail: "Característica actualizada exitosamente",
+      detail: "Servicio actualizado exitosamente",
       life: 3000,
     });
     reset();
@@ -77,7 +79,7 @@ export default function FormFeature(props: FormFeatureProps) {
               control={form.control}
               render={({ field, fieldState }) => (
                 <>
-                  <InputText {...field} placeholder="Nombre de la característica" className="w-full" />
+                  <InputText {...field} placeholder="Nombre del servicio" className="w-full" />
                   {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                 </>
               )}
@@ -87,7 +89,7 @@ export default function FormFeature(props: FormFeatureProps) {
 
         <div className="flex gap-2 mt-8">
           <Button
-            label="Guardar Característica"
+            label="Guardar Servicio"
             className="p-button-danger"
             type="submit"
             disabled={!isValid || isSubmitting}
