@@ -16,10 +16,10 @@ export default async function Home() {
       {/* Hero Section */}
       <section className="relative flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white pt-16">
         <HeroSlider />
-        <div className="absolute inset-0 bg-black/35" />
-        <div className="relative z-10 mt-36 text-center px-4 max-w-3xl md:mt-44">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">Encontrá tu lugar en el mundo</h1>
-          <p className="text-lg md:text-xl text-gray-200 mb-10">Te ayudamos a encontrar la propiedad ideal para vos.</p>
+        <div className="absolute inset-0 bg-black/20" />
+        <div className="relative z-10 mt-56 max-w-3xl px-4 text-center md:mt-68">
+          <h1 className="mb-6 whitespace-nowrap text-4xl font-bold md:text-6xl">Encontrá tu lugar en el mundo</h1>
+          <p className="text-lg md:text-xl text-white mb-100">Te ayudamos a encontrar la propiedad ideal para vos.</p>
           <HeroActions />
         </div>
       </section>

@@ -7,7 +7,7 @@ export default function HeroSlider() {
         src="/img/lomaBolaLaCruz.jpeg"
         alt="Vista panorámica de La Paz, Córdoba"
         fill
-        className="object-cover object-center opacity-45"
+        className="object-cover object-center"
         priority
       />
     </div>

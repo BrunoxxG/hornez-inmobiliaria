@@ -85,8 +85,8 @@ export default function FormProperty(props: FormPropertyProps) {
       currency: property?.currency || "USD",
       propertyTypeId: property?.propertyType.id || "",
       address: property?.address || "",
-      city: property?.city || "",
-      province: property?.province || "",
+      city: property?.city || "La Paz",
+      province: property?.province || "Córdoba",
       totalRooms: property?.totalRooms ?? 0,
       bedrooms: property?.bedrooms ?? 0,
       bathrooms: property?.bathrooms ?? 0,
@@ -500,27 +500,13 @@ export default function FormProperty(props: FormPropertyProps) {
             </div>
 
             <div className="mb-3">
-              <label className="block text-sm font-semibold mb-2">Ciudad *</label>
-              <Controller
-                name="city"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <>
-                    <InputText {...field} placeholder="Ciudad" className={`w-full ${fieldState.error ? "p-invalid" : ""}`} />
-                    {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
-                  </>
-                )}
-              />
-            </div>
-
-            <div className="mb-3">
               <label className="block text-sm font-semibold mb-2">Provincia *</label>
               <Controller
                 name="province"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <>
-                    <InputText {...field} placeholder="Provincia" className={`w-full ${fieldState.error ? "p-invalid" : ""}`} />
+                    <InputText {...field} placeholder="Córdoba" className={`w-full ${fieldState.error ? "p-invalid" : ""}`} />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                   </>
                 )}
