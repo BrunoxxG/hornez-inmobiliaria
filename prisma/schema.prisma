@@ -75,6 +75,28 @@ enum FeatureCategory {
   ADDITIONAL
 }
 
+enum ContactReason {
+  TASACION
+  COMPRA
+  OTRO
+}
+
+model ContactInquiry {
+  id        String        @id @default(cuid())
+  name      String
+  email     String
+  phone     String
+  reason    ContactReason
+  message   String
+  read      Boolean       @default(false)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([read])
+  @@index([createdAt])
+  @@map("contact_inquiries")
+}
+
 model Property {
   id          String  @id @default(cuid())
   title       String
@@ -101,10 +123,10 @@ model Property {
   lat Float
   lng Float
 
-  status   PropertyStatus @default(AVAILABLE)
+  status        PropertyStatus        @default(AVAILABLE)
   documentation PropertyDocumentation @default(DEED)
-  active   Boolean        @default(true)
-  standOut Boolean        @default(false)
+  active        Boolean               @default(true)
+  standOut      Boolean               @default(false)
 
   userId String
   user   User   @relation(fields: [userId], references: [id])
@@ -129,9 +151,9 @@ model Property {
 }
 
 model Feature {
-  id   String @id @default(cuid())
-  name String
-  slug String @unique
+  id       String          @id @default(cuid())
+  name     String
+  slug     String          @unique
   category FeatureCategory @default(SERVICE)
 
   properties PropertyFeature[]
@@ -166,10 +188,10 @@ model Image {
 }
 
 model Document {
-  id         String   @id @default(cuid())
-  url        String
-  name       String
-  
+  id   String @id @default(cuid())
+  url  String
+  name String
+
   property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   propertyId String
 

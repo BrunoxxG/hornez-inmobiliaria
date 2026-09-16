@@ -6,8 +6,10 @@ import { usePathname } from "next/navigation";
 
 export default function Sidebar({
   isCollapsed,
+  unreadInquiries,
 }: {
   isCollapsed: boolean;
+  unreadInquiries: number;
 }) {
   const pathname = usePathname();
 
@@ -47,7 +49,21 @@ export default function Sidebar({
                   fontSize: isCollapsed ? "1.25rem" : "1.125rem",
                 }}
               />
-              {!isCollapsed && <span>{item.label}</span>}
+              {!isCollapsed && (
+                <>
+                  <span>{item.label}</span>
+                  {item.path === "/dashboard/consultas" && (
+                    <span className="ml-auto flex items-center gap-1 text-hornez-orange">
+                      <i className="pi pi-bell text-[1.3125rem]" />
+                      {unreadInquiries > 0 && (
+                        <span className="text-lg font-bold">
+                          {unreadInquiries > 99 ? "99+" : unreadInquiries}
+                        </span>
+                      )}
+                    </span>
+                  )}
+                </>
+              )}
             </Link>
           );
         })}

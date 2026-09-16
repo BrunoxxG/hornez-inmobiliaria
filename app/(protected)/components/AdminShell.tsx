@@ -38,7 +38,7 @@ export default function AdminShell({
           isSidebarCollapsed ? "w-20" : "w-65"
         }`}
       >
-        <Sidebar isCollapsed={isSidebarCollapsed} />
+        <Sidebar isCollapsed={isSidebarCollapsed} unreadInquiries={unreadInquiries} />
       </div>
 
       <PrimeSidebar visible={isSidebarOpen} onHide={() => setIsSidebarOpen(false)} className="md:hidden">
@@ -61,6 +61,16 @@ export default function AdminShell({
               >
                 <i className={`${item.icon} mr-2`} />
                 <span>{item.label}</span>
+                {item.path === "/dashboard/consultas" && (
+                  <span className="ml-auto flex items-center gap-1 text-hornez-orange">
+                    <i className="pi pi-bell text-[1.3125rem]" />
+                    {unreadInquiries > 0 && (
+                      <span className="text-lg font-bold">
+                        {unreadInquiries > 99 ? "99+" : unreadInquiries}
+                      </span>
+                    )}
+                  </span>
+                )}
               </Link>
             );
           })}
@@ -70,7 +80,6 @@ export default function AdminShell({
       <div className="flex flex-col flex-1 min-w-0 min-h-screen">
         <Topbar
           session={session}
-          unreadInquiries={unreadInquiries}
           isCollapsed={isSidebarCollapsed}
           onToggleCollapse={() => setIsSidebarCollapsed((v) => !v)}
           onToggleMobile={() => setIsSidebarOpen((v) => !v)}
