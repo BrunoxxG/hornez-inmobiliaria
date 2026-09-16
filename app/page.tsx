@@ -17,9 +17,9 @@ export default async function Home() {
       <section className="relative flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white pt-16">
         <HeroSlider />
         <div className="absolute inset-0 bg-black/20" />
-        <div className="relative z-10 mt-56 max-w-3xl px-4 text-center md:mt-68">
+        <div className="relative z-10 max-w-3xl translate-y-20 px-4 text-center md:translate-y-28">
           <h1 className="mb-6 whitespace-nowrap text-4xl font-bold md:text-6xl">Encontrá tu lugar en el mundo</h1>
-          <p className="text-lg md:text-xl text-white mb-100">Te ayudamos a encontrar la propiedad ideal para vos.</p>
+          <p className="mb-10 text-lg text-white md:text-xl">Te ayudamos a encontrar la propiedad ideal para vos.</p>
           <HeroActions />
         </div>
       </section>
