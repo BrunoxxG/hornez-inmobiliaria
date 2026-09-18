@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { InputNumber } from "primereact/inputnumber";
 
 type Option = {
   id: string;
@@ -96,14 +97,17 @@ export default function PropertiesFilters({
     setMaxPrice("");
   };
 
+  const formatPrice = (value: string) =>
+    value ? new Intl.NumberFormat("es-AR", { maximumFractionDigits: 2 }).format(Number(value)) : "";
+
   const priceLabel = priceCurrency || minPrice || maxPrice
-    ? `${priceCurrency || "Precio"}${minPrice ? ` desde ${minPrice}` : ""}${maxPrice ? ` hasta ${maxPrice}` : ""}`
+    ? `${priceCurrency || "Precio"}${minPrice ? ` desde ${formatPrice(minPrice)}` : ""}${maxPrice ? ` hasta ${formatPrice(maxPrice)}` : ""}`
     : "Precio";
 
   return (
     <div className="mt-16 bg-white shadow-sm">
       <div className="mx-auto max-w-7xl space-y-4 p-4">
-        <div className="flex flex-nowrap items-start gap-4 overflow-x-auto">
+        <div className="flex flex-wrap items-start gap-4">
           <select
             value={searchParams.get("tipo") || ""}
             onChange={(event) => updateParam("tipo", event.target.value)}
@@ -142,20 +146,30 @@ export default function PropertiesFilters({
                     <option value="USD">USD</option>
                     <option value="ARS">ARS</option>
                   </select>
-                  <input
-                    type="number"
-                    min="0"
+                  <InputNumber
+                    value={minPrice ? Number(minPrice) : null}
+                    onValueChange={(event) => setMinPrice(event.value == null ? "" : String(event.value))}
+                    locale="es-AR"
+                    mode="decimal"
+                    min={0}
+                    minFractionDigits={0}
+                    maxFractionDigits={2}
+                    useGrouping
                     placeholder="Desde"
-                    value={minPrice}
-                    onChange={(event) => setMinPrice(event.target.value)}
+                    inputClassName="w-full"
                     className="w-full rounded border p-2 focus:border-hornez-orange focus:ring-1 focus:ring-hornez-orange"
                   />
-                  <input
-                    type="number"
-                    min="0"
+                  <InputNumber
+                    value={maxPrice ? Number(maxPrice) : null}
+                    onValueChange={(event) => setMaxPrice(event.value == null ? "" : String(event.value))}
+                    locale="es-AR"
+                    mode="decimal"
+                    min={0}
+                    minFractionDigits={0}
+                    maxFractionDigits={2}
+                    useGrouping
                     placeholder="Hasta"
-                    value={maxPrice}
-                    onChange={(event) => setMaxPrice(event.target.value)}
+                    inputClassName="w-full"
                     className="w-full rounded border p-2 focus:border-hornez-orange focus:ring-1 focus:ring-hornez-orange"
                   />
                   <button

@@ -2,7 +2,7 @@
 
 import { DataTable, DataTableFilterMeta } from "primereact/datatable";
 import { InputText } from "primereact/inputtext";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { FilterMatchMode } from "primereact/api";
@@ -30,6 +30,10 @@ export function ListProperties({ properties, session }: { properties: PropertyZo
   const [propertyToDelete, setPropertyToDelete] = useState<PropertyZod | null>(null);
   const [selectedProperty, setSelectedProperty] = useState<PropertyZod | undefined>(undefined);
   const toast = useRef<ToastType | null>(null);
+
+  useEffect(() => {
+    setItems(properties);
+  }, [properties]);
 
   const { filters, globalFilterValue, onGlobalFilterChange, clearFilters, hasActiveFilters } =
     useDataTableFilters(initialFilters);

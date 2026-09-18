@@ -5,6 +5,7 @@ import { Controller, useForm } from "react-hook-form";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { FormPropertyProps, PROPERTY_STATUS, propertyFormSchema, PropertyFormZod } from "../lib/zodPublications";
 import { createProperty, updateProperty } from "../actions/actionsProperties";
 import { usePropertyFormData } from "../hooks/usePropertyFormData";
@@ -33,6 +34,7 @@ type DocumentItem = {
 
 export default function FormProperty(props: FormPropertyProps) {
   const { property, setOpenModalForm, toast, session } = props;
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [existingImages, setExistingImages] = useState<ImageItem[]>([]);
   const [newImages, setNewImages] = useState<ImageItem[]>([]);
@@ -277,6 +279,7 @@ export default function FormProperty(props: FormPropertyProps) {
         });
       }
 
+      router.refresh();
       setOpenModalForm?.(false);
     } catch (error) {
       toast.current?.show({
