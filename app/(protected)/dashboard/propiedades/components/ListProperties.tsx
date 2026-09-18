@@ -167,7 +167,6 @@ export function ListProperties({ properties, session }: { properties: PropertyZo
         <Column field="title" header="Título" body={titleBodyTemplate} sortable style={{ minWidth: "200px" }} />
         <Column field="price" header="Precio" body={priceBodyTemplate} sortable style={{ minWidth: "100px" }} />
         <Column field="propertyType.name" header="Tipo" sortable style={{ minWidth: "100px" }} />
-        <Column field="listingType.name" header="Lista" sortable style={{ minWidth: "100px" }} />
         <Column field="address" header="Dirección" body={addressBodyTemplate} sortable style={{ minWidth: "200px" }} />
         <Column field="status" header="Estado" body={statusBodyTemplate} sortable style={{ minWidth: "100px" }} />
         <Column field="active" header="Mostrar" body={destacadaBodyTemplate} sortable style={{ minWidth: "100px" }} />

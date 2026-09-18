@@ -23,10 +23,10 @@ const REASON_LABELS = {
 export default function ConsultationsList({ inquiries }: { inquiries: Inquiry[] }) {
   const [items, setItems] = useState(inquiries);
 
-  const handleMarkAsRead = async (id: string) => {
-    const result = await markContactInquiryAsRead(id);
+  const handleToggleRead = async (id: string, read: boolean) => {
+    const result = await markContactInquiryAsRead(id, read);
     if (result.success) {
-      setItems((current) => current.map((item) => (item.id === id ? { ...item, read: true } : item)));
+      setItems((current) => current.map((item) => (item.id === id ? { ...item, read } : item)));
     }
   };
 
@@ -41,22 +41,39 @@ export default function ConsultationsList({ inquiries }: { inquiries: Inquiry[] 
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0 flex-1">
               <div className="mb-3 flex flex-wrap items-center gap-3">
-                <h2 className="text-lg font-bold text-hornez-blue">{inquiry.name}</h2>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Nombre</p>
+                  <h2 className="text-lg font-bold text-hornez-blue">{inquiry.name}</h2>
+                </div>
                 {!inquiry.read && <span className="rounded-full bg-orange-100 px-2 py-1 text-xs font-semibold text-hornez-orange">Nueva</span>}
-                <span className="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600">{REASON_LABELS[inquiry.reason]}</span>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Motivo</p>
+                  <span className="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600">{REASON_LABELS[inquiry.reason]}</span>
+                </div>
               </div>
               <div className="grid gap-2 text-sm text-gray-600 sm:grid-cols-2">
-                <a href={`mailto:${inquiry.email}`} className="hover:text-hornez-orange">{inquiry.email}</a>
-                <a href={`tel:${inquiry.phone}`} className="hover:text-hornez-orange">{inquiry.phone}</a>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Mail</p>
+                  <a href={`mailto:${inquiry.email}`} className="hover:text-hornez-orange">{inquiry.email}</a>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Teléfono</p>
+                  <a href={`tel:${inquiry.phone}`} className="hover:text-hornez-orange">{inquiry.phone}</a>
+                </div>
               </div>
-              <p className="mt-4 whitespace-pre-line text-gray-800">{inquiry.message}</p>
+              <div className="mt-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Consulta</p>
+                <p className="whitespace-pre-line text-gray-800">{inquiry.message}</p>
+              </div>
               <p className="mt-4 text-xs text-gray-400">{new Date(inquiry.createdAt).toLocaleString("es-AR")}</p>
             </div>
-            {!inquiry.read && (
-              <button type="button" onClick={() => void handleMarkAsRead(inquiry.id)} className="shrink-0 rounded-md bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-800 transition-colors hover:bg-hornez-orange hover:text-white">
-                Marcar como leída
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => void handleToggleRead(inquiry.id, !inquiry.read)}
+              className="shrink-0 rounded-md bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-800 transition-colors hover:bg-hornez-orange hover:text-white"
+            >
+              {inquiry.read ? "Marcar como no leída" : "Marcar como leída"}
+            </button>
           </div>
         </article>
       ))}

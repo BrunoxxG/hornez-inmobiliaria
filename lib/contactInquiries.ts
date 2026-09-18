@@ -53,14 +53,14 @@ export async function createContactInquiry(values: {
   }
 }
 
-export async function markContactInquiryAsRead(inquiryId: string) {
+export async function markContactInquiryAsRead(inquiryId: string, read: boolean) {
   const session = await auth();
   if (!session) return { success: false, error: "No autorizado" };
 
   try {
     await prisma.contactInquiry.update({
       where: { id: inquiryId },
-      data: { read: true },
+      data: { read },
     });
     revalidatePath("/dashboard/consultas");
     return { success: true };
