@@ -16,6 +16,7 @@ import { formatCurrency } from "@/app/(protected)/lib/utils";
 import { Tag } from "primereact/tag";
 import { classNames } from "primereact/utils";
 import { Session } from "next-auth";
+import { deleteProperty } from "../actions/actionsProperties";
 
 const initialFilters: DataTableFilterMeta = {
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -23,13 +24,25 @@ const initialFilters: DataTableFilterMeta = {
 };
 
 export function ListProperties({ properties, session }: { properties: PropertyZod[], session: Session }) {
+  const [items, setItems] = useState(properties);
   const [showNewPropertyModal, setShowNewPropertyModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [propertyToDelete, setPropertyToDelete] = useState<PropertyZod | null>(null);
   const [selectedProperty, setSelectedProperty] = useState<PropertyZod | undefined>(undefined);
   const toast = useRef<ToastType | null>(null);
 
   const { filters, globalFilterValue, onGlobalFilterChange, clearFilters, hasActiveFilters } =
     useDataTableFilters(initialFilters);
+
+  const handleDeleteProperty = async (property: PropertyZod) => {
+    const result = await deleteProperty(property.id);
+    if (result.success) {
+      setItems((current) => current.filter((item) => item.id !== property.id));
+      toast.current?.show({ severity: "success", summary: "Eliminada", detail: "Propiedad eliminada", life: 3000 });
+    } else {
+      toast.current?.show({ severity: "error", summary: "Error", detail: result.error, life: 3000 });
+    }
+  };
 
   const titleBodyTemplate = (rowData: PropertyZod) => {
     return (
@@ -113,6 +126,17 @@ export function ListProperties({ properties, session }: { properties: PropertyZo
             setShowDetailModal(true);
           }}
         />
+        <Button
+          icon="pi pi-trash"
+          className="p-button-text"
+          severity="danger"
+          tooltip="Eliminar"
+          tooltipOptions={{ position: "top" }}
+          onClick={(e) => {
+            e.stopPropagation();
+            setPropertyToDelete(rowData);
+          }}
+        />
       </div>
     );
   };
@@ -152,8 +176,30 @@ export function ListProperties({ properties, session }: { properties: PropertyZo
   return (
     <div>
       <Toast ref={toast} />
+      <Dialog
+        visible={propertyToDelete !== null}
+        onHide={() => setPropertyToDelete(null)}
+        header="Confirmar eliminación"
+        modal
+        style={{ width: "min(90vw, 28rem)" }}
+      >
+        <p className="m-0 text-gray-700">
+          ¿Estás seguro que deseas eliminar <strong>{propertyToDelete?.title}</strong>?
+        </p>
+        <div className="mt-6 flex justify-end gap-2">
+          <Button label="Cancelar" severity="secondary" outlined onClick={() => setPropertyToDelete(null)} />
+          <Button
+            label="Eliminar"
+            severity="danger"
+            onClick={() => {
+              if (propertyToDelete) void handleDeleteProperty(propertyToDelete);
+              setPropertyToDelete(null);
+            }}
+          />
+        </div>
+      </Dialog>
       <DataTable
-        value={properties}
+        value={items}
         paginator
         rows={10}
         rowsPerPageOptions={[5, 10, 25, 50]}

@@ -1,7 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { markContactInquiryAsRead } from "@/lib/contactInquiries";
+import { useRef, useState } from "react";
+import { Dialog } from "primereact/dialog";
+import { Button } from "primereact/button";
+import { Toast } from "primereact/toast";
+import type { Toast as ToastType } from "primereact/toast";
+import { deleteContactInquiry, markContactInquiryAsRead } from "@/lib/contactInquiries";
 
 type Inquiry = {
   id: string;
@@ -22,6 +26,8 @@ const REASON_LABELS = {
 
 export default function ConsultationsList({ inquiries }: { inquiries: Inquiry[] }) {
   const [items, setItems] = useState(inquiries);
+  const [inquiryToDelete, setInquiryToDelete] = useState<Inquiry | null>(null);
+  const toast = useRef<ToastType | null>(null);
 
   const handleToggleRead = async (id: string, read: boolean) => {
     const result = await markContactInquiryAsRead(id, read);
@@ -30,16 +36,25 @@ export default function ConsultationsList({ inquiries }: { inquiries: Inquiry[] 
     }
   };
 
-  if (items.length === 0) {
-    return <p className="rounded-lg border border-dashed border-gray-300 bg-white p-8 text-center text-gray-500">Todavía no hay consultas.</p>;
-  }
+  const handleDelete = async (id: string) => {
+    const result = await deleteContactInquiry(id);
+    if (result.success) {
+      setItems((current) => current.filter((item) => item.id !== id));
+      toast.current?.show({ severity: "success", summary: "Eliminada", detail: "Consulta eliminada", life: 3000 });
+    } else {
+      toast.current?.show({ severity: "error", summary: "Error", detail: result.error, life: 3000 });
+    }
+  };
 
   return (
     <div className="space-y-4">
-      {items.map((inquiry) => (
+      <Toast ref={toast} />
+      {items.length === 0 ? (
+        <p className="rounded-lg border border-dashed border-gray-300 bg-white p-8 text-center text-gray-500">Todavía no hay consultas.</p>
+      ) : items.map((inquiry) => (
         <article key={inquiry.id} className={`rounded-xl border bg-white p-5 shadow-sm ${inquiry.read ? "border-gray-200" : "border-hornez-orange"}`}>
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div className="min-w-0 flex-1">
+          <div className="flex flex-col gap-4">
+            <div className="min-w-0">
               <div className="grid gap-4 text-sm text-gray-600 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Nombre</p>
@@ -67,16 +82,47 @@ export default function ConsultationsList({ inquiries }: { inquiries: Inquiry[] 
               </div>
               <p className="mt-4 text-xs text-gray-400">{new Date(inquiry.createdAt).toLocaleString("es-AR")}</p>
             </div>
-            <button
-              type="button"
-              onClick={() => void handleToggleRead(inquiry.id, !inquiry.read)}
-              className="shrink-0 rounded-md bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-800 transition-colors hover:bg-hornez-orange hover:text-white"
-            >
-              {inquiry.read ? "Marcar como no leído" : "Marcar como leído"}
-            </button>
+            <div className="flex flex-wrap justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => void handleToggleRead(inquiry.id, !inquiry.read)}
+                className="rounded-md bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-800 transition-colors hover:bg-hornez-orange hover:text-white"
+              >
+                {inquiry.read ? "No leído" : "Leído"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setInquiryToDelete(inquiry)}
+                className="rounded-md bg-red-100 px-4 py-2 text-sm font-semibold text-red-700 transition-colors hover:bg-red-600 hover:text-white"
+              >
+                Eliminar
+              </button>
+            </div>
           </div>
         </article>
       ))}
+      <Dialog
+        visible={inquiryToDelete !== null}
+        onHide={() => setInquiryToDelete(null)}
+        header="Confirmar eliminación"
+        modal
+        style={{ width: "min(90vw, 28rem)" }}
+      >
+        <p className="m-0 text-gray-700">
+          ¿Estás seguro que deseas eliminar la consulta de <strong>{inquiryToDelete?.name}</strong>?
+        </p>
+        <div className="mt-6 flex justify-end gap-2">
+          <Button label="Cancelar" severity="secondary" outlined onClick={() => setInquiryToDelete(null)} />
+          <Button
+            label="Eliminar"
+            severity="danger"
+            onClick={() => {
+              if (inquiryToDelete) void handleDelete(inquiryToDelete.id);
+              setInquiryToDelete(null);
+            }}
+          />
+        </div>
+      </Dialog>
     </div>
   );
 }

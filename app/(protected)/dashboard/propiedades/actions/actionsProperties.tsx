@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
 import { propertyFormSchema, PropertyFormZod } from "../lib/zodPublications";
 import { Prisma } from "@prisma/client";
+import { auth } from "@/lib/auth";
 
 export async function createProperty(values: PropertyFormZod) {
   const { data, success } = propertyFormSchema.safeParse(values);
@@ -228,5 +229,19 @@ export async function updateProperty(values: PropertyFormZod, propertyId: string
   } catch (error) {
     console.error(error);
     return { success: false, error: "Ocurrio un error" };
+  }
+}
+
+export async function deleteProperty(propertyId: string) {
+  const session = await auth();
+  if (!session) return { success: false, error: "No autorizado" };
+
+  try {
+    await prisma.property.delete({ where: { id: propertyId } });
+    revalidatePath("/dashboard/propiedades");
+    return { success: true };
+  } catch (error) {
+    console.error(error);
+    return { success: false, error: "No se pudo eliminar la propiedad" };
   }
 }

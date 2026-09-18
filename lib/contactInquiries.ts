@@ -69,3 +69,17 @@ export async function markContactInquiryAsRead(inquiryId: string, read: boolean)
     return { success: false, error: "No se pudo actualizar la consulta" };
   }
 }
+
+export async function deleteContactInquiry(inquiryId: string) {
+  const session = await auth();
+  if (!session) return { success: false, error: "No autorizado" };
+
+  try {
+    await prisma.contactInquiry.delete({ where: { id: inquiryId } });
+    revalidatePath("/dashboard/consultas");
+    return { success: true };
+  } catch (error) {
+    console.error(error);
+    return { success: false, error: "No se pudo eliminar la consulta" };
+  }
+}

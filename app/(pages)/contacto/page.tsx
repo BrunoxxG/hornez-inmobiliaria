@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Music2 } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -24,6 +24,13 @@ export default function ContactPage() {
   const [sent, setSent] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [submitError, setSubmitError] = useState("");
+
+  useEffect(() => {
+    if (!sent) return;
+
+    const timeout = window.setTimeout(() => setSent(false), 3000);
+    return () => window.clearTimeout(timeout);
+  }, [sent]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -71,6 +78,14 @@ export default function ContactPage() {
           >
             <div className="absolute inset-0 bg-transparent" />
             <div className="relative mx-auto w-full max-w-3xl rounded-2xl bg-white/60 p-6 shadow-xl sm:w-[35%] sm:p-8">
+              {sent && (
+                <div
+                  aria-live="polite"
+                  className="absolute left-1/2 top-1/2 z-10 w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-lg bg-green-600 px-4 py-4 text-center font-semibold text-white shadow-xl"
+                >
+                  Mensaje enviado correctamente.
+                </div>
+              )}
               <p className="mb-6 text-center text-lg font-medium leading-relaxed text-gray-800">
                 Déjanos tus datos y nos comunicaremos a la brevedad.
               </p>
@@ -142,7 +157,6 @@ export default function ContactPage() {
                   <button type="submit" className="rounded-md bg-hornez-orange px-6 py-3 font-semibold text-white transition-colors hover:bg-orange-600">
                     Enviar
                   </button>
-                  {sent && <p className="text-sm font-medium text-green-700">Mensaje enviado correctamente.</p>}
                   {submitError && <p className="text-sm font-medium text-red-600">{submitError}</p>}
                 </div>
               </form>
