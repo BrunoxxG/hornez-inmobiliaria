@@ -40,25 +40,25 @@ export default function ConsultationsList({ inquiries }: { inquiries: Inquiry[] 
         <article key={inquiry.id} className={`rounded-xl border bg-white p-5 shadow-sm ${inquiry.read ? "border-gray-200" : "border-hornez-orange"}`}>
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0 flex-1">
-              <div className="mb-3 flex flex-wrap items-center gap-3">
+              <div className="grid gap-4 text-sm text-gray-600 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Nombre</p>
-                  <h2 className="text-lg font-bold text-hornez-blue">{inquiry.name}</h2>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h2 className="text-lg font-bold text-hornez-blue">{inquiry.name}</h2>
+                    {!inquiry.read && <span className="rounded-full bg-orange-100 px-2 py-1 text-xs font-semibold text-hornez-orange">Nueva</span>}
+                  </div>
                 </div>
-                {!inquiry.read && <span className="rounded-full bg-orange-100 px-2 py-1 text-xs font-semibold text-hornez-orange">Nueva</span>}
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Motivo</p>
                   <span className="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600">{REASON_LABELS[inquiry.reason]}</span>
                 </div>
-              </div>
-              <div className="grid gap-2 text-sm text-gray-600 sm:grid-cols-2">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Mail</p>
-                  <a href={`mailto:${inquiry.email}`} className="hover:text-hornez-orange">{inquiry.email}</a>
-                </div>
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Teléfono</p>
                   <a href={`tel:${inquiry.phone}`} className="hover:text-hornez-orange">{inquiry.phone}</a>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Mail</p>
+                  <a href={`mailto:${inquiry.email}`} className="hover:text-hornez-orange">{inquiry.email}</a>
                 </div>
               </div>
               <div className="mt-4">
@@ -72,7 +72,7 @@ export default function ConsultationsList({ inquiries }: { inquiries: Inquiry[] 
               onClick={() => void handleToggleRead(inquiry.id, !inquiry.read)}
               className="shrink-0 rounded-md bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-800 transition-colors hover:bg-hornez-orange hover:text-white"
             >
-              {inquiry.read ? "Marcar como no leída" : "Marcar como leída"}
+              {inquiry.read ? "Marcar como no leído" : "Marcar como leído"}
             </button>
           </div>
         </article>
