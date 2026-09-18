@@ -174,7 +174,6 @@ export default function ContactPage() {
 
           <section className="mt-10 overflow-hidden rounded-xl bg-white shadow-sm">
             <div className="p-6 text-center">
-              <h2 className="text-xl font-bold text-hornez-blue">Ubicación del pueblo La Paz</h2>
               <p className="mt-2 text-gray-600">La Paz, Córdoba</p>
             </div>
             <iframe
@@ -187,7 +186,7 @@ export default function ContactPage() {
           </section>
 
           <section className="mt-10">
-            <h2 className="mb-5 text-center text-xl font-bold text-hornez-blue">Hablemos</h2>
+            <h2 className="mb-5 text-center text-xl font-bold text-hornez-blue">¿Hablamos?</h2>
             <div className="grid gap-4 sm:grid-cols-3">
               {CONTACT_PHONES.map((contact) => (
                 <Link key={contact.label} href={contact.href} className="rounded-lg bg-white p-4 text-center shadow-sm transition-colors hover:bg-orange-50">
