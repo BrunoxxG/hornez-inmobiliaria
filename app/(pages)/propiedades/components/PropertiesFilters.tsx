@@ -29,11 +29,13 @@ export default function PropertiesFilters({
   const [priceCurrency, setPriceCurrency] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
+  const [location, setLocation] = useState("");
 
   useEffect(() => {
     setPriceCurrency(searchParams.get("currency") || "");
     setMinPrice(searchParams.get("minPrice") || "");
     setMaxPrice(searchParams.get("maxPrice") || "");
+    setLocation(searchParams.get("location") || "");
   }, [searchParams]);
 
   const updateParam = useCallback(
@@ -95,6 +97,11 @@ export default function PropertiesFilters({
     setPriceCurrency("");
     setMinPrice("");
     setMaxPrice("");
+    setLocation("");
+  };
+
+  const applyLocation = () => {
+    updateParam("location", location.trim());
   };
 
   const formatPrice = (value: string) =>
@@ -184,6 +191,32 @@ export default function PropertiesFilters({
             )}
           </div>
 
+          <div className="flex min-w-64 flex-1 gap-2">
+            <input
+              type="search"
+              value={location}
+              onChange={(event) => setLocation(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  applyLocation();
+                }
+              }}
+              placeholder="Ubicación"
+              aria-label="Ubicación"
+              className={`min-w-0 flex-1 rounded border p-2 focus:border-hornez-orange focus:ring-1 focus:ring-hornez-orange ${
+                location ? "border-hornez-orange bg-orange-50" : ""
+              }`}
+            />
+            <button
+              type="button"
+              onClick={applyLocation}
+              className="shrink-0 rounded bg-hornez-orange px-3 py-2 font-semibold text-white hover:bg-orange-600"
+            >
+              Buscar
+            </button>
+          </div>
+
           <select
             value={searchParams.get("documentation") || ""}
             onChange={(event) => updateParam("documentation", event.target.value)}
@@ -194,21 +227,6 @@ export default function PropertiesFilters({
             <option value="">Documentación</option>
             <option value="POSSESSORY_RIGHTS">Derechos posesorios</option>
             <option value="DEED">Escritura</option>
-          </select>
-
-          <select
-            value={searchParams.get("areaRange") || ""}
-            onChange={(event) => updateParam("areaRange", event.target.value)}
-            className={`min-w-48 flex-1 rounded border p-2 focus:border-hornez-orange focus:ring-1 focus:ring-hornez-orange ${
-              searchParams.get("areaRange") ? "border-hornez-orange bg-orange-50" : ""
-            }`}
-          >
-            <option value="">Superficie</option>
-            <option value="0-50">Hasta 50 m²</option>
-            <option value="50-100">50 - 100 m²</option>
-            <option value="100-200">100 - 200 m²</option>
-            <option value="200-500">200 - 500 m²</option>
-            <option value="500-">500+ m²</option>
           </select>
 
           <select

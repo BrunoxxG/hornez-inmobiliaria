@@ -12,7 +12,7 @@ type Inquiry = {
   name: string;
   email: string;
   phone: string;
-  reason: "TASACION" | "COMPRA" | "OTRO";
+  reason: "TASACION" | "COMPRA" | "VENTA" | "OTRO";
   message: string;
   read: boolean;
   createdAt: Date;
@@ -21,6 +21,7 @@ type Inquiry = {
 const REASON_LABELS = {
   TASACION: "Tasación",
   COMPRA: "Compra",
+  VENTA: "Venta",
   OTRO: "Otro",
 };
 

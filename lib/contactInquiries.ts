@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
-const REASONS = ["tasacion", "compra", "otro"] as const;
+const REASONS = ["tasacion", "compra", "venta", "otro"] as const;
 type ContactReasonValue = (typeof REASONS)[number];
 
 const isContactReason = (value: string): value is ContactReasonValue =>
@@ -40,7 +40,7 @@ export async function createContactInquiry(values: {
         name,
         email,
         phone,
-        reason: values.reason.toUpperCase() as "TASACION" | "COMPRA" | "OTRO",
+        reason: values.reason.toUpperCase() as "TASACION" | "COMPRA" | "VENTA" | "OTRO",
         message,
       },
     });

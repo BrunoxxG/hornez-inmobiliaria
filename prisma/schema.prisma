@@ -78,6 +78,7 @@ enum FeatureCategory {
 enum ContactReason {
   TASACION
   COMPRA
+  VENTA
   OTRO
 }
 

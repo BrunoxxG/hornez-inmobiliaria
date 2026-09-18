@@ -41,7 +41,14 @@ export async function getPropertiesView(filters: any): Promise<PropertyZod[]> {
             : undefined,
         price: getRange(filters.minPrice, filters.maxPrice),
         bedrooms: filters.bedrooms ? { gte: Number(filters.bedrooms) } : undefined,
-        area: getRange(...(filters.areaRange?.split("-") || [])),
+        OR: filters.location
+          ? ["city", "address", "province"].map((field) => ({
+              [field]: {
+                contains: filters.location,
+                mode: "insensitive",
+              },
+            }))
+          : undefined,
         AND: featureFilters,
       },
       orderBy: {

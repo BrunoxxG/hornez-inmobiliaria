@@ -32,6 +32,19 @@ export default function ContactPage() {
     return () => window.clearTimeout(timeout);
   }, [sent]);
 
+  useEffect(() => {
+    if (window.location.hash !== "#formulario-contacto") return;
+
+    const frame = window.requestAnimationFrame(() => {
+      document.getElementById("formulario-contacto")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
@@ -89,7 +102,7 @@ export default function ContactPage() {
               <p className="mb-6 text-center text-lg font-medium leading-relaxed text-gray-800">
                 Déjanos tus datos y nos comunicaremos a la brevedad.
               </p>
-              <form noValidate onSubmit={handleSubmit} className="space-y-5">
+              <form id="formulario-contacto" noValidate onSubmit={handleSubmit} className="scroll-mt-50 space-y-5">
                 <div className="space-y-5">
                   <label className="block space-y-2 text-center text-sm font-semibold text-gray-700">
                     NOMBRE
@@ -141,6 +154,7 @@ export default function ContactPage() {
                       <option value="" disabled>Seleccionar motivo</option>
                       <option value="tasacion">Tasación</option>
                       <option value="compra">Compra</option>
+                      <option value="venta">Venta</option>
                       <option value="otro">Otro</option>
                     </select>
                   </label>
