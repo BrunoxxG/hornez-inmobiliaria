@@ -10,7 +10,7 @@ export default async function Config() {
 
   return (
     <>
-      <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-2">
+      <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-3">
         <ListPropertyTypes propertyTypes={propertyTypes} />
         <ListFeatures features={features} category="SERVICE" />
         <ListFeatures features={features} category="ADDITIONAL" />
