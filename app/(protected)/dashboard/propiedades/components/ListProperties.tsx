@@ -85,7 +85,7 @@ export function ListProperties({ properties, session }: { properties: PropertyZo
 
   const approvalBodyTemplate = (rowData: PropertyZod) => {
     const labels = { PENDING: "Pendiente", APPROVED: "Aprobada", REJECTED: "Rechazada" };
-    const severity = { PENDING: "warning", APPROVED: "success", REJECTED: "danger" } as const;
+    const severity = { PENDING: "warning", APPROVED: "success", REJECTED: "warning" } as const;
     const status = rowData.approvalStatus ?? "APPROVED";
     return <Tag value={labels[status]} severity={severity[status]} />;
   };

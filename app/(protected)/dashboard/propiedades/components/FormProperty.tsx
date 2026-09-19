@@ -397,6 +397,12 @@ export default function FormProperty(props: FormPropertyProps) {
         })}
       >
         <div className="p-4">
+          {property?.approvalStatus === "REJECTED" && property.rejectionReason && (
+            <div className="mb-5 rounded-lg border border-yellow-300 bg-yellow-50 p-4 text-yellow-900">
+              <p className="text-sm font-bold">Motivo del rechazo</p>
+              <p className="mt-1 whitespace-pre-line text-sm">{property.rejectionReason}</p>
+            </div>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="mb-3 col-span-2">
               <label className="block text-sm font-semibold mb-2">Título *</label>
