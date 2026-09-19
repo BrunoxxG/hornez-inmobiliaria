@@ -90,7 +90,7 @@ export default function FormFeature(props: FormFeatureProps) {
         <div className="flex gap-2 mt-8">
           <Button
             label="Guardar Servicio"
-            className="p-button-danger"
+            className="dashboard-action-button"
             type="submit"
             disabled={!isValid || isSubmitting}
           />

@@ -912,7 +912,7 @@ export default function FormProperty(props: FormPropertyProps) {
           <div className="flex gap-2 mt-8">
             <Button
               label="Guardar Propiedad"
-              className="p-button-danger"
+              className="dashboard-action-button"
               type="submit"
               disabled={isSubmitting}
             />

@@ -124,7 +124,7 @@ export function ListProperties({ properties, session }: { properties: PropertyZo
           style={{
             backgroundColor: "#F7F7F7",
             border: "1px solid #F9F9F9",
-            color: "#E31E24",
+            color: "#EF7D00",
             borderRadius: "8px",
             minHeight: "40px",
             minWidth: "40px",
@@ -165,7 +165,7 @@ export function ListProperties({ properties, session }: { properties: PropertyZo
           <Button
             type="button"
             icon="pi pi-filter-slash"
-            label="Limpiar"
+            label="Limpiar filtros"
             outlined
             onClick={clearFilters}
             style={{
@@ -179,7 +179,7 @@ export function ListProperties({ properties, session }: { properties: PropertyZo
         label="Nueva Propiedad"
         icon="pi pi-plus"
         onClick={() => setShowNewPropertyModal(true)}
-        className="p-button-danger"
+        className="dashboard-action-button"
       />
     </div>
   );

@@ -50,3 +50,18 @@ body {
 .animate-bounce-soft {
   animation: bounceSoft 1s ease-in-out infinite;
 }
+
+.dashboard-action-button {
+  background-color: #e5e7eb !important;
+  border-color: #d1d5db !important;
+  color: #1f2937 !important;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.dashboard-action-button:hover,
+.dashboard-action-button:focus,
+.dashboard-action-button:active {
+  background-color: var(--hornez-orange) !important;
+  border-color: var(--hornez-orange) !important;
+  color: #ffffff !important;
+}

@@ -94,9 +94,9 @@ export default function ApprovalsList({ properties, session }: { properties: Pen
               <p className="mt-3 line-clamp-3 text-sm text-gray-700">{property.description}</p>
             </div>
             <div className="flex shrink-0 flex-col gap-2 sm:flex-row md:flex-col">
-              <Button label="Editar" icon="pi pi-pencil" severity="secondary" outlined onClick={() => setPropertyToEdit(property)} />
+              <Button label="Editar" icon="pi pi-pencil" className="dashboard-action-button" onClick={() => setPropertyToEdit(property)} />
               <Button label="Aprobar" icon="pi pi-check" severity="success" onClick={() => void handleApprove(property.id)} />
-              <Button label="Rechazar" icon="pi pi-times" severity="danger" outlined onClick={() => setPropertyToReject(property)} />
+              <Button label="Rechazar" icon="pi pi-times" severity="warning" outlined onClick={() => setPropertyToReject(property)} />
             </div>
           </div>
         </article>
@@ -121,7 +121,7 @@ export default function ApprovalsList({ properties, session }: { properties: Pen
         <InputTextarea value={rejectionReason} onChange={(event) => setRejectionReason(event.target.value)} rows={4} className="w-full" />
         <div className="mt-4 flex justify-end gap-2">
           <Button label="Cancelar" severity="secondary" outlined onClick={() => setPropertyToReject(null)} />
-          <Button label="Rechazar" severity="danger" onClick={() => void handleReject()} />
+          <Button label="Rechazar" severity="warning" onClick={() => void handleReject()} />
         </div>
       </Dialog>
     </div>

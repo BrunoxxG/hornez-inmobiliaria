@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { startTransition, useCallback, useEffect, useState } from "react";
 import { InputNumber } from "primereact/inputnumber";
 
 type Option = {
@@ -32,10 +32,12 @@ export default function PropertiesFilters({
   const [location, setLocation] = useState("");
 
   useEffect(() => {
-    setPriceCurrency(searchParams.get("currency") || "");
-    setMinPrice(searchParams.get("minPrice") || "");
-    setMaxPrice(searchParams.get("maxPrice") || "");
-    setLocation(searchParams.get("location") || "");
+    startTransition(() => {
+      setPriceCurrency(searchParams.get("currency") || "");
+      setMinPrice(searchParams.get("minPrice") || "");
+      setMaxPrice(searchParams.get("maxPrice") || "");
+      setLocation(searchParams.get("location") || "");
+    });
   }, [searchParams]);
 
   const updateParam = useCallback(
@@ -249,7 +251,7 @@ export default function PropertiesFilters({
             onClick={clearFilters}
             className="shrink-0 rounded border border-gray-300 bg-gray-200 px-4 py-2 text-gray-800 transition-colors hover:bg-gray-300 focus:border-hornez-orange focus:bg-hornez-orange focus:text-white active:border-hornez-orange active:bg-hornez-orange active:text-white"
           >
-            Limpiar
+            Limpiar filtros
           </button>
         </div>
 

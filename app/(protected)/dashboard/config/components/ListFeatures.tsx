@@ -68,7 +68,7 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
           style={{
             backgroundColor: "#F7F7F7",
             border: "1px solid #F9F9F9",
-            color: "#E31E24",
+            color: "#EF7D00",
             borderRadius: "8px",
             minHeight: "40px",
             minWidth: "40px",
@@ -116,7 +116,7 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
             <Button
               type="button"
               icon="pi pi-filter-slash"
-              label="Limpiar"
+              label="Limpiar filtros"
               outlined
               onClick={clearFilters}
               style={{
@@ -130,7 +130,7 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
           label={`Nuevo ${title}`}
           icon="pi pi-plus"
           onClick={() => setShowNewFeatureModal(true)}
-          className="p-button-danger"
+          className="dashboard-action-button"
         />
       </div>
   );

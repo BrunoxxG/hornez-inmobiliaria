@@ -88,7 +88,7 @@ export default function FormListingType(props: FormListingTypeProps) {
         <div className="flex gap-2 mt-8">
           <Button
             label="Guardar Tipo de Listado"
-            className="p-button-danger"
+            className="dashboard-action-button"
             type="submit"
             disabled={!isValid || isSubmitting}
           />
