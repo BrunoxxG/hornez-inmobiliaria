@@ -87,7 +87,7 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
           style={{
             backgroundColor: "#F7F7F7",
             border: "1px solid #F9F9F9",
-            color: "#6B7280",
+            color: "#C00D0D",
             borderRadius: "8px",
             minHeight: "40px",
             minWidth: "40px",

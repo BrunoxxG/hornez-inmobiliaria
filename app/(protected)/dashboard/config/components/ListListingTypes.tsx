@@ -78,7 +78,7 @@ export function ListListingTypes({ listingTypes }: { listingTypes: ListingTypeZo
           style={{
             backgroundColor: "#F7F7F7",
             border: "1px solid #F9F9F9",
-            color: "#6B7280",
+            color: "#C00D0D",
             borderRadius: "8px",
             minHeight: "40px",
             minWidth: "40px",

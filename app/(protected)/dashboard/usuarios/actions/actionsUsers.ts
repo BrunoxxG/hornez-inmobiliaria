@@ -57,6 +57,32 @@ export async function resetManagedUserPassword(userId: string, password: string)
   }
 }
 
+export async function updateManagedUser(userId: string, values: { name: string; role: "USER" | "ADMIN" }) {
+  const session = await getAdminSession();
+  if (!session || session.user.role !== "SUPERADMIN") {
+    return { success: false, error: "Solo el superadmin puede editar usuarios" };
+  }
+
+  const name = values.name.trim();
+  if (!name) return { success: false, error: "El nombre es obligatorio" };
+
+  try {
+    const target = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
+    if (!target) return { success: false, error: "No se encontró el usuario" };
+    if (target.role === "SUPERADMIN") return { success: false, error: "No se puede modificar al superadmin" };
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: { name, role: values.role },
+    });
+    revalidatePath("/dashboard/usuarios");
+    return { success: true };
+  } catch (error) {
+    console.error(error);
+    return { success: false, error: "No se pudo actualizar el usuario" };
+  }
+}
+
 export async function deleteManagedUser(userId: string) {
   const session = await getAdminSession();
   if (!session) return { success: false, error: "No autorizado" };
