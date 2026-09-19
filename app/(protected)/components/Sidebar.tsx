@@ -3,13 +3,18 @@
 import Link from "next/link";
 import { MENU_ITEMS } from "../lib/utils";
 import { usePathname } from "next/navigation";
+import { isAdminRole } from "@/lib/authorization";
 
 export default function Sidebar({
   isCollapsed,
   unreadInquiries,
+  pendingApprovals,
+  userRole,
 }: {
   isCollapsed: boolean;
   unreadInquiries: number;
+  pendingApprovals: number;
+  userRole?: string;
 }) {
   const pathname = usePathname();
 
@@ -29,7 +34,7 @@ export default function Sidebar({
       </div>
 
       <nav className="py-4">
-        {MENU_ITEMS.map((item) => {
+        {MENU_ITEMS.filter((item) => !item.adminOnly || isAdminRole(userRole)).map((item) => {
           const isActive =
             pathname === item.path || pathname.startsWith(item.path + "/");
 
@@ -60,6 +65,12 @@ export default function Sidebar({
                           {unreadInquiries > 99 ? "99+" : unreadInquiries}
                         </span>
                       )}
+                    </span>
+                  )}
+                  {item.path === "/dashboard/aprobaciones" && pendingApprovals > 0 && (
+                    <span className="ml-auto flex items-center gap-1 text-hornez-orange">
+                      <i className="pi pi-bell text-[1.3125rem]" />
+                      <span className="text-lg font-bold">{pendingApprovals > 99 ? "99+" : pendingApprovals}</span>
                     </span>
                   )}
                 </>

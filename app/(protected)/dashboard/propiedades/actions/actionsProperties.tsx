@@ -5,8 +5,12 @@ import prisma from "@/lib/prisma";
 import { propertyFormSchema, PropertyFormZod } from "../lib/zodPublications";
 import { Prisma } from "@prisma/client";
 import { auth } from "@/lib/auth";
+import { isAdminRole } from "@/lib/authorization";
 
 export async function createProperty(values: PropertyFormZod) {
+  const session = await auth();
+  if (!session?.user?.id) return { success: false, error: "No autorizado" };
+
   const { data, success } = propertyFormSchema.safeParse(values);
   if (!success) {
     return { success: false, error: "Invalid data" };
@@ -32,7 +36,6 @@ export async function createProperty(values: PropertyFormZod) {
       documentation,
       active,
       standOut,
-      userId,
       video,
       features,
       images,
@@ -68,7 +71,10 @@ export async function createProperty(values: PropertyFormZod) {
         documentation,
         active,
         standOut,
-        userId,
+        userId: session.user.id,
+        approvalStatus: isAdminRole(session.user.role) ? "APPROVED" : "PENDING",
+        approvedById: isAdminRole(session.user.role) ? session.user.id : null,
+        approvedAt: isAdminRole(session.user.role) ? new Date() : null,
         video,
         features: {
           create: features.map((featureId) => ({
@@ -101,6 +107,9 @@ export async function createProperty(values: PropertyFormZod) {
 }
 
 export async function updateProperty(values: PropertyFormZod, propertyId: string) {
+  const session = await auth();
+  if (!session?.user?.id) return { success: false, error: "No autorizado" };
+
   const { data, success } = propertyFormSchema.safeParse(values);
   if (!success) {
     return { error: "Invalid data" };
@@ -135,6 +144,15 @@ export async function updateProperty(values: PropertyFormZod, propertyId: string
       deletedDocuments,
       existingDocuments,
     } = data;
+    const currentProperty = await prisma.property.findUnique({
+      where: { id: propertyId },
+      select: { userId: true },
+    });
+    if (!currentProperty) return { success: false, error: "No se encontró la propiedad" };
+    if (!isAdminRole(session.user.role) && currentProperty.userId !== session.user.id) {
+      return { success: false, error: "No autorizado" };
+    }
+
     const saleListingType = await prisma.listingType.findUnique({
       where: { slug: "venta" },
       select: { id: true },
@@ -168,6 +186,14 @@ export async function updateProperty(values: PropertyFormZod, propertyId: string
           active,
           standOut,
           video,
+          ...(isAdminRole(session.user.role)
+            ? {}
+            : {
+                approvalStatus: "PENDING" as const,
+                approvedById: null,
+                approvedAt: null,
+                rejectionReason: null,
+              }),
           features: {
             deleteMany: {},
             create: features.map((featureId) => ({
@@ -237,6 +263,15 @@ export async function deleteProperty(propertyId: string) {
   if (!session) return { success: false, error: "No autorizado" };
 
   try {
+    const property = await prisma.property.findUnique({
+      where: { id: propertyId },
+      select: { userId: true },
+    });
+    if (!property) return { success: false, error: "No se encontró la propiedad" };
+    if (!isAdminRole(session.user.role) && property.userId !== session.user.id) {
+      return { success: false, error: "No autorizado" };
+    }
+
     await prisma.property.delete({ where: { id: propertyId } });
     revalidatePath("/dashboard/propiedades");
     return { success: true };

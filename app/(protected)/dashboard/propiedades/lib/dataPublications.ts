@@ -12,6 +12,12 @@ export async function getProperties(): Promise<PropertyZod[]> {
         title: true,
         description: true,
         price: true,
+        listingType: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
         propertyType: {
           select: {
             id: true,
@@ -29,6 +35,10 @@ export async function getProperties(): Promise<PropertyZod[]> {
         lat: true,
         lng: true,
         status: true,
+        approvalStatus: true,
+        approvedById: true,
+        approvedAt: true,
+        rejectionReason: true,
         documentation: true,
         active: true,
         standOut: true,

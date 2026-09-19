@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { startTransition, useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import { Sidebar as PrimeSidebar } from "primereact/sidebar";
@@ -8,15 +8,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { MENU_ITEMS } from "../lib/utils";
 import { Session } from "next-auth";
+import { isAdminRole } from "@/lib/authorization";
 
 export default function AdminShell({
   children,
   session,
   unreadInquiries,
+  pendingApprovals,
 }: {
   children: React.ReactNode;
   session: Session;
   unreadInquiries: number;
+  pendingApprovals: number;
 }) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -24,7 +27,7 @@ export default function AdminShell({
 
   useEffect(() => {
     const saved = localStorage.getItem("sidebarCollapsed");
-    if (saved) setIsSidebarCollapsed(saved === "true");
+    if (saved) startTransition(() => setIsSidebarCollapsed(saved === "true"));
   }, []);
 
   useEffect(() => {
@@ -38,7 +41,7 @@ export default function AdminShell({
           isSidebarCollapsed ? "w-20" : "w-65"
         }`}
       >
-        <Sidebar isCollapsed={isSidebarCollapsed} unreadInquiries={unreadInquiries} />
+        <Sidebar isCollapsed={isSidebarCollapsed} unreadInquiries={unreadInquiries} pendingApprovals={pendingApprovals} userRole={session.user.role} />
       </div>
 
       <PrimeSidebar visible={isSidebarOpen} onHide={() => setIsSidebarOpen(false)} className="md:hidden">
@@ -47,7 +50,7 @@ export default function AdminShell({
           <p className="text-sm text-gray-600">Panel de Administración</p>
         </div>
         <div className="flex flex-col gap-1">
-          {MENU_ITEMS.map((item) => {
+          {MENU_ITEMS.filter((item) => !item.adminOnly || isAdminRole(session.user.role)).map((item) => {
             const isActive = pathname === item.path || pathname.startsWith(item.path + "/");
 
             return (
@@ -69,6 +72,12 @@ export default function AdminShell({
                         {unreadInquiries > 99 ? "99+" : unreadInquiries}
                       </span>
                     )}
+                  </span>
+                )}
+                {item.path === "/dashboard/aprobaciones" && pendingApprovals > 0 && (
+                  <span className="ml-auto flex items-center gap-1 text-hornez-orange">
+                    <i className="pi pi-bell text-[1.3125rem]" />
+                    <span className="text-lg font-bold">{pendingApprovals > 99 ? "99+" : pendingApprovals}</span>
                   </span>
                 )}
               </Link>

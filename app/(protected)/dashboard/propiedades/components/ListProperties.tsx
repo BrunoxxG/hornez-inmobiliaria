@@ -83,6 +83,13 @@ export function ListProperties({ properties, session }: { properties: PropertyZo
     );
   };
 
+  const approvalBodyTemplate = (rowData: PropertyZod) => {
+    const labels = { PENDING: "Pendiente", APPROVED: "Aprobada", REJECTED: "Rechazada" };
+    const severity = { PENDING: "warning", APPROVED: "success", REJECTED: "danger" } as const;
+    const status = rowData.approvalStatus ?? "APPROVED";
+    return <Tag value={labels[status]} severity={severity[status]} />;
+  };
+
   const destacadaBodyTemplate = (row: PropertyZod) => {
     return (
       <div>
@@ -219,6 +226,7 @@ export function ListProperties({ properties, session }: { properties: PropertyZo
         <Column field="propertyType.name" header="Tipo" sortable style={{ minWidth: "100px" }} />
         <Column field="address" header="Dirección" body={addressBodyTemplate} sortable style={{ minWidth: "200px" }} />
         <Column field="status" header="Estado" body={statusBodyTemplate} sortable style={{ minWidth: "100px" }} />
+        <Column field="approvalStatus" header="Aprobación" body={approvalBodyTemplate} sortable style={{ minWidth: "120px" }} />
         <Column field="active" header="Mostrar" body={destacadaBodyTemplate} sortable style={{ minWidth: "100px" }} />
         <Column header="Acciones" body={actionsBodyTemplate} exportable={false} style={{ minWidth: "100px" }} />
       </DataTable>

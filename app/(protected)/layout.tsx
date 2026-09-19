@@ -11,12 +11,16 @@ export default async function Layout({ children }: { children: React.ReactNode }
   }
 
   let unreadInquiries = 0;
+  let pendingApprovals = 0;
   try {
     unreadInquiries = await prisma.contactInquiry.count({ where: { read: false } });
+    if (session.user.role === "ADMIN" || session.user.role === "SUPERADMIN") {
+      pendingApprovals = await prisma.property.count({ where: { approvalStatus: "PENDING" } });
+    }
   } catch (error) {
     console.error("No se pudo cargar el contador de consultas", error);
   }
 
-  return <AdminShell session={session} unreadInquiries={unreadInquiries}>{children}</AdminShell>;
+  return <AdminShell session={session} unreadInquiries={unreadInquiries} pendingApprovals={pendingApprovals}>{children}</AdminShell>;
 
 }

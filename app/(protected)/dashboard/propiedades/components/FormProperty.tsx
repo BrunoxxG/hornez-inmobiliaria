@@ -15,6 +15,7 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { InputNumber } from "primereact/inputnumber";
 import { FileUpload } from "primereact/fileupload";
 import MapPicker from "./MapPickerGoogle";
+import { isAdminRole } from "@/lib/authorization";
 
 type ImageItem = {
   id?: string;
@@ -275,7 +276,7 @@ export default function FormProperty(props: FormPropertyProps) {
         toast.current?.show({
           severity: "success",
           summary: "OK",
-          detail: "Propiedad guardada",
+          detail: isAdminRole(session.user.role) ? "Propiedad guardada" : "Propiedad enviada para aprobación",
         });
       }
 
