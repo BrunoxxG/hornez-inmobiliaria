@@ -104,7 +104,18 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
   };
 
   const header = (
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-bold text-hornez-blue">{title}</h2>
+          <Button
+            icon="pi pi-plus"
+            aria-label={`Nuevo ${title}`}
+            tooltip={`Nuevo ${title}`}
+            tooltipOptions={{ position: "top" }}
+            onClick={() => setShowNewFeatureModal(true)}
+            className="dashboard-action-button"
+          />
+        </div>
         <div className="flex gap-2">
           <InputText
             value={globalFilterValue}
@@ -126,17 +137,11 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
             />
           )}
         </div>
-        <Button
-          label={`Nuevo ${title}`}
-          icon="pi pi-plus"
-          onClick={() => setShowNewFeatureModal(true)}
-          className="dashboard-action-button"
-        />
       </div>
   );
 
   return (
-    <div className="border">
+    <div className="border rounded-lg">
       <Toast ref={toast} />
       <DataTable
         value={filteredFeatures}
