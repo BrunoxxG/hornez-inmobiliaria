@@ -18,7 +18,9 @@ export default async function Home() {
         <HeroSlider />
         <div className="absolute inset-0 bg-black/20" />
         <div className="relative z-10 max-w-3xl translate-y-20 px-4 text-center md:translate-y-28">
-          <h1 className="mb-6 whitespace-nowrap text-4xl font-bold md:text-6xl">Encontrá tu lugar en el mundo</h1>
+          <h1 className="mx-auto mb-6 max-w-[20rem] text-3xl font-bold leading-tight sm:max-w-xl sm:text-4xl md:max-w-3xl md:text-6xl">
+            Encontrá tu lugar en el mundo
+          </h1>
           <p className="mb-10 text-lg text-white md:text-xl">Te ayudamos a encontrar la propiedad ideal para vos.</p>
           <HeroActions />
         </div>
