@@ -189,7 +189,7 @@ export default function PropertiesFilters({
                   <button
                     type="button"
                     onClick={applyPriceFilters}
-                    className="w-full rounded bg-hornez-orange px-4 py-2 font-semibold text-white hover:bg-orange-600"
+                    className="w-full rounded border border-gray-300 bg-gray-200 px-4 py-2 font-semibold text-gray-800 transition-colors hover:border-hornez-orange hover:bg-hornez-orange hover:text-white focus:border-hornez-orange focus:bg-hornez-orange focus:text-white active:border-hornez-orange active:bg-hornez-orange active:text-white"
                   >
                     Aplicar
                   </button>
@@ -240,7 +240,7 @@ export default function PropertiesFilters({
           <button
             type="button"
             onClick={clearFilters}
-            className="shrink-0 rounded border border-gray-300 bg-gray-200 px-4 py-2 text-gray-800 transition-colors hover:bg-gray-300 focus:border-hornez-orange focus:bg-hornez-orange focus:text-white active:border-hornez-orange active:bg-hornez-orange active:text-white"
+            className="shrink-0 rounded border border-gray-300 bg-gray-200 px-4 py-2 text-gray-800 transition-colors hover:border-hornez-orange hover:bg-hornez-orange hover:text-white focus:border-hornez-orange focus:bg-hornez-orange focus:text-white active:border-hornez-orange active:bg-hornez-orange active:text-white"
           >
             Limpiar filtros
           </button>
