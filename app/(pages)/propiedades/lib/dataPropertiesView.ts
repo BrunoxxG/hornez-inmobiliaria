@@ -23,6 +23,25 @@ type PropertyFilters = {
   location?: string;
 };
 
+export async function getPropertyLocations(): Promise<string[]> {
+  try {
+    const properties = await prisma.property.findMany({
+      where: {
+        active: true,
+        status: "AVAILABLE",
+        approvalStatus: "APPROVED",
+      },
+      select: { city: true },
+    });
+
+    return Array.from(new Set(properties.map((property) => property.city.trim()).filter(Boolean))).sort((a, b) =>
+      a.localeCompare(b, "es"),
+    );
+  } catch (error) {
+    return [];
+  }
+}
+
 export async function getPropertiesView(filters: PropertyFilters): Promise<PropertyZod[]> {
   try {
     const featureFilters = filters.features

@@ -34,7 +34,7 @@ type DocumentItem = {
 };
 
 export default function FormProperty(props: FormPropertyProps) {
-  const { property, setOpenModalForm, toast, session } = props;
+  const { property, locations = [], setOpenModalForm, toast, session } = props;
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [existingImages, setExistingImages] = useState<ImageItem[]>([]);
@@ -87,7 +87,7 @@ export default function FormProperty(props: FormPropertyProps) {
       price: property?.price || 0,
       currency: property?.currency || "USD",
       propertyTypeId: property?.propertyType.id || "",
-      address: property?.address || "",
+      address: property?.address || property?.city || locations[0] || "La Paz",
       city: property?.city || "La Paz",
       province: property?.province || "Córdoba",
       totalRooms: property?.totalRooms ?? 0,
@@ -496,13 +496,25 @@ export default function FormProperty(props: FormPropertyProps) {
             </div>
 
             <div className="mb-3">
-              <label className="block text-sm font-semibold mb-2">Dirección *</label>
+              <label className="block text-sm font-semibold mb-2">Localidad *</label>
               <Controller
-                name="address"
+                name="city"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <>
-                    <InputText {...field} placeholder="Dirección" className={`w-full ${fieldState.error ? "p-invalid" : ""}`} />
+                    <Dropdown
+                      value={field.value}
+                      options={Array.from(new Set([...(locations.length > 0 ? locations : []), field.value].filter(Boolean))).sort((a, b) => a.localeCompare(b, "es"))}
+                      onChange={(event) => {
+                        field.onChange(event.value);
+                        if (!property) form.setValue("address", event.value || "");
+                      }}
+                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
+                      placeholder="Seleccionar localidad"
+                      filter
+                      editable
+                      showClear
+                    />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                   </>
                 )}

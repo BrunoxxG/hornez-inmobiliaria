@@ -21,7 +21,7 @@ type PendingProperty = {
   currency: "USD" | "ARS";
   createdAt: Date;
   user: { name: string; email: string };
-  images: { url: string }[];
+  images: { id: string; url: string }[];
   listingType: { id: string; name: string };
   propertyType: { id: string; name: string };
   address: string;

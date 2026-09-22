@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { startTransition, useCallback, useEffect, useState } from "react";
 import { InputNumber } from "primereact/inputnumber";
+import { Dropdown } from "primereact/dropdown";
 
 type Option = {
   id: string;
@@ -19,9 +20,11 @@ type Feature = {
 export default function PropertiesFilters({
   propertyTypes = [],
   features = [],
+  locations = [],
 }: {
   propertyTypes?: Option[];
   features?: Feature[];
+  locations?: string[];
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -102,8 +105,10 @@ export default function PropertiesFilters({
     setLocation("");
   };
 
-  const applyLocation = () => {
-    updateParam("location", location.trim());
+  const applyLocation = (value = location) => {
+    const selectedLocation = value.trim();
+    setLocation(selectedLocation);
+    updateParam("location", selectedLocation);
   };
 
   const formatPrice = (value: string) =>
@@ -193,31 +198,17 @@ export default function PropertiesFilters({
             )}
           </div>
 
-          <div className="flex min-w-64 flex-1 gap-2">
-            <input
-              type="search"
-              value={location}
-              onChange={(event) => setLocation(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  event.preventDefault();
-                  applyLocation();
-                }
-              }}
-              placeholder="Ubicación"
-              aria-label="Ubicación"
-              className={`min-w-0 flex-1 rounded border p-2 focus:border-hornez-orange focus:ring-1 focus:ring-hornez-orange ${
-                location ? "border-hornez-orange bg-orange-50" : ""
-              }`}
-            />
-            <button
-              type="button"
-              onClick={applyLocation}
-              className="shrink-0 rounded bg-hornez-orange px-3 py-2 font-semibold text-white hover:bg-orange-600"
-            >
-              Buscar
-            </button>
-          </div>
+          <Dropdown
+            value={location}
+            options={locations}
+            onChange={(event) => applyLocation(event.value || "")}
+            filter
+            showClear
+            placeholder="Localidad"
+            aria-label="Localidad"
+            className={`min-w-64 flex-1 rounded border ${location ? "border-hornez-orange bg-orange-50" : ""}`}
+            filterPlaceholder="Buscar localidad"
+          />
 
           <select
             value={searchParams.get("documentation") || ""}

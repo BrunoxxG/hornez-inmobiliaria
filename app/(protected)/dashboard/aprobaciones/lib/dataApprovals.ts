@@ -39,7 +39,7 @@ export async function getPendingProperties() {
       createdAt: true,
       user: { select: { name: true, email: true } },
       images: {
-        select: { url: true },
+        select: { id: true, url: true },
         orderBy: { order: "asc" },
         take: 1,
       },

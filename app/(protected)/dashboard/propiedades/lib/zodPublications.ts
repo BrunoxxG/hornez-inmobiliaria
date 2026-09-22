@@ -68,7 +68,7 @@ export const propertyFormSchema = object({
   description: string().trim().min(1, "Descripción requerida"),
   price: number().min(0, "El precio debe ser mayor o igual a 0"),
   propertyTypeId: string().min(1, "Tipo de propiedad requerido"),
-  address: string().trim().min(1, "Dirección requerida"),
+  address: string().trim().min(1, "Localidad requerida"),
   city: string().trim().min(1, "Ciudad requerida"),
   province: string().trim().min(1, "Provincia requerida"),
   totalRooms: number(),
@@ -98,6 +98,7 @@ export type PropertyFormZod = z.infer<typeof propertyFormSchema>;
 export type FormPropertyProps = {
   setOpenModalForm?: Dispatch<SetStateAction<boolean>>;
   property?: PropertyZod;
+  locations?: string[];
   toast: React.RefObject<ToastType | null>;
   session: Session;
 };

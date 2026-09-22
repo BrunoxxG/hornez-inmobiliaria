@@ -24,6 +24,7 @@ const initialFilters: DataTableFilterMeta = {
 };
 
 export function ListProperties({ properties, session }: { properties: PropertyZod[], session: Session }) {
+  const locations = Array.from(new Set(properties.map((property) => property.city))).sort((a, b) => a.localeCompare(b, "es"));
   const [items, setItems] = useState(properties);
   const [showNewPropertyModal, setShowNewPropertyModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -68,8 +69,7 @@ export function ListProperties({ properties, session }: { properties: PropertyZo
   const addressBodyTemplate = (rowData: PropertyZod) => {
     return (
       <div>
-        <div className="font-semibold">{rowData.address}</div>
-        <div className="text-sm text-gray-600">{rowData.city}</div>
+        <div className="font-semibold">{rowData.city}</div>
       </div>
     );
   };
@@ -224,7 +224,7 @@ export function ListProperties({ properties, session }: { properties: PropertyZo
         <Column field="title" header="Título" body={titleBodyTemplate} sortable style={{ minWidth: "200px" }} />
         <Column field="price" header="Precio" body={priceBodyTemplate} sortable style={{ minWidth: "100px" }} />
         <Column field="propertyType.name" header="Tipo" sortable style={{ minWidth: "100px" }} />
-        <Column field="address" header="Dirección" body={addressBodyTemplate} sortable style={{ minWidth: "200px" }} />
+        <Column field="city" header="Localidad" body={addressBodyTemplate} sortable style={{ minWidth: "160px" }} />
         <Column field="status" header="Estado" body={statusBodyTemplate} sortable style={{ minWidth: "100px" }} />
         <Column field="approvalStatus" header="Aprobación" body={approvalBodyTemplate} sortable style={{ minWidth: "120px" }} />
         <Column field="active" header="Mostrar" body={destacadaBodyTemplate} sortable style={{ minWidth: "100px" }} />
@@ -239,7 +239,7 @@ export function ListProperties({ properties, session }: { properties: PropertyZo
         modal
         dismissableMask
       >
-        <FormProperty setOpenModalForm={setShowNewPropertyModal} toast={toast} session={session}/>
+        <FormProperty locations={locations} setOpenModalForm={setShowNewPropertyModal} toast={toast} session={session}/>
       </Dialog>
 
       <Dialog
@@ -254,7 +254,7 @@ export function ListProperties({ properties, session }: { properties: PropertyZo
         dismissableMask
       >
         {selectedProperty && (
-          <FormProperty property={selectedProperty} setOpenModalForm={setShowDetailModal} toast={toast} session={session}/>
+          <FormProperty property={selectedProperty} locations={locations} setOpenModalForm={setShowDetailModal} toast={toast} session={session}/>
         )}
       </Dialog>
     </div>
