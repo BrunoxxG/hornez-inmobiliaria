@@ -19,6 +19,8 @@ type Draft = {
 
 export default function DraftsPageClient({ drafts, session }: { drafts: Draft[]; session: Session }) {
   const [selectedDraft, setSelectedDraft] = useState<Draft | null>(null);
+  const [removedDraftIds, setRemovedDraftIds] = useState<string[]>([]);
+  const [draftListVersion, setDraftListVersion] = useState(0);
   const toast = useRef<ToastType | null>(null);
 
   return (
@@ -27,12 +29,21 @@ export default function DraftsPageClient({ drafts, session }: { drafts: Draft[];
       <div>
         <h1 className="text-3xl font-bold text-hornez-blue">Borradores</h1>
       </div>
-      <DraftsList drafts={drafts} onResume={setSelectedDraft} />
+      <DraftsList
+        key={draftListVersion}
+        drafts={drafts.filter((draft) => !removedDraftIds.includes(draft.id))}
+        onResume={setSelectedDraft}
+        onDraftRemoved={(draftId) => setRemovedDraftIds((current) => [...current, draftId])}
+      />
       <Dialog visible={selectedDraft !== null} onHide={() => setSelectedDraft(null)} header="Retomar borrador" style={{ width: "min(95vw, 46rem)" }} modal>
         {selectedDraft && (
           <FormProperty
             draftId={selectedDraft.id}
             draftData={selectedDraft.data}
+            onDraftSaved={(draftId) => {
+              setRemovedDraftIds((current) => [...current, draftId]);
+              setDraftListVersion((current) => current + 1);
+            }}
             setOpenModalForm={(open) => { if (!open) setSelectedDraft(null); }}
             toast={toast}
             session={session}

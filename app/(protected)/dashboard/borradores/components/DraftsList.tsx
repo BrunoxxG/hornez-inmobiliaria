@@ -16,7 +16,7 @@ type Draft = {
   user: { name: string; email: string };
 };
 
-export default function DraftsList({ drafts, onResume }: { drafts: Draft[]; onResume: (draft: Draft) => void }) {
+export default function DraftsList({ drafts, onResume, onDraftRemoved }: { drafts: Draft[]; onResume: (draft: Draft) => void; onDraftRemoved?: (draftId: string) => void }) {
   const [items, setItems] = useState(drafts);
   const [draftToDelete, setDraftToDelete] = useState<Draft | null>(null);
   const toast = useRef<ToastType | null>(null);
@@ -29,6 +29,7 @@ export default function DraftsList({ drafts, onResume }: { drafts: Draft[]; onRe
       return;
     }
     setItems((current) => current.filter((item) => item.id !== draftToDelete.id));
+    onDraftRemoved?.(draftToDelete.id);
     setDraftToDelete(null);
     toast.current?.show({ severity: "success", summary: "Eliminado", detail: "Borrador eliminado", life: 3000 });
   };

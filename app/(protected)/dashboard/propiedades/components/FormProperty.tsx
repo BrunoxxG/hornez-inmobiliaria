@@ -36,7 +36,7 @@ type DocumentItem = {
 };
 
 export default function FormProperty(props: FormPropertyProps) {
-  const { property, locations = [], draftId, draftData, setOpenModalForm, toast, session } = props;
+  const { property, locations = [], draftId, draftData, onDraftSaved, setOpenModalForm, toast, session } = props;
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [existingImages, setExistingImages] = useState<ImageItem[]>([]);
@@ -286,6 +286,8 @@ export default function FormProperty(props: FormPropertyProps) {
               detail: "La propiedad se guardó, pero no se pudo eliminar el borrador",
               life: 4000,
             });
+          } else {
+            onDraftSaved?.(draftId);
           }
         }
 
