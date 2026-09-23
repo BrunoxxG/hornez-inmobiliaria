@@ -90,9 +90,9 @@ export default function FormProperty(props: FormPropertyProps) {
       price: property?.price || Number(savedDraft.price || 0),
       currency: property?.currency || (savedDraft.currency as "USD" | "ARS") || "USD",
       propertyTypeId: property?.propertyType.id || String(savedDraft.propertyTypeId || ""),
-      address: property?.address || String(savedDraft.address || savedDraft.city || locations[0] || "La Paz"),
-      city: property?.city || String(savedDraft.city || locations[0] || "La Paz"),
-      province: property?.province || String(savedDraft.province || "Córdoba"),
+      address: property?.address || String(savedDraft.address || savedDraft.city || ""),
+      city: property?.city || String(savedDraft.city || ""),
+      province: property?.province || String(savedDraft.province || ""),
       totalRooms: property?.totalRooms ?? Number(savedDraft.totalRooms || 0),
       bedrooms: property?.bedrooms ?? Number(savedDraft.bedrooms || 0),
       bathrooms: property?.bathrooms ?? Number(savedDraft.bathrooms || 0),
@@ -110,6 +110,7 @@ export default function FormProperty(props: FormPropertyProps) {
   });
 
   const { reset } = form;
+  const { clearErrors } = form;
 
   const selectedFeatures = form.watch("features") || [];
 
@@ -120,6 +121,7 @@ export default function FormProperty(props: FormPropertyProps) {
   const handleAddFeature = (featureId: string) => {
     if (!selectedFeatures.includes(featureId)) {
       form.setValue("features", [...selectedFeatures, featureId]);
+      clearErrors("features");
     }
   };
 
@@ -448,7 +450,7 @@ export default function FormProperty(props: FormPropertyProps) {
             </div>
 
             <div className="mb-3 col-span-2">
-              <label className="block text-sm font-semibold mb-2">Descripción *</label>
+              <label className="block text-sm font-semibold mb-2">Descripción</label>
               <Controller
                 name="description"
                 control={form.control}
@@ -482,7 +484,7 @@ export default function FormProperty(props: FormPropertyProps) {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-2">Moneda *</label>
+              <label className="block text-sm font-semibold mb-2">Moneda</label>
               <Controller
                 name="currency"
                 control={form.control}
@@ -519,6 +521,7 @@ export default function FormProperty(props: FormPropertyProps) {
                       optionValue="id"
                       className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
                       placeholder="Seleccionar Tipo"
+                      showClear
                       onChange={(event) => field.onChange(event.value)}
                     />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
@@ -539,6 +542,7 @@ export default function FormProperty(props: FormPropertyProps) {
                       options={Array.from(new Set([...(locations.length > 0 ? locations : []), field.value].filter(Boolean))).sort((a, b) => a.localeCompare(b, "es"))}
                       className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
                       placeholder="Seleccionar localidad"
+                      showClear
                       onChange={(event) => {
                         field.onChange(event.value);
                         if (!property) form.setValue("address", event.value || "");
@@ -566,7 +570,7 @@ export default function FormProperty(props: FormPropertyProps) {
 
             <div className="col-span-2">
               <div className="flex items-end justify-between mb-2">
-                <label className="block text-sm font-semibold">Ubicación *</label>
+                <label className="block text-sm font-semibold">Ubicación</label>
                 <Button type="button" label="Buscar en mapa" onClick={geocodeAddress} className="p-button-secondary" />
               </div>
               <MapPicker
@@ -584,7 +588,7 @@ export default function FormProperty(props: FormPropertyProps) {
             </div>
 
             <div className="w-full">
-              <label className="block text-sm font-semibold mb-2">Ambientes *</label>
+              <label className="block text-sm font-semibold mb-2">Ambientes</label>
               <Controller
                 name="totalRooms"
                 control={form.control}
@@ -602,7 +606,7 @@ export default function FormProperty(props: FormPropertyProps) {
             </div>
 
             <div className="w-full">
-              <label className="block text-sm font-semibold mb-2">Dormitorios *</label>
+              <label className="block text-sm font-semibold mb-2">Dormitorios</label>
               <Controller
                 name="bedrooms"
                 control={form.control}
@@ -620,7 +624,7 @@ export default function FormProperty(props: FormPropertyProps) {
             </div>
 
             <div className="w-full">
-              <label className="block text-sm font-semibold mb-2">Baños *</label>
+              <label className="block text-sm font-semibold mb-2">Baños</label>
               <Controller
                 name="bathrooms"
                 control={form.control}
@@ -638,7 +642,7 @@ export default function FormProperty(props: FormPropertyProps) {
             </div>
 
             <div className="w-full">
-              <label className="block text-sm font-semibold mb-2">Area (m2) *</label>
+              <label className="block text-sm font-semibold mb-2">Area (m2)</label>
               <Controller
                 name="area"
                 control={form.control}
@@ -684,28 +688,7 @@ export default function FormProperty(props: FormPropertyProps) {
                       }))}
                       className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
                       placeholder="Seleccionar estado"
-                    />
-                    {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
-                  </>
-                )}
-              />
-            </div>
-
-            <div className="mb-3">
-              <label className="block text-sm font-semibold mb-2">Documentación *</label>
-              <Controller
-                name="documentation"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <>
-                    <Dropdown
-                      {...field}
-                      options={[
-                        { label: "Escritura", value: "DEED" },
-                        { label: "Derechos posesorios", value: "POSSESSORY_RIGHTS" },
-                      ]}
-                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
-                      placeholder="Seleccionar documentación"
+                      showClear
                     />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                   </>
@@ -714,11 +697,11 @@ export default function FormProperty(props: FormPropertyProps) {
             </div>
 
             <div className="w-full col-span-2">
-              <div className="flex flex-col gap-4">
+              <div className="grid gap-4 md:grid-cols-2">
                 {(["SERVICE", "ADDITIONAL"] as const).map((category) => (
                   <div key={category}>
                     <div className="mb-2 flex items-center justify-between">
-                      <label className="block text-sm font-medium text-gray-700">{category === "SERVICE" ? "Servicios" : "Adicionales"}</label>
+                      <label className="block text-sm font-medium text-gray-700">{category === "SERVICE" ? "Servicios *" : "Adicionales"}</label>
                     </div>
                     <Dropdown
                       options={features.filter((feature) => feature.category === category && !selectedFeatures.includes(feature.id))}
@@ -755,6 +738,31 @@ export default function FormProperty(props: FormPropertyProps) {
               {isLoading ? (
                 <span>Cargando servicios y adicionales...</span>
               ) : null}
+              {form.formState.errors.features && (
+                <small className="p-error">{form.formState.errors.features.message}</small>
+              )}
+            </div>
+
+            <div className="mb-3">
+              <label className="block text-sm font-semibold mb-2">Documentación</label>
+              <Controller
+                name="documentation"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <>
+                    <Dropdown
+                      {...field}
+                      options={[
+                        { label: "Escritura", value: "DEED" },
+                        { label: "Derechos posesorios", value: "POSSESSORY_RIGHTS" },
+                      ]}
+                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
+                      placeholder="Seleccionar documentación"
+                    />
+                    {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
+                  </>
+                )}
+              />
             </div>
 
             <div className="w-full col-span-2">
