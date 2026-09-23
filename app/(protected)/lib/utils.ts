@@ -1,5 +1,6 @@
 export const MENU_ITEMS = [
   { label: "Propiedades", icon: "pi pi-book", path: "/dashboard/propiedades" },
+  { label: "Borradores", icon: "pi pi-file-edit", path: "/dashboard/borradores" },
   { label: "Consultas", icon: "pi pi-inbox", path: "/dashboard/consultas" },
   { label: "Aprobaciones", icon: "pi pi-check-square", path: "/dashboard/aprobaciones", adminOnly: true },
   { label: "Usuarios", icon: "pi pi-users", path: "/dashboard/usuarios", adminOnly: true },

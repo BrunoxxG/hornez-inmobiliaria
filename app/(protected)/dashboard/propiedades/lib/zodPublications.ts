@@ -99,6 +99,8 @@ export type FormPropertyProps = {
   setOpenModalForm?: Dispatch<SetStateAction<boolean>>;
   property?: PropertyZod;
   locations?: string[];
+  draftId?: string;
+  draftData?: Record<string, unknown>;
   toast: React.RefObject<ToastType | null>;
   session: Session;
 };

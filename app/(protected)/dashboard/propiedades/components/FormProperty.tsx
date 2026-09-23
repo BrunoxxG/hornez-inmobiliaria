@@ -16,6 +16,8 @@ import { InputNumber } from "primereact/inputnumber";
 import { FileUpload } from "primereact/fileupload";
 import MapPicker from "./MapPickerGoogle";
 import { isAdminRole } from "@/lib/authorization";
+import { deletePropertyDraft } from "../../borradores/actions/actionsDrafts";
+import { savePropertyDraft } from "../../borradores/actions/actionsDrafts";
 
 type ImageItem = {
   id?: string;
@@ -34,7 +36,7 @@ type DocumentItem = {
 };
 
 export default function FormProperty(props: FormPropertyProps) {
-  const { property, locations = [], setOpenModalForm, toast, session } = props;
+  const { property, locations = [], draftId, draftData, setOpenModalForm, toast, session } = props;
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [existingImages, setExistingImages] = useState<ImageItem[]>([]);
@@ -45,6 +47,7 @@ export default function FormProperty(props: FormPropertyProps) {
   const [deletedDocuments, setDeletedDocuments] = useState<string[]>([]);
 
   const { propertyTypes, features, isLoading } = usePropertyFormData();
+  const savedDraft = draftData ?? {};
 
   useEffect(() => {
     if (property?.images) {
@@ -82,27 +85,27 @@ export default function FormProperty(props: FormPropertyProps) {
     resolver: zodResolver(propertyFormSchema),
     mode: "onChange",
     defaultValues: {
-      title: property?.title || "",
-      description: property?.description || "",
-      price: property?.price || 0,
-      currency: property?.currency || "USD",
-      propertyTypeId: property?.propertyType.id || "",
-      address: property?.address || property?.city || locations[0] || "La Paz",
-      city: property?.city || "La Paz",
-      province: property?.province || "Córdoba",
-      totalRooms: property?.totalRooms ?? 0,
-      bedrooms: property?.bedrooms ?? 0,
-      bathrooms: property?.bathrooms ?? 0,
-      area: property?.area ?? 0,
-      lat: property?.lat ?? 0,
-      lng: property?.lng ?? 0,
-      status: property?.status || "AVAILABLE",
-      documentation: property?.documentation || "DEED",
-      active: property?.active ?? true,
-      standOut: property?.standOut ?? false,
+      title: property?.title || String(savedDraft.title || ""),
+      description: property?.description || String(savedDraft.description || ""),
+      price: property?.price || Number(savedDraft.price || 0),
+      currency: property?.currency || (savedDraft.currency as "USD" | "ARS") || "USD",
+      propertyTypeId: property?.propertyType.id || String(savedDraft.propertyTypeId || ""),
+      address: property?.address || String(savedDraft.address || savedDraft.city || locations[0] || "La Paz"),
+      city: property?.city || String(savedDraft.city || locations[0] || "La Paz"),
+      province: property?.province || String(savedDraft.province || "Córdoba"),
+      totalRooms: property?.totalRooms ?? Number(savedDraft.totalRooms || 0),
+      bedrooms: property?.bedrooms ?? Number(savedDraft.bedrooms || 0),
+      bathrooms: property?.bathrooms ?? Number(savedDraft.bathrooms || 0),
+      area: property?.area ?? Number(savedDraft.area || 0),
+      lat: property?.lat ?? Number(savedDraft.lat || 0),
+      lng: property?.lng ?? Number(savedDraft.lng || 0),
+      status: property?.status || (savedDraft.status as PropertyFormZod["status"]) || "AVAILABLE",
+      documentation: property?.documentation || (savedDraft.documentation as PropertyFormZod["documentation"]) || "DEED",
+      active: property?.active ?? Boolean(savedDraft.active ?? true),
+      standOut: property?.standOut ?? Boolean(savedDraft.standOut ?? false),
       userId: property?.userId || session.user.id,
-      features: property?.features?.map((f) => f.feature.id) || [],
-      video: property?.video || "",
+      features: property?.features?.map((f) => f.feature.id) || (Array.isArray(savedDraft.features) ? savedDraft.features.filter((value): value is string => typeof value === "string") : []),
+      video: property?.video || String(savedDraft.video || ""),
     },
   });
 
@@ -126,6 +129,7 @@ export default function FormProperty(props: FormPropertyProps) {
       selectedFeatures.filter((f) => f !== featureId),
     );
   };
+
 
   const uploadImages = async (images: ImageItem[], title: string) => {
     const uploads = await Promise.all(
@@ -273,6 +277,18 @@ export default function FormProperty(props: FormPropertyProps) {
           throw new Error(error);
         }
 
+        if (draftId) {
+          const draftResult = await deletePropertyDraft(draftId);
+          if (!draftResult.success) {
+            toast.current?.show({
+              severity: "warn",
+              summary: "Propiedad guardada",
+              detail: "La propiedad se guardó, pero no se pudo eliminar el borrador",
+              life: 4000,
+            });
+          }
+        }
+
         toast.current?.show({
           severity: "success",
           summary: "OK",
@@ -291,6 +307,17 @@ export default function FormProperty(props: FormPropertyProps) {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleSaveDraft = async () => {
+    const result = await savePropertyDraft(draftId, form.getValues() as unknown as Record<string, unknown>);
+    if (!result.success) {
+      toast.current?.show({ severity: "error", summary: "Error", detail: result.error, life: 3000 });
+      return;
+    }
+    toast.current?.show({ severity: "success", summary: "Guardado", detail: "Borrador guardado", life: 3000 });
+    setOpenModalForm?.(false);
+    router.refresh();
   };
 
   const onSubmitUpdate = async (values: PropertyFormZod) => {
@@ -475,7 +502,9 @@ export default function FormProperty(props: FormPropertyProps) {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-2">Tipo *</label>
+              <div className="mb-2 flex items-center justify-between">
+                <label className="block text-sm font-semibold">Tipo *</label>
+              </div>
               <Controller
                 name="propertyTypeId"
                 control={form.control}
@@ -488,6 +517,7 @@ export default function FormProperty(props: FormPropertyProps) {
                       optionValue="id"
                       className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
                       placeholder="Seleccionar Tipo"
+                      onChange={(event) => field.onChange(event.value)}
                     />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                   </>
@@ -505,15 +535,12 @@ export default function FormProperty(props: FormPropertyProps) {
                     <Dropdown
                       value={field.value}
                       options={Array.from(new Set([...(locations.length > 0 ? locations : []), field.value].filter(Boolean))).sort((a, b) => a.localeCompare(b, "es"))}
+                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
+                      placeholder="Seleccionar localidad"
                       onChange={(event) => {
                         field.onChange(event.value);
                         if (!property) form.setValue("address", event.value || "");
                       }}
-                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
-                      placeholder="Seleccionar localidad"
-                      filter
-                      editable
-                      showClear
                     />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                   </>
@@ -688,16 +715,16 @@ export default function FormProperty(props: FormPropertyProps) {
               <div className="flex flex-col gap-4">
                 {(["SERVICE", "ADDITIONAL"] as const).map((category) => (
                   <div key={category}>
-                    <label className="mb-2 block text-sm font-medium text-gray-700">
-                      {category === "SERVICE" ? "Servicios" : "Adicionales"}
-                    </label>
+                    <div className="mb-2 flex items-center justify-between">
+                      <label className="block text-sm font-medium text-gray-700">{category === "SERVICE" ? "Servicios" : "Adicionales"}</label>
+                    </div>
                     <Dropdown
                       options={features.filter((feature) => feature.category === category && !selectedFeatures.includes(feature.id))}
                       optionLabel="name"
                       optionValue="id"
-                      onChange={(e) => handleAddFeature(e.value)}
                       className="w-full"
                       placeholder={category === "SERVICE" ? "Seleccionar servicios" : "Seleccionar adicionales"}
+                      onChange={(event) => handleAddFeature(event.value)}
                     />
                     {!isLoading && (
                       <div className="mt-4 flex flex-wrap gap-2">
@@ -922,6 +949,13 @@ export default function FormProperty(props: FormPropertyProps) {
           </div>
 
           <div className="flex gap-2 mt-8">
+            <Button
+              label="Guardar borrador"
+              icon="pi pi-file-edit"
+              className="dashboard-action-button"
+              type="button"
+              onClick={() => void handleSaveDraft()}
+            />
             <Button
               label="Guardar Propiedad"
               className="dashboard-action-button"

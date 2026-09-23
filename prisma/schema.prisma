@@ -27,6 +27,7 @@ model User {
 
   properties Property[] @relation("PropertyCreators")
   approvedProperties Property[] @relation("PropertyApprovals")
+  drafts Draft[]
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
@@ -163,6 +164,19 @@ model Property {
   @@index([status])
   @@index([approvalStatus])
   @@map("properties")
+}
+
+model Draft {
+  id        String   @id @default(cuid())
+  title     String   @default("Sin título")
+  data      Json
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([updatedAt])
+  @@map("property_drafts")
 }
 
 model Feature {
