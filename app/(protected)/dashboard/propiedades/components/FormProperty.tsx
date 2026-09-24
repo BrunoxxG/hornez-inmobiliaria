@@ -546,6 +546,9 @@ export default function FormProperty(props: FormPropertyProps) {
                       showClear
                       onChange={(event) => {
                         field.onChange(event.value);
+                        if (event.value) {
+                          clearErrors(["city", "address"]);
+                        }
                         if (!property) form.setValue("address", event.value || "");
                       }}
                     />
