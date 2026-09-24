@@ -40,6 +40,10 @@ export async function updateLocation(currentName: string, newName: string) {
       return { success: false, error: "No se puede editar porque la localidad está en uso por una propiedad" };
     }
 
+    await prisma.locality.updateMany({
+      where: { name: currentName },
+      data: { name },
+    });
     const result = await prisma.property.updateMany({
       where: { city: currentName },
       data: { city: name },
@@ -62,7 +66,10 @@ export async function deleteLocation(name: string) {
     const property = await prisma.property.findFirst({ where: { city: name }, select: { id: true } });
     if (property) return { success: false, error: "No se puede eliminar porque la localidad está en uso por una propiedad" };
 
+    await prisma.locality.deleteMany({ where: { name } });
     revalidatePath("/dashboard/config");
+    revalidatePath("/dashboard/propiedades");
+    revalidatePath("/propiedades");
     return { success: true };
   } catch (error) {
     console.error(error);

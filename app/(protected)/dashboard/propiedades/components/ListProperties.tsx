@@ -23,8 +23,7 @@ const initialFilters: DataTableFilterMeta = {
   title: { value: null, matchMode: FilterMatchMode.CONTAINS },
 };
 
-export function ListProperties({ properties, session }: { properties: PropertyZod[], session: Session }) {
-  const locations = Array.from(new Set(properties.map((property) => property.city))).sort((a, b) => a.localeCompare(b, "es"));
+export function ListProperties({ properties, locations, session }: { properties: PropertyZod[], locations: string[], session: Session }) {
   const [items, setItems] = useState(properties);
   const [showNewPropertyModal, setShowNewPropertyModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
