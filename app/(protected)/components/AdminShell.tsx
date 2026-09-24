@@ -15,11 +15,13 @@ export default function AdminShell({
   session,
   unreadInquiries,
   pendingApprovals,
+  draftCount,
 }: {
   children: React.ReactNode;
   session: Session;
   unreadInquiries: number;
   pendingApprovals: number;
+  draftCount: number;
 }) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -41,7 +43,7 @@ export default function AdminShell({
           isSidebarCollapsed ? "w-20" : "w-65"
         }`}
       >
-        <Sidebar isCollapsed={isSidebarCollapsed} unreadInquiries={unreadInquiries} pendingApprovals={pendingApprovals} userRole={session.user.role} />
+        <Sidebar isCollapsed={isSidebarCollapsed} unreadInquiries={unreadInquiries} pendingApprovals={pendingApprovals} draftCount={draftCount} userRole={session.user.role} />
       </div>
 
       <PrimeSidebar visible={isSidebarOpen} onHide={() => setIsSidebarOpen(false)} className="md:hidden">
@@ -74,10 +76,16 @@ export default function AdminShell({
                     )}
                   </span>
                 )}
-                {item.path === "/dashboard/aprobaciones" && pendingApprovals > 0 && (
+                {item.path === "/dashboard/aprobaciones" && (
                   <span className="ml-auto flex items-center gap-1 text-hornez-orange">
                     <i className="pi pi-bell text-[1.3125rem]" />
-                    <span className="text-lg font-bold">{pendingApprovals > 99 ? "99+" : pendingApprovals}</span>
+                    {pendingApprovals > 0 && <span className="text-lg font-bold">{pendingApprovals > 99 ? "99+" : pendingApprovals}</span>}
+                  </span>
+                )}
+                {item.path === "/dashboard/borradores" && (
+                  <span className="ml-auto flex items-center gap-1 text-hornez-orange">
+                    <i className="pi pi-bell text-[1.3125rem]" />
+                    {draftCount > 0 && <span className="text-lg font-bold">{draftCount > 99 ? "99+" : draftCount}</span>}
                   </span>
                 )}
               </Link>

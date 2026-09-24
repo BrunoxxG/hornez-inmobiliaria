@@ -9,11 +9,13 @@ export default function Sidebar({
   isCollapsed,
   unreadInquiries,
   pendingApprovals,
+  draftCount,
   userRole,
 }: {
   isCollapsed: boolean;
   unreadInquiries: number;
   pendingApprovals: number;
+  draftCount: number;
   userRole?: string;
 }) {
   const pathname = usePathname();
@@ -67,10 +69,16 @@ export default function Sidebar({
                       )}
                     </span>
                   )}
-                  {item.path === "/dashboard/aprobaciones" && pendingApprovals > 0 && (
+                  {item.path === "/dashboard/aprobaciones" && (
                     <span className="ml-auto flex items-center gap-1 text-hornez-orange">
                       <i className="pi pi-bell text-[1.3125rem]" />
-                      <span className="text-lg font-bold">{pendingApprovals > 99 ? "99+" : pendingApprovals}</span>
+                      {pendingApprovals > 0 && <span className="text-lg font-bold">{pendingApprovals > 99 ? "99+" : pendingApprovals}</span>}
+                    </span>
+                  )}
+                  {item.path === "/dashboard/borradores" && (
+                    <span className="ml-auto flex items-center gap-1 text-hornez-orange">
+                      <i className="pi pi-bell text-[1.3125rem]" />
+                      {draftCount > 0 && <span className="text-lg font-bold">{draftCount > 99 ? "99+" : draftCount}</span>}
                     </span>
                   )}
                 </>
