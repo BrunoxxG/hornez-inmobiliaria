@@ -3,314 +3,147 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
-const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL!,
-});
-
-const prisma = new PrismaClient({
-  adapter,
-});
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  console.time("Seeding complete 🌱");
-
-  // =====================
-  // USERS
-  // =====================
-  const hashedPassword = await bcrypt.hash("brunogimenez", 10);
+  const password = await bcrypt.hash(process.env.SEED_DEFAULT_PASSWORD || "cambiar-esta-clave", 10);
 
   await prisma.user.createMany({
     data: [
-      {
-        name: "Bruno Gimenez",
-        email: "brunogimenez@gmail.com",
-        password: hashedPassword,
-        role: "SUPERADMIN",
-      },
+      { name: "Bruno Gimenez", email: "brunogimenez@gmail.com", password, role: "SUPERADMIN" },
+      { name: "Mirko", email: "mirko@gmail.com", password, role: "USER" },
     ],
     skipDuplicates: true,
   });
 
-  // =====================
-  // LISTING TYPES
-  // =====================
   await prisma.listingType.createMany({
-    data: [
-      { name: "Venta", slug: "venta" },
-      { name: "Alquiler", slug: "alquiler" },
-    ],
+    data: [{ name: "Venta", slug: "venta" }],
     skipDuplicates: true,
   });
 
-  // =====================
-  // PROPERTY TYPES
-  // =====================
   await prisma.propertyType.createMany({
     data: [
       { name: "Casa", slug: "casa" },
-      { name: "Departamento", slug: "departamento" },
-      { name: "Cabaña", slug: "cabaña" },
+      { name: "Loteo", slug: "loteo" },
       { name: "Terreno", slug: "terreno" },
-      { name: "Oficina", slug: "oficina" },
-      { name: "Local", slug: "local" },
     ],
     skipDuplicates: true,
   });
 
-  // =====================
-  // FEATURES
-  // =====================
   await prisma.feature.createMany({
     data: [
-      { name: "Pileta", slug: "pileta" },
-      { name: "Garage", slug: "garage" },
-      { name: "Balcón", slug: "balcon" },
-      { name: "Terraza", slug: "terraza" },
-      { name: "Patio", slug: "patio" },
-      { name: "Quincho", slug: "quincho" },
-      { name: "Parrilla", slug: "parrilla" },
-      { name: "Aire acondicionado", slug: "aire-acondicionado" },
-      { name: "Calefacción", slug: "calefaccion" },
-      { name: "Ascensor", slug: "ascensor" },
-      { name: "Seguridad 24hs", slug: "seguridad-24hs" },
-      { name: "Amoblado", slug: "amoblado" },
+      { name: "Agua de red", slug: "agua-de-red", category: "SERVICE" },
+      { name: "Energia monofasica", slug: "energia-monofasica", category: "SERVICE" },
+      { name: "Recoleccion de residuos", slug: "recoleccion-de-residuos", category: "SERVICE" },
+      { name: "Cercado", slug: "cercado", category: "ADDITIONAL" },
     ],
     skipDuplicates: true,
   });
 
-  // =====================
-  // MOCK PROPERTIES
-  // =====================
-  const user = await prisma.user.findFirst();
-  const venta = await prisma.listingType.findFirst({ where: { slug: "venta" } });
-  const alquiler = await prisma.listingType.findFirst({ where: { slug: "alquiler" } });
-  const casa = await prisma.propertyType.findFirst({ where: { slug: "casa" } });
-  const depto = await prisma.propertyType.findFirst({ where: { slug: "departamento" } });
-  const cabana = await prisma.propertyType.findFirst({ where: { slug: "cabaña" } });
-  const terreno = await prisma.propertyType.findFirst({ where: { slug: "terreno" } });
-  const local = await prisma.propertyType.findFirst({ where: { slug: "local" } });
+  await prisma.locality.createMany({
+    data: [{ name: "La Paz" }, { name: "Las Chacras" }, { name: "Luyaba" }],
+    skipDuplicates: true,
+  });
 
-  if (user && venta && alquiler && casa && depto && cabana && terreno && local) {
-    const mockProperties = [
-      {
-        title: "Casa moderna con pileta en Barrio Privado",
-        description: "Hermosa casa de 3 dormitorios con pileta climatizada, quincho y amplio jardín. Ubicada en barrio cerrado con seguridad 24hs.",
-        price: 185000,
-        currency: "USD" as const,
-        listingTypeId: venta.id,
-        propertyTypeId: casa.id,
-        address: "Los Álamos 450",
-        city: "Villa de Merlo",
-        province: "San Luis",
-        totalRooms: 5,
-        bedrooms: 3,
-        bathrooms: 2,
-        area: 220,
-        lat: -32.3448,
-        lng: -65.0107,
-        status: "AVAILABLE" as const,
-        active: true,
-        userId: user.id,
-        video: "-",
-        standOut: true
-      },
-      {
-        title: "Departamento céntrico con balcón",
-        description: "Luminoso departamento de 2 ambientes con balcón terraza. A 2 cuadras de la plaza principal. Ideal inversión.",
-        price: 78000,
-        currency: "USD" as const,
-        listingTypeId: venta.id,
-        propertyTypeId: depto.id,
-        address: "Av. del Sol 128",
-        city: "Villa de Merlo",
-        province: "San Luis",
-        totalRooms: 5,
-        bedrooms: 1,
-        bathrooms: 1,
-        area: 55,
-        lat: -32.3465,
-        lng: -65.0132,
-        status: "AVAILABLE" as const,
-        active: true,
-        userId: user.id,
-        video: "-",
-        standOut: true
-      },
-      {
-        title: "Cabaña de montaña con vista panorámica",
-        description: "Encantadora cabaña de piedra y madera con vista a las sierras. 2 dormitorios, estufa a leña y deck con parrilla.",
-        price: 120000,
-        currency: "USD" as const,
-        listingTypeId: venta.id,
-        propertyTypeId: cabana.id,
-        address: "Camino de las Sierras km 3",
-        city: "Villa de Merlo",
-        province: "San Luis",
-        totalRooms: 5,
-        bedrooms: 2,
-        bathrooms: 1,
-        area: 95,
-        lat: -32.3380,
-        lng: -65.0200,
-        status: "AVAILABLE" as const,
-        active: true,
-        userId: user.id,
-        video: "-",
-        standOut: true
-      },
-      {
-        title: "Terreno en Barrio La Sebastiana",
-        description: "Lote de 800m² con todos los servicios. Gas natural, agua corriente, electricidad. Ideal para construir tu casa.",
-        price: 35000,
-        currency: "USD" as const,
-        listingTypeId: venta.id,
-        propertyTypeId: terreno.id,
-        address: "Calle de los Poetas s/n",
-        city: "Villa de Merlo",
-        province: "San Luis",
-        totalRooms: 0,
-        bedrooms: 0,
-        bathrooms: 0,
-        area: 800,
-        lat: -32.3500,
-        lng: -65.0050,
-        status: "AVAILABLE" as const,
-        active: true,
-        userId: user.id,
-        video: "-",
-        standOut: true
-      },
-      {
-        title: "Casa a estrenar en Las Moreras",
-        description: "Casa de 4 dormitorios a estrenar en barrio Las Moreras. Garage doble, patio con parrilla, cocina integrada. Lista para habitar.",
-        price: 210000,
-        currency: "USD" as const,
-        listingTypeId: venta.id,
-        propertyTypeId: casa.id,
-        address: "Las Moreras lote 24",
-        city: "Villa de Merlo",
-        province: "San Luis",
-        totalRooms: 5,
-        bedrooms: 4,
-        bathrooms: 3,
-        area: 280,
-        lat: -32.3520,
-        lng: -65.0080,
-        status: "AVAILABLE" as const,
-        active: true,
-        userId: user.id,
-        video: "-",
-        standOut: true
-      },
-      {
-        title: "Departamento en alquiler temporario",
-        description: "Moderno departamento amoblado de 2 dormitorios. Ideal para turistas. A 5 minutos del centro comercial.",
-        price: 450000,
-        currency: "ARS" as const,
-        listingTypeId: alquiler.id,
-        propertyTypeId: depto.id,
-        address: "Av. del Deporte 890",
-        city: "Villa de Merlo",
-        province: "San Luis",
-        totalRooms: 5,
-        bedrooms: 2,
-        bathrooms: 1,
-        area: 70,
-        lat: -32.3430,
-        lng: -65.0150,
-        status: "AVAILABLE" as const,
-        active: true,
-        userId: user.id,
-        video: "-",
-        standOut: true
-      },
-      {
-        title: "Local comercial sobre avenida principal",
-        description: "Amplio local de 120m² sobre Av. del Sol. Gran vidriera, depósito y baño. Excelente ubicación comercial.",
-        price: 300000,
-        currency: "ARS" as const,
-        listingTypeId: alquiler.id,
-        propertyTypeId: local.id,
-        address: "Av. del Sol 560",
-        city: "Villa de Merlo",
-        province: "San Luis",
-        totalRooms: 5,
-        bedrooms: 2,
-        bathrooms: 1,
-        area: 120,
-        lat: -32.3460,
-        lng: -65.0120,
-        status: "AVAILABLE" as const,
-        active: true,
-        userId: user.id,
-        video: "-",
-        standOut: false
-      },
-      {
-        title: "Cabaña con pileta en Barranca Arriba",
-        description: "Cabaña rústica con pileta privada y vistas increíbles. 3 dormitorios, living con hogar y amplio parque.",
-        price: 155000,
-        currency: "USD" as const,
-        listingTypeId: venta.id,
-        propertyTypeId: cabana.id,
-        address: "Barranca Arriba parcela 15",
-        city: "Villa de Merlo",
-        province: "San Luis",
-        totalRooms: 5,
-        bedrooms: 3,
-        bathrooms: 2,
-        area: 150,
-        lat: -32.3400,
-        lng: -65.0180,
-        status: "AVAILABLE" as const,
-        active: true,
-        userId: user.id,
-        video: "-",
-        standOut: false
-      },
-    ];
+  const user = await prisma.user.findUnique({ where: { email: "brunogimenez@gmail.com" } });
+  const venta = await prisma.listingType.findUnique({ where: { slug: "venta" } });
+  const casa = await prisma.propertyType.findUnique({ where: { slug: "casa" } });
+  const terreno = await prisma.propertyType.findUnique({ where: { slug: "terreno" } });
+  const agua = await prisma.feature.findUnique({ where: { slug: "agua-de-red" } });
+  const cercado = await prisma.feature.findUnique({ where: { slug: "cercado" } });
 
-    for (const prop of mockProperties) {
-      await prisma.property.create({ data: prop });
-    }
+  if (!user || !venta || !casa || !terreno || !agua || !cercado) return;
 
-    // Agregar features a algunas propiedades
-    const allProperties = await prisma.property.findMany();
-    const features = await prisma.feature.findMany();
-    const pileta = features.find((f) => f.name === "Pileta");
-    const garage = features.find((f) => f.name === "Garage");
-    const parrilla = features.find((f) => f.name === "Parrilla");
-    const aire = features.find((f) => f.name === "Aire acondicionado");
+  const properties = [
+    {
+      title: "Departamento céntrico con balcón",
+      description: "Luminoso departamento de 2 ambientes con balcón terraza. A 2 cuadras de la plaza principal. Ideal inversión.",
+      price: 78000,
+      propertyTypeId: terreno.id,
+      address: "Av. del Sol 128",
+      city: "Las Chacras",
+      province: "Córdoba",
+      totalRooms: 5,
+      bedrooms: 1,
+      bathrooms: 1,
+      area: 55,
+      currency: "USD" as const,
+      lat: -32.3465,
+      lng: -65.0132,
+      documentation: "DEED" as const,
+      standOut: true,
+      featureSlugs: ["agua-de-red", "cercado"],
+    },
+    {
+      title: "Cabaña de montaña con vista panorámica",
+      description: "Encantadora cabaña de piedra y madera con vista a las sierras. 2 dormitorios, estufa a leña y deck con parrilla.",
+      price: 120000,
+      propertyTypeId: casa.id,
+      address: "Camino de las Sierras km 3",
+      city: "La Paz",
+      province: "Córdoba",
+      totalRooms: 2,
+      bedrooms: 2,
+      bathrooms: 1,
+      area: 95,
+      currency: "USD" as const,
+      lat: -32.338,
+      lng: -65.02,
+      documentation: "POSSESSORY_RIGHTS" as const,
+      standOut: true,
+      featureSlugs: ["agua-de-red", "cercado"],
+    },
+    {
+      title: "Departamento en alquiler temporario",
+      description: "Moderno departamento amoblado de 2 dormitorios. Ideal para turistas. A 5 minutos del centro comercial.",
+      price: 450000,
+      propertyTypeId: casa.id,
+      address: "Av. del Deporte 890",
+      city: "Luyaba",
+      province: "Córdoba",
+      totalRooms: 5,
+      bedrooms: 2,
+      bathrooms: 1,
+      area: 70,
+      currency: "ARS" as const,
+      lat: -32.343,
+      lng: -65.015,
+      documentation: "DEED" as const,
+      standOut: true,
+      featureSlugs: ["agua-de-red"],
+    },
+  ];
 
-    if (pileta && garage && parrilla && aire) {
-      for (const prop of allProperties.slice(0, 4)) {
-        await prisma.propertyFeature.createMany({
-          data: [
-            { propertyId: prop.id, featureId: pileta.id },
-            { propertyId: prop.id, featureId: garage.id },
-            { propertyId: prop.id, featureId: parrilla.id },
-          ],
-          skipDuplicates: true,
-        });
-      }
-      for (const prop of allProperties.slice(4)) {
-        await prisma.propertyFeature.createMany({
-          data: [
-            { propertyId: prop.id, featureId: aire.id },
-            { propertyId: prop.id, featureId: parrilla.id },
-          ],
-          skipDuplicates: true,
-        });
-      }
-    }
+  for (const property of properties) {
+    const { featureSlugs, ...data } = property;
+    const created = await prisma.property.create({
+      data: {
+        ...data,
+        listingTypeId: venta.id,
+        status: "AVAILABLE",
+        active: true,
+        userId: user.id,
+        approvalStatus: "APPROVED",
+        video: "-",
+      },
+    });
+
+    const featureIds = await prisma.feature.findMany({
+      where: { slug: { in: featureSlugs } },
+      select: { id: true },
+    });
+
+    await prisma.propertyFeature.createMany({
+      data: featureIds.map((feature) => ({ propertyId: created.id, featureId: feature.id })),
+      skipDuplicates: true,
+    });
   }
-
-  console.timeEnd("Seeding complete 🌱");
 }
 
 main()
-  .catch((e) => {
-    console.error(e);
+  .catch((error) => {
+    console.error(error);
     process.exit(1);
   })
   .finally(async () => {
