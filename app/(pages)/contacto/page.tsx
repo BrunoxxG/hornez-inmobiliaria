@@ -168,7 +168,7 @@ export default function ContactPage() {
                   className="w-full resize-y rounded-md border border-gray-300 bg-white/90 px-3 py-2 text-center font-normal outline-none transition-colors focus:border-hornez-orange focus:ring-1 focus:ring-hornez-orange" />
                 </label>
                 <div className="flex flex-col items-center justify-center gap-3">
-                  <button type="submit" className="rounded-md bg-hornez-orange px-6 py-3 font-semibold text-white transition-colors hover:bg-orange-600">
+                  <button type="submit" className="rounded-md border border-gray-300 bg-gray-200 px-6 py-3 font-semibold text-gray-800 transition-colors hover:border-hornez-orange hover:bg-hornez-orange hover:text-white focus:border-hornez-orange focus:bg-hornez-orange focus:text-white active:border-hornez-orange active:bg-hornez-orange active:text-white">
                     Enviar
                   </button>
                   {submitError && <p className="text-sm font-medium text-red-600">{submitError}</p>}

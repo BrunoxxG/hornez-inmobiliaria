@@ -230,7 +230,7 @@ export default function PropertiesFilters({
             }`}
           >
             <option value="">Dormitorios</option>
-            {[1, 2, 3, 4, 5].map((number) => (
+            {[1, 2, 3].map((number) => (
               <option key={number} value={number}>
                 {number}+
               </option>
