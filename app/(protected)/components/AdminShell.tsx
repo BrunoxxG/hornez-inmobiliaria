@@ -16,12 +16,14 @@ export default function AdminShell({
   unreadInquiries,
   pendingApprovals,
   draftCount,
+  publishedProperties,
 }: {
   children: React.ReactNode;
   session: Session;
   unreadInquiries: number;
   pendingApprovals: number;
   draftCount: number;
+  publishedProperties: number;
 }) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -43,7 +45,7 @@ export default function AdminShell({
           isSidebarCollapsed ? "w-20" : "w-65"
         }`}
       >
-        <Sidebar isCollapsed={isSidebarCollapsed} unreadInquiries={unreadInquiries} pendingApprovals={pendingApprovals} draftCount={draftCount} userRole={session.user.role} />
+        <Sidebar isCollapsed={isSidebarCollapsed} unreadInquiries={unreadInquiries} pendingApprovals={pendingApprovals} draftCount={draftCount} publishedProperties={publishedProperties} userRole={session.user.role} />
       </div>
 
       <PrimeSidebar visible={isSidebarOpen} onHide={() => setIsSidebarOpen(false)} className="md:hidden">
@@ -66,6 +68,11 @@ export default function AdminShell({
               >
                 <i className={`${item.icon} mr-2`} />
                 <span>{item.label}</span>
+                {item.path === "/dashboard/propiedades" && (
+                  <span className="ml-auto text-lg font-bold text-hornez-orange">
+                    {publishedProperties > 99 ? "99+" : publishedProperties}
+                  </span>
+                )}
                 {item.path === "/dashboard/consultas" && (
                   <span className="ml-auto flex items-center gap-1 text-hornez-orange">
                     <i className="pi pi-bell text-[1.3125rem]" />

@@ -10,12 +10,14 @@ export default function Sidebar({
   unreadInquiries,
   pendingApprovals,
   draftCount,
+  publishedProperties,
   userRole,
 }: {
   isCollapsed: boolean;
   unreadInquiries: number;
   pendingApprovals: number;
   draftCount: number;
+  publishedProperties: number;
   userRole?: string;
 }) {
   const pathname = usePathname();
@@ -59,6 +61,11 @@ export default function Sidebar({
               {!isCollapsed && (
                 <>
                   <span>{item.label}</span>
+                  {item.path === "/dashboard/propiedades" && (
+                    <span className="ml-auto text-lg font-bold text-hornez-orange">
+                      {publishedProperties > 99 ? "99+" : publishedProperties}
+                    </span>
+                  )}
                   {item.path === "/dashboard/consultas" && (
                     <span className="ml-auto flex items-center gap-1 text-hornez-orange">
                       <i className="pi pi-bell text-[1.3125rem]" />
