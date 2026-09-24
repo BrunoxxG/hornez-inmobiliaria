@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { startTransition, useCallback, useEffect, useState } from "react";
+import { startTransition, useCallback, useEffect, useRef, useState } from "react";
 import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
 
@@ -33,6 +33,7 @@ export default function PropertiesFilters({
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [location, setLocation] = useState("");
+  const priceFilterRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     startTransition(() => {
@@ -42,6 +43,17 @@ export default function PropertiesFilters({
       setLocation(searchParams.get("location") || "");
     });
   }, [searchParams]);
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (priceFilterRef.current && !priceFilterRef.current.contains(event.target as Node)) {
+        setIsPriceOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
 
   const updateParam = useCallback(
     (key: string, value?: string) => {
@@ -137,7 +149,7 @@ export default function PropertiesFilters({
             ))}
           </select>
 
-          <div className="relative min-w-48 flex-1">
+          <div ref={priceFilterRef} className="relative min-w-48 flex-1">
             <button
               type="button"
               onClick={() => setIsPriceOpen((open) => !open)}

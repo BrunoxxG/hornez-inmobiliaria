@@ -29,6 +29,10 @@ type PendingProperty = {
   bedrooms: number;
   bathrooms: number;
   area: number;
+  coveredArea: number;
+  landArea: number;
+  age: number;
+  floors: number;
   lat: number;
   lng: number;
   status: "AVAILABLE" | "RESERVED" | "SOLD" | "RENTED";

@@ -97,6 +97,10 @@ export default function FormProperty(props: FormPropertyProps) {
       bedrooms: property?.bedrooms ?? Number(savedDraft.bedrooms || 0),
       bathrooms: property?.bathrooms ?? Number(savedDraft.bathrooms || 0),
       area: property?.area ?? Number(savedDraft.area || 0),
+      coveredArea: property?.coveredArea ?? Number(savedDraft.coveredArea || 0),
+      landArea: property?.landArea ?? Number(savedDraft.landArea || 0),
+      age: property?.age ?? Number(savedDraft.age || 0),
+      floors: property?.floors ?? Number(savedDraft.floors || 0),
       lat: property?.lat ?? Number(savedDraft.lat || 0),
       lng: property?.lng ?? Number(savedDraft.lng || 0),
       status: property?.status || (savedDraft.status as PropertyFormZod["status"]) || "AVAILABLE",
@@ -661,6 +665,23 @@ export default function FormProperty(props: FormPropertyProps) {
                   </>
                 )}
               />
+            </div>
+
+            <div className="w-full">
+              <label className="block text-sm font-semibold mb-2">Sup. cubierta (m²)</label>
+              <Controller name="coveredArea" control={form.control} render={({ field }) => <InputNumber value={field.value} onChange={(e) => field.onChange(e.value ?? 0)} className="w-full" />} />
+            </div>
+            <div className="w-full">
+              <label className="block text-sm font-semibold mb-2">Terreno (m²)</label>
+              <Controller name="landArea" control={form.control} render={({ field }) => <InputNumber value={field.value} onChange={(e) => field.onChange(e.value ?? 0)} className="w-full" />} />
+            </div>
+            <div className="w-full">
+              <label className="block text-sm font-semibold mb-2">Antigüedad</label>
+              <Controller name="age" control={form.control} render={({ field }) => <InputNumber value={field.value} onChange={(e) => field.onChange(e.value ?? 0)} min={0} className="w-full" />} />
+            </div>
+            <div className="w-full">
+              <label className="block text-sm font-semibold mb-2">Plantas</label>
+              <Controller name="floors" control={form.control} render={({ field }) => <InputNumber value={field.value} onChange={(e) => field.onChange(e.value ?? 0)} min={0} className="w-full" />} />
             </div>
 
             <div className="mb-3">

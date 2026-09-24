@@ -135,6 +135,10 @@ model Property {
   bedrooms   Int
   bathrooms  Int
   area       Float
+  coveredArea Float @default(0)
+  landArea Float @default(0)
+  age Int @default(0)
+  floors Int @default(0)
 
   currency Currency @default(USD)
 

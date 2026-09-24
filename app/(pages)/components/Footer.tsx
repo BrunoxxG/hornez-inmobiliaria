@@ -1,4 +1,5 @@
 import Link from "next/link";
+import WhatsAppFloating from "./WhatsAppFloating";
 
 // Footer institucional: identidad, contacto y acceso al panel administrativo.
 export default function Footer() {
@@ -85,23 +86,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="fixed bottom-5 right-5 z-50">
-        <a
-          href="https://wa.me/5493544400903"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Contactar por WhatsApp"
-          className="peer flex h-[3.85rem] w-[3.85rem] items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition-transform hover:scale-110"
-        >
-          <i className="pi pi-whatsapp text-3xl" />
-        </a>
-        <div className="invisible pointer-events-none absolute bottom-[calc(100%+0.75rem)] right-0 w-max max-w-[18rem] rounded-2xl bg-white px-4 py-3 text-sm font-medium leading-snug text-gray-800 opacity-0 shadow-lg transition-opacity peer-hover:visible peer-hover:opacity-100">
-          Hola! Si estás buscando comprar o poner a la venta tu propiedad,
-          <br />
-          ¡Estoy acá para ayudarte con eso!
-          <span className="absolute -bottom-2 right-6 h-4 w-4 rotate-45 bg-white" />
-        </div>
-      </div>
+      <WhatsAppFloating />
     </footer>
   );
 }

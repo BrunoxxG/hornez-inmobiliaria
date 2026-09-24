@@ -62,6 +62,10 @@ export function ListProperties({ properties, locations, session }: { properties:
           bedrooms: values.bedrooms,
           bathrooms: values.bathrooms,
           area: values.area,
+          coveredArea: values.coveredArea,
+          landArea: values.landArea,
+          age: values.age,
+          floors: values.floors,
           currency: values.currency,
           status: values.status,
           active: values.active,
@@ -87,6 +91,8 @@ export function ListProperties({ properties, locations, session }: { properties:
       </div>
     );
   };
+
+  const optionalPropertyDataTemplate = (value: number, suffix: string) => value ? `${value} ${suffix}` : "-";
 
   const addressBodyTemplate = (rowData: PropertyZod) => {
     return (
@@ -246,7 +252,6 @@ export function ListProperties({ properties, locations, session }: { properties:
         <Column field="title" header="Título" body={titleBodyTemplate} sortable style={{ minWidth: "200px" }} />
         <Column field="price" header="Precio" body={priceBodyTemplate} sortable style={{ minWidth: "100px" }} />
         <Column field="propertyType.name" header="Tipo" sortable style={{ minWidth: "100px" }} />
-        <Column field="city" header="Localidad" body={addressBodyTemplate} sortable style={{ minWidth: "160px" }} />
         <Column field="status" header="Estado" body={statusBodyTemplate} sortable style={{ minWidth: "100px" }} />
         <Column field="approvalStatus" header="Aprobación" body={approvalBodyTemplate} sortable style={{ minWidth: "120px" }} />
         <Column field="active" header="Mostrar" body={destacadaBodyTemplate} sortable style={{ minWidth: "100px" }} />
