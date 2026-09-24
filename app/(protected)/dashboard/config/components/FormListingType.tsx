@@ -9,7 +9,7 @@ import { FormListingTypeProps, listingTypeFormSchema, ListingTypeFormZod } from 
 import { createListingType, updateListingType } from "../actions/actionsConfig";
 
 export default function FormListingType(props: FormListingTypeProps) {
-  const { listingType, setOpenModalForm, toast } = props;
+  const { listingType, setOpenModalForm, onUpdated, toast } = props;
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<ListingTypeFormZod>({
@@ -63,6 +63,7 @@ export default function FormListingType(props: FormListingTypeProps) {
       life: 3000,
     });
     reset();
+    onUpdated?.({ ...listingType, name: values.name, slug: values.name.toLowerCase().replace(/\s+/g, "-") });
     setOpenModalForm?.(false);
   };
 

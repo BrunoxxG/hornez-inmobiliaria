@@ -9,7 +9,7 @@ import { featureFormSchema, FeatureFormZod, FormFeatureProps } from "../lib/zodC
 import { createFeature, updateFeature } from "../actions/actionsConfig";
 
 export default function FormFeature(props: FormFeatureProps) {
-  const { feature, category, setOpenModalForm, onCreated, toast } = props;
+  const { feature, category, setOpenModalForm, onCreated, onUpdated, toast } = props;
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<FeatureFormZod>({
@@ -65,6 +65,7 @@ export default function FormFeature(props: FormFeatureProps) {
       life: 3000,
     });
     reset();
+    onUpdated?.({ ...feature, name: values.name, slug: values.name.toLowerCase().replace(/\s+/g, "-") });
     setOpenModalForm?.(false);
   };
 

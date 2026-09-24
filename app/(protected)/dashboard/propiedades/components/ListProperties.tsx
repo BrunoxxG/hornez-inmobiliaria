@@ -10,7 +10,7 @@ import { Dialog } from "primereact/dialog";
 import { Toast } from "primereact/toast";
 import type { Toast as ToastType } from "primereact/toast";
 import { useDataTableFilters } from "@/app/lib/hooks/useDataTableFilters";
-import { PROPERTY_STATUS, PropertyZod } from "../lib/zodPublications";
+import { PROPERTY_STATUS, PropertyFormZod, PropertyZod } from "../lib/zodPublications";
 import FormProperty from "./FormProperty";
 import { formatCurrency } from "@/app/(protected)/lib/utils";
 import { Tag } from "primereact/tag";
@@ -47,6 +47,29 @@ export function ListProperties({ properties, session }: { properties: PropertyZo
     } else {
       toast.current?.show({ severity: "error", summary: "Error", detail: result.error, life: 3000 });
     }
+  };
+
+  const handlePropertyUpdated = (propertyId: string, values: PropertyFormZod) => {
+    setItems((current) => current.map((item) => item.id === propertyId
+      ? {
+          ...item,
+          title: values.title,
+          description: values.description,
+          price: values.price,
+          address: values.address,
+          city: values.city,
+          province: values.province,
+          totalRooms: values.totalRooms,
+          bedrooms: values.bedrooms,
+          bathrooms: values.bathrooms,
+          area: values.area,
+          currency: values.currency,
+          status: values.status,
+          active: values.active,
+          standOut: values.standOut,
+          video: values.video,
+        }
+      : item));
   };
 
   const titleBodyTemplate = (rowData: PropertyZod) => {
@@ -254,7 +277,7 @@ export function ListProperties({ properties, session }: { properties: PropertyZo
         dismissableMask
       >
         {selectedProperty && (
-          <FormProperty property={selectedProperty} locations={locations} setOpenModalForm={setShowDetailModal} toast={toast} session={session}/>
+          <FormProperty property={selectedProperty} locations={locations} onPropertyUpdated={handlePropertyUpdated} setOpenModalForm={setShowDetailModal} toast={toast} session={session}/>
         )}
       </Dialog>
     </div>

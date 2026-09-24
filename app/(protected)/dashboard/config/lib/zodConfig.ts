@@ -15,6 +15,7 @@ export type ListingTypeFormZod = z.infer<typeof listingTypeFormSchema>;
 export type FormListingTypeProps = {
   setOpenModalForm?: Dispatch<SetStateAction<boolean>>;
   listingType?: ListingTypeZod;
+  onUpdated?: (listingType: ListingTypeZod) => void;
   toast: React.RefObject<ToastType | null>;
 };
 
@@ -32,6 +33,7 @@ export type FormPropertyTypeProps = {
   setOpenModalForm?: Dispatch<SetStateAction<boolean>>;
   propertyType?: PropertyTypeZod;
   onCreated?: (propertyType: PropertyTypeZod) => void;
+  onUpdated?: (propertyType: PropertyTypeZod) => void;
   toast: React.RefObject<ToastType | null>;
 };
 
@@ -52,5 +54,6 @@ export type FormFeatureProps = {
   feature?: FeatureZod;
   category: "SERVICE" | "ADDITIONAL";
   onCreated?: (feature: FeatureZod) => void;
+  onUpdated?: (feature: FeatureZod) => void;
   toast: React.RefObject<ToastType | null>;
 };

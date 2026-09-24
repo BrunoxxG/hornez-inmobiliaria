@@ -23,6 +23,7 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
   const [showNewFeatureModal, setShowNewFeatureModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState<FeatureZod | undefined>(undefined);
+  const [featureToDelete, setFeatureToDelete] = useState<FeatureZod | null>(null);
   const toast = useRef<ToastType | null>(null);
   const [filteredFeatures, setFilteredFeatures] = useState<FeatureZod[]>(
     features.filter((feature) => feature.category === category),
@@ -38,6 +39,18 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
     hasActiveFilters,
   } = useDataTableFilters(initialFilters);
 
+  const handleDelete = async () => {
+    if (!featureToDelete) return;
+    const result = await deleteFeature(featureToDelete.id);
+    if (!result.success) {
+      toast.current?.show({ severity: "error", summary: "Error", detail: result.error });
+      return;
+    }
+    setFilteredFeatures((current) => current.filter((feature) => feature.id !== featureToDelete.id));
+    setFeatureToDelete(null);
+    toast.current?.show({ severity: "success", summary: "OK", detail: `${title} eliminado` });
+  };
+
   const nameBodyTemplate = (rowData: FeatureZod) => {
     return (
       <div>
@@ -47,19 +60,6 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
   };
 
   const actionsBodyTemplate = (rowData: FeatureZod) => {
-    const handleDelete = async () => {
-      if (!window.confirm(`¿Eliminar el servicio "${rowData.name}"?`)) return;
-
-      const result = await deleteFeature(rowData.id);
-      if (!result.success) {
-        toast.current?.show({ severity: "error", summary: "Error", detail: result.error });
-        return;
-      }
-
-      setFilteredFeatures((current) => current.filter((feature) => feature.id !== rowData.id));
-      toast.current?.show({ severity: "success", summary: "OK", detail: `${title} eliminado` });
-    };
-
     return (
       <div className="flex gap-2">
         <Button
@@ -96,7 +96,7 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
           tooltipOptions={{ position: "top" }}
           onClick={(e) => {
             e.stopPropagation();
-            void handleDelete();
+            setFeatureToDelete(rowData);
           }}
         />
       </div>
@@ -143,6 +143,10 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
   return (
     <div className="border rounded-lg">
       <Toast ref={toast} />
+      <Dialog visible={featureToDelete !== null} onHide={() => setFeatureToDelete(null)} header="Confirmar eliminación" modal style={{ width: "min(90vw, 28rem)" }}>
+        <p>¿Eliminar <strong>{featureToDelete?.name}</strong>?</p>
+        <div className="mt-4 flex justify-end gap-2"><Button label="Cancelar" severity="secondary" outlined onClick={() => setFeatureToDelete(null)} /><Button label="Eliminar" severity="danger" onClick={() => void handleDelete()} /></div>
+      </Dialog>
       <DataTable
         value={filteredFeatures}
         onValueChange={(e) => setFilteredFeatures(e)}
@@ -187,7 +191,7 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
         modal
         dismissableMask
       >
-        {selectedFeature && <FormFeature category={category} feature={selectedFeature} setOpenModalForm={setShowDetailModal} toast={toast} />}
+        {selectedFeature && <FormFeature category={category} feature={selectedFeature} onUpdated={(updated) => setFilteredFeatures((current) => current.map((item) => item.id === updated.id ? updated : item))} setOpenModalForm={setShowDetailModal} toast={toast} />}
       </Dialog>
     </div>
   );

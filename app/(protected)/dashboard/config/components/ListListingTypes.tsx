@@ -23,11 +23,24 @@ export function ListListingTypes({ listingTypes }: { listingTypes: ListingTypeZo
   const [showNewListingTypeModal, setShowNewListingTypeModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedListingType, setSelectedListingType] = useState<ListingTypeZod | undefined>(undefined);
+  const [listingTypeToDelete, setListingTypeToDelete] = useState<ListingTypeZod | null>(null);
   const toast = useRef<ToastType | null>(null);
   const [filteredListingTypes, setFilteredListingTypes] = useState<ListingTypeZod[]>(listingTypes);
 
   const { filters, globalFilterValue, onGlobalFilterChange, clearFilters, hasActiveFilters } =
     useDataTableFilters(initialFilters);
+
+  const handleDelete = async () => {
+    if (!listingTypeToDelete) return;
+    const result = await deleteListingType(listingTypeToDelete.id);
+    if (!result.success) {
+      toast.current?.show({ severity: "error", summary: "Error", detail: result.error });
+      return;
+    }
+    setFilteredListingTypes((current) => current.filter((listingType) => listingType.id !== listingTypeToDelete.id));
+    setListingTypeToDelete(null);
+    toast.current?.show({ severity: "success", summary: "OK", detail: "Tipo de listado eliminado" });
+  };
 
   const nameBodyTemplate = (rowData: ListingTypeZod) => {
     return (
@@ -38,19 +51,6 @@ export function ListListingTypes({ listingTypes }: { listingTypes: ListingTypeZo
   };
 
   const actionsBodyTemplate = (rowData: ListingTypeZod) => {
-    const handleDelete = async () => {
-      if (!window.confirm(`¿Eliminar el tipo de listado "${rowData.name}"?`)) return;
-
-      const result = await deleteListingType(rowData.id);
-      if (!result.success) {
-        toast.current?.show({ severity: "error", summary: "Error", detail: result.error });
-        return;
-      }
-
-      setFilteredListingTypes((current) => current.filter((listingType) => listingType.id !== rowData.id));
-      toast.current?.show({ severity: "success", summary: "OK", detail: "Tipo de listado eliminado" });
-    };
-
     return (
       <div className="flex gap-2">
         <Button
@@ -87,7 +87,7 @@ export function ListListingTypes({ listingTypes }: { listingTypes: ListingTypeZo
           tooltipOptions={{ position: "top" }}
           onClick={(e) => {
             e.stopPropagation();
-            void handleDelete();
+            setListingTypeToDelete(rowData);
           }}
         />
       </div>
@@ -129,6 +129,10 @@ export function ListListingTypes({ listingTypes }: { listingTypes: ListingTypeZo
   return (
     <div className="border">
       <Toast ref={toast} />
+      <Dialog visible={listingTypeToDelete !== null} onHide={() => setListingTypeToDelete(null)} header="Confirmar eliminación" modal style={{ width: "min(90vw, 28rem)" }}>
+        <p>¿Eliminar el tipo de listado <strong>{listingTypeToDelete?.name}</strong>?</p>
+        <div className="mt-4 flex justify-end gap-2"><Button label="Cancelar" severity="secondary" outlined onClick={() => setListingTypeToDelete(null)} /><Button label="Eliminar" severity="danger" onClick={() => void handleDelete()} /></div>
+      </Dialog>
       <DataTable
         value={filteredListingTypes}
         onValueChange={(e) => setFilteredListingTypes(e)}
@@ -169,7 +173,7 @@ export function ListListingTypes({ listingTypes }: { listingTypes: ListingTypeZo
         dismissableMask
       >
         {selectedListingType && (
-          <FormListingType listingType={selectedListingType} setOpenModalForm={setShowDetailModal} toast={toast} />
+          <FormListingType listingType={selectedListingType} onUpdated={(updated) => setFilteredListingTypes((current) => current.map((item) => item.id === updated.id ? updated : item))} setOpenModalForm={setShowDetailModal} toast={toast} />
         )}
       </Dialog>
     </div>

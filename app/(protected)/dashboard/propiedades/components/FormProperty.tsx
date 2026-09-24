@@ -36,7 +36,7 @@ type DocumentItem = {
 };
 
 export default function FormProperty(props: FormPropertyProps) {
-  const { property, locations = [], draftId, draftData, onDraftSaved, setOpenModalForm, toast, session } = props;
+  const { property, locations = [], draftId, draftData, onDraftSaved, onPropertyUpdated, setOpenModalForm, toast, session } = props;
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [existingImages, setExistingImages] = useState<ImageItem[]>([]);
@@ -342,6 +342,7 @@ export default function FormProperty(props: FormPropertyProps) {
       detail: "Propiedad actualizada exitosamente",
       life: 3000,
     });
+    onPropertyUpdated?.(propertyId, values);
     reset();
     setOpenModalForm?.(false);
   };

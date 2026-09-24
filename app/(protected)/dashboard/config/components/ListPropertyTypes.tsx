@@ -23,6 +23,7 @@ export function ListPropertyTypes({ propertyTypes }: { propertyTypes: PropertyTy
   const [showNewPropertyTypeModal, setShowNewPropertyTypeModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedPropertyType, setSelectedPropertyType] = useState<PropertyTypeZod | undefined>(undefined);
+  const [propertyTypeToDelete, setPropertyTypeToDelete] = useState<PropertyTypeZod | null>(null);
   const toast = useRef<ToastType | null>(null);
   const [filteredPropertyTypes, setFilteredPropertyTypes] = useState<PropertyTypeZod[]>(propertyTypes);
 
@@ -34,6 +35,18 @@ export function ListPropertyTypes({ propertyTypes }: { propertyTypes: PropertyTy
     hasActiveFilters,
   } = useDataTableFilters(initialFilters);
 
+  const handleDelete = async () => {
+    if (!propertyTypeToDelete) return;
+    const result = await deletePropertyType(propertyTypeToDelete.id);
+    if (!result.success) {
+      toast.current?.show({ severity: "error", summary: "Error", detail: result.error });
+      return;
+    }
+    setFilteredPropertyTypes((current) => current.filter((propertyType) => propertyType.id !== propertyTypeToDelete.id));
+    setPropertyTypeToDelete(null);
+    toast.current?.show({ severity: "success", summary: "OK", detail: "Tipo de propiedad eliminado" });
+  };
+
   const nameBodyTemplate = (rowData: PropertyTypeZod) => {
     return (
       <div>
@@ -43,19 +56,6 @@ export function ListPropertyTypes({ propertyTypes }: { propertyTypes: PropertyTy
   };
 
   const actionsBodyTemplate = (rowData: PropertyTypeZod) => {
-    const handleDelete = async () => {
-      if (!window.confirm(`¿Eliminar el tipo de propiedad "${rowData.name}"?`)) return;
-
-      const result = await deletePropertyType(rowData.id);
-      if (!result.success) {
-        toast.current?.show({ severity: "error", summary: "Error", detail: result.error });
-        return;
-      }
-
-      setFilteredPropertyTypes((current) => current.filter((propertyType) => propertyType.id !== rowData.id));
-      toast.current?.show({ severity: "success", summary: "OK", detail: "Tipo de propiedad eliminado" });
-    };
-
     return (
       <div className="flex gap-2">
         <Button
@@ -92,7 +92,7 @@ export function ListPropertyTypes({ propertyTypes }: { propertyTypes: PropertyTy
           tooltipOptions={{ position: "top" }}
           onClick={(e) => {
             e.stopPropagation();
-            void handleDelete();
+            setPropertyTypeToDelete(rowData);
           }}
         />
       </div>
@@ -139,6 +139,10 @@ export function ListPropertyTypes({ propertyTypes }: { propertyTypes: PropertyTy
   return (
     <div className="border rounded-lg">
       <Toast ref={toast} />
+      <Dialog visible={propertyTypeToDelete !== null} onHide={() => setPropertyTypeToDelete(null)} header="Confirmar eliminación" modal style={{ width: "min(90vw, 28rem)" }}>
+        <p>¿Eliminar el tipo de propiedad <strong>{propertyTypeToDelete?.name}</strong>?</p>
+        <div className="mt-4 flex justify-end gap-2"><Button label="Cancelar" severity="secondary" outlined onClick={() => setPropertyTypeToDelete(null)} /><Button label="Eliminar" severity="danger" onClick={() => void handleDelete()} /></div>
+      </Dialog>
       <DataTable
         value={filteredPropertyTypes}
         onValueChange={(e) => setFilteredPropertyTypes(e)}
@@ -182,7 +186,7 @@ export function ListPropertyTypes({ propertyTypes }: { propertyTypes: PropertyTy
         modal
         dismissableMask
       >
-        {selectedPropertyType && <FormPropertyType propertyType={selectedPropertyType} setOpenModalForm={setShowDetailModal} toast={toast} />}
+        {selectedPropertyType && <FormPropertyType propertyType={selectedPropertyType} onUpdated={(updated) => setFilteredPropertyTypes((current) => current.map((item) => item.id === updated.id ? updated : item))} setOpenModalForm={setShowDetailModal} toast={toast} />}
       </Dialog>
     </div>
   );

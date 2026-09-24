@@ -102,6 +102,7 @@ export type FormPropertyProps = {
   draftId?: string;
   draftData?: Record<string, unknown>;
   onDraftSaved?: (draftId: string) => void;
+  onPropertyUpdated?: (propertyId: string, values: PropertyFormZod) => void;
   toast: React.RefObject<ToastType | null>;
   session: Session;
 };
