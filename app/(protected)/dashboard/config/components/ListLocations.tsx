@@ -78,7 +78,6 @@ export function ListLocations({ locations }: { locations: string[] }) {
       </Dialog>
       <DataTable
         value={items}
-        onValueChange={setItems}
         paginator
         rows={10}
         rowsPerPageOptions={[5, 10, 25, 50]}
@@ -88,8 +87,8 @@ export function ListLocations({ locations }: { locations: string[] }) {
         header={
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold text-hornez-blue">Localidad</h2>
-              <Button icon="pi pi-plus" className="dashboard-action-button p-0" text tooltip="Nueva localidad" tooltipOptions={{ position: "top" }} onClick={() => setShowCreate(true)} />
+              <h2 className="text-lg font-bold text-hornez-blue">Localidades</h2>
+              <Button icon="pi pi-plus" className="dashboard-action-button" text tooltip="Nueva localidad" tooltipOptions={{ position: "top" }} onClick={() => setShowCreate(true)} />
             </div>
             <InputText
               value={globalFilterValue}
@@ -113,7 +112,7 @@ export function ListLocations({ locations }: { locations: string[] }) {
           )}
         />
       </DataTable>
-      <Dialog visible={showCreate} onHide={() => setShowCreate(false)} header="Nueva localidad" modal style={{ width: "min(90vw, 28rem)" }}>
+      <Dialog visible={showCreate} onHide={() => setShowCreate(false)} header="Nueva Localidad" modal style={{ width: "min(90vw, 28rem)" }}>
         <InputText value={newName} onChange={(event) => setNewName(event.target.value)} placeholder="Localidad" className="w-full" />
         <div className="mt-4 flex justify-end gap-2"><Button label="Cancelar" severity="secondary" outlined onClick={() => setShowCreate(false)} /><Button label="Crear" className="dashboard-action-button" onClick={() => void handleCreate()} /></div>
       </Dialog>

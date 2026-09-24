@@ -135,7 +135,6 @@ export function ListListingTypes({ listingTypes }: { listingTypes: ListingTypeZo
       </Dialog>
       <DataTable
         value={filteredListingTypes}
-        onValueChange={(e) => setFilteredListingTypes(e)}
         paginator
         rows={10}
         rowsPerPageOptions={[5, 10, 25, 50]}

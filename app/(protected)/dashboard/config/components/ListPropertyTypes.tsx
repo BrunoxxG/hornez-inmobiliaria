@@ -102,7 +102,7 @@ export function ListPropertyTypes({ propertyTypes }: { propertyTypes: PropertyTy
   const header = (
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold text-hornez-blue">Tipo de propiedad</h2>
+          <h2 className="text-lg font-bold text-hornez-blue">Tipos de propiedades</h2>
           <Button
             icon="pi pi-plus"
             aria-label="Nuevo tipo de propiedad"
@@ -145,7 +145,6 @@ export function ListPropertyTypes({ propertyTypes }: { propertyTypes: PropertyTy
       </Dialog>
       <DataTable
         value={filteredPropertyTypes}
-        onValueChange={(e) => setFilteredPropertyTypes(e)}
         paginator
         rows={10}
         rowsPerPageOptions={[5, 10, 25, 50]}

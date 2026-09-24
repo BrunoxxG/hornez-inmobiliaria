@@ -963,13 +963,15 @@ export default function FormProperty(props: FormPropertyProps) {
           </div>
 
           <div className="flex gap-2 mt-8">
-            <Button
-              label="Guardar borrador"
-              icon="pi pi-file-edit"
-              className="dashboard-action-button"
-              type="button"
-              onClick={() => void handleSaveDraft()}
-            />
+            {!property && (
+              <Button
+                label="Guardar borrador"
+                icon="pi pi-file-edit"
+                className="dashboard-action-button"
+                type="button"
+                onClick={() => void handleSaveDraft()}
+              />
+            )}
             <Button
               label="Guardar Propiedad"
               className="dashboard-action-button"

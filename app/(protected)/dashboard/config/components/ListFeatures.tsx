@@ -28,7 +28,7 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
   const [filteredFeatures, setFilteredFeatures] = useState<FeatureZod[]>(
     features.filter((feature) => feature.category === category),
   );
-  const title = category === "SERVICE" ? "Servicio" : "Adicional";
+  const title = category === "SERVICE" ? "Servicios" : "Adicionales";
   const titlePlural = category === "SERVICE" ? "Servicios" : "Adicionales";
 
   const {
@@ -149,7 +149,6 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
       </Dialog>
       <DataTable
         value={filteredFeatures}
-        onValueChange={(e) => setFilteredFeatures(e)}
         paginator
         rows={10}
         rowsPerPageOptions={[5, 10, 25, 50]}
@@ -167,7 +166,7 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
       <Dialog
         visible={showNewFeatureModal}
         onHide={() => setShowNewFeatureModal(false)}
-        header={`Nuevo ${title}`}
+        header={`Nuevo ${category === "SERVICE" ? "Servicio" : "Adicional"}`}
         style={{ width: "700px" }}
         modal
         dismissableMask
@@ -186,7 +185,7 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
           setShowDetailModal(false);
           setSelectedFeature(undefined);
         }}
-        header={category === "SERVICE" ? "Servicio" : "Adicional"}
+        header={category === "SERVICE" ? "Servicios" : "Adicionales"}
         style={{ width: "700px" }}
         modal
         dismissableMask
