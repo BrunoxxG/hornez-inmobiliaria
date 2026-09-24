@@ -205,8 +205,8 @@ export default function ContactPage() {
               <p className="mt-2 text-gray-600">La Paz, Córdoba</p>
             </div>
             <iframe
-              title="Ubicación de Plaza de La Paz, Córdoba"
-              src="https://www.google.com/maps?q=Plaza%20de%20La%20Paz%2C%20C%C3%B3rdoba%2C%20Argentina&output=embed"
+              title="Ubicación de La Paz, Traslasierra, Córdoba"
+              src="https://www.google.com/maps?q=La%20Paz%2C%20Traslasierra%2C%20C%C3%B3rdoba%2C%20Argentina&output=embed"
               className="h-80 w-full border-0"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
