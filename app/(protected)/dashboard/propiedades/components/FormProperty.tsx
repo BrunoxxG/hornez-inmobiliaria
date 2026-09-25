@@ -726,7 +726,7 @@ export default function FormProperty(props: FormPropertyProps) {
                 {(["SERVICE", "ADDITIONAL"] as const).map((category) => (
                   <div key={category}>
                     <div className="mb-2 flex items-center justify-between">
-                      <label className="block text-sm font-medium text-gray-700">{category === "SERVICE" ? "Servicios *" : "Adicionales"}</label>
+                      <label className="block text-sm font-medium text-gray-700">{category === "SERVICE" ? "Servicios" : "Adicionales"}</label>
                     </div>
                     <Dropdown
                       options={features.filter((feature) => feature.category === category && !selectedFeatures.includes(feature.id))}
@@ -763,9 +763,6 @@ export default function FormProperty(props: FormPropertyProps) {
               {isLoading ? (
                 <span>Cargando servicios y adicionales...</span>
               ) : null}
-              {form.formState.errors.features && (
-                <small className="p-error">{form.formState.errors.features.message}</small>
-              )}
             </div>
 
             <div className="mb-3">
@@ -791,7 +788,7 @@ export default function FormProperty(props: FormPropertyProps) {
             </div>
 
             <div className="w-full col-span-2">
-              <label className="block text-sm font-semibold mb-2">Imágenes *</label>
+              <label className="block text-sm font-semibold mb-2">Imágenes</label>
               <FileUpload
                 mode="advanced"
                 multiple

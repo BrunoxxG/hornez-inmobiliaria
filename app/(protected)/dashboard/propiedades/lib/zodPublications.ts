@@ -91,7 +91,7 @@ export const propertyFormSchema = object({
   active: boolean(),
   standOut: boolean(),
   userId: string().min(1, "Usuario requerido"),
-  features: array(string()).min(1, "Debés seleccionar al menos un servicio"),
+  features: array(string()),
   video: string(),
   images: array(object({ url: string(), order: number() })).optional(),
   deletedImages: array(string()).optional(),

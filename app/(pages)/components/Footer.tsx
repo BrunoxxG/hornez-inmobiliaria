@@ -26,11 +26,7 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Contacto */}
           <div className="md:justify-self-end">
-            <h3 className="mb-2 text-[0.96rem] font-semibold uppercase tracking-wider text-white">
-              Contacto
-            </h3>
             <ul className="space-y-2 text-[0.96rem] text-gray-400">
               <li className="flex items-center gap-3">
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-gray-300 transition-colors hover:bg-hornez-orange/15 hover:text-hornez-orange">
@@ -49,13 +45,21 @@ export default function Footer() {
                 </a>
               </li>
               <li className="flex items-center gap-3">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-gray-300 transition-colors hover:bg-hornez-orange/15 hover:text-hornez-orange">
-                  <i className="pi pi-map-marker" />
-                </span>
-                <span className="transition-colors hover:text-hornez-orange">La Paz, Córdoba</span>
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=La%20Paz%2C%20Traslasierra%2C%20C%C3%B3rdoba%2C%20Argentina"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 transition-colors hover:text-hornez-orange"
+                >
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-gray-300 transition-colors hover:bg-hornez-orange/15 hover:text-hornez-orange">
+                    <i className="pi pi-map-marker" />
+                  </span>
+                  La Paz, Córdoba
+                </a>
               </li>
             </ul>
           </div>
+
         </div>
       </div>
 
