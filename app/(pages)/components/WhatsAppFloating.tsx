@@ -1,9 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const WHATSAPP_TOOLTIP_CLOSED_KEY = "whatsapp-tooltip-closed";
 
 export default function WhatsAppFloating() {
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setIsVisible(localStorage.getItem(WHATSAPP_TOOLTIP_CLOSED_KEY) !== "true");
+  }, []);
+
+  const handleClose = () => {
+    localStorage.setItem(WHATSAPP_TOOLTIP_CLOSED_KEY, "true");
+    setIsVisible(false);
+  };
 
   return (
     <div className="fixed bottom-5 right-5 z-50">
@@ -25,7 +36,7 @@ export default function WhatsAppFloating() {
           </p>
           <button
             type="button"
-            onClick={() => setIsVisible(false)}
+            onClick={handleClose}
             aria-label="Cerrar mensaje de WhatsApp"
             className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-orange-50 hover:text-hornez-orange"
           >

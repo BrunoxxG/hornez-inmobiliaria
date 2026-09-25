@@ -152,7 +152,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
 
                   {property.coveredArea != 0 && (
                     <div className="flex items-center justify-between gap-3">
-                      <span>Sup. cubierta</span>
+                      <span>Total construido</span>
                       <span className="font-medium text-gray-800">{property.coveredArea} m²</span>
                     </div>
                   )}

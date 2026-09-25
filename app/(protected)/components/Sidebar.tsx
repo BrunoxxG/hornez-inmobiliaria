@@ -28,16 +28,20 @@ export default function Sidebar({
         ${isCollapsed ? "w-20" : "w-65"}
       `}
     >
-      <div className="p-6 border-b border-gray-200 bg-gray-50">
+      <div className={`border-b border-gray-200 bg-white ${isCollapsed ? "p-3" : "p-5"}`}>
+        <img
+          src="/img/logoColor.png"
+          alt="Hornez Inmobiliaria"
+          className={`mx-auto object-contain ${isCollapsed ? "h-10 w-10" : "h-12 w-full"}`}
+        />
         {!isCollapsed && (
-          <>
-            <h2 className="text-2xl font-bold">Hornez Inmobiliaria</h2>
+          <div className="mt-3 text-center">
             <p className="text-sm text-gray-600">Panel de Administración</p>
-          </>
+          </div>
         )}
       </div>
 
-      <nav className="py-4">
+      <nav className="space-y-1 bg-gray-50 px-3 py-4">
         {MENU_ITEMS.filter((item) => !item.adminOnly || isAdminRole(userRole)).map((item) => {
           const isActive =
             pathname === item.path || pathname.startsWith(item.path + "/");
@@ -46,14 +50,14 @@ export default function Sidebar({
             <Link
               key={item.path}
               href={item.path}
-              className={`flex items-center cursor-pointer transition-all duration-200 border-l-[3px] ${
+              className={`group flex items-center cursor-pointer rounded-lg border border-transparent transition-all duration-200 ${
                 isActive
-                  ? "bg-[rgba(227,30,36,0.1)] text-hornez-blue border-hornez-blue font-semibold"
-                  : "border-transparent text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-              } ${isCollapsed ? "justify-center px-2 py-3.5" : "px-6 py-3.5"}`}
+                  ? "border-orange-200 bg-orange-50 text-gray-900 font-semibold shadow-sm"
+                  : "text-gray-600 hover:border-gray-200 hover:bg-white hover:text-gray-900"
+              } ${isCollapsed ? "justify-center px-2 py-3.5" : "px-3 py-3"}`}
             >
               <i
-                className={`${item.icon} ${isCollapsed ? "mr-0" : "mr-3"}`}
+                className={`${item.icon} ${isActive ? "text-hornez-orange" : "text-gray-400 group-hover:text-hornez-orange"} ${isCollapsed ? "mr-0" : "mr-3"}`}
                 style={{
                   fontSize: isCollapsed ? "1.25rem" : "1.125rem",
                 }}

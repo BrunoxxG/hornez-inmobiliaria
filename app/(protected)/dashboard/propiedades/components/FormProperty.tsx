@@ -668,7 +668,7 @@ export default function FormProperty(props: FormPropertyProps) {
             </div>
 
             <div className="w-full">
-              <label className="block text-sm font-semibold mb-2">Sup. cubierta (m²)</label>
+              <label className="block text-sm font-semibold mb-2">Total construido (m²)</label>
               <Controller name="coveredArea" control={form.control} render={({ field }) => <InputNumber value={field.value} onChange={(e) => field.onChange(e.value ?? 0)} className="w-full" />} />
             </div>
             <div className="w-full">
