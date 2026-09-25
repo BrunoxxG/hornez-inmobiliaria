@@ -10,7 +10,7 @@ import { useRef } from "react";
 import type { Toast as ToastType } from "primereact/toast";
 import { createManagedUser, deleteManagedUser, resetManagedUserPassword, updateManagedUser } from "../actions/actionsUsers";
 
-type ManagedUser = { id: string; name: string; email: string; role: "USER" | "ADMIN" | "SUPERADMIN"; createdAt: Date };
+type ManagedUser = { id: string; name: string; email: string; role: "BASIC" | "ADMIN" | "SUPERADMIN"; createdAt: Date };
 
 export default function UsersList({ users, currentRole }: { users: ManagedUser[]; currentRole: string }) {
   const [items, setItems] = useState(users);
@@ -18,9 +18,9 @@ export default function UsersList({ users, currentRole }: { users: ManagedUser[]
   const [resetUser, setResetUser] = useState<ManagedUser | null>(null);
   const [deleteUser, setDeleteUser] = useState<ManagedUser | null>(null);
   const [editUser, setEditUser] = useState<ManagedUser | null>(null);
-  const [editField, setEditField] = useState<"name" | "role">("name");
-  const [editForm, setEditForm] = useState({ name: "", role: "USER" as "USER" | "ADMIN" });
-  const [form, setForm] = useState({ name: "", email: "", password: "", role: "USER" as "USER" | "ADMIN" });
+  const [editField, setEditField] = useState<"name" | "email" | "role">("name");
+  const [editForm, setEditForm] = useState({ name: "", email: "", role: "BASIC" as "BASIC" | "ADMIN" });
+  const [form, setForm] = useState({ name: "", email: "", password: "", role: "BASIC" as "BASIC" | "ADMIN" });
   const [newPassword, setNewPassword] = useState("");
   const toast = useRef<ToastType | null>(null);
 
@@ -30,7 +30,7 @@ export default function UsersList({ users, currentRole }: { users: ManagedUser[]
     const result = await createManagedUser(form);
     if (!result.success) return showError(result.error);
     setShowCreate(false);
-    setForm({ name: "", email: "", password: "", role: "USER" });
+    setForm({ name: "", email: "", password: "", role: "BASIC" });
     toast.current?.show({ severity: "success", summary: "Creado", detail: "Usuario creado", life: 3000 });
     window.location.reload();
   };
@@ -89,16 +89,23 @@ export default function UsersList({ users, currentRole }: { users: ManagedUser[]
                         onClick={() => {
                           setEditUser(user);
                           setEditField("name");
-                          setEditForm({ name: user.name, role: user.role === "ADMIN" ? "ADMIN" : "USER" });
+                          setEditForm({ name: user.name, email: user.email, role: user.role === "ADMIN" ? "ADMIN" : "BASIC" });
                         }}
                       />
                     )}
                   </div>
                 </td>
-                <td className="p-4">{user.email}</td>
                 <td className="whitespace-nowrap p-4">
                   <div className="inline-flex items-center gap-1">
-                    <span>{user.role}</span>
+                    <span>{user.email}</span>
+                    {currentRole === "SUPERADMIN" && user.role !== "SUPERADMIN" && (
+                      <Button icon="pi pi-pencil" className="p-button-text" style={{ color: "#EF7D00" }} tooltip="Editar email" tooltipOptions={{ position: "top" }} aria-label={`Editar email de ${user.name}`} onClick={() => { setEditUser(user); setEditField("email"); setEditForm({ name: user.name, email: user.email, role: user.role === "ADMIN" ? "ADMIN" : "BASIC" }); }} />
+                    )}
+                  </div>
+                </td>
+                <td className="whitespace-nowrap p-4">
+                  <div className="inline-flex items-center gap-1">
+                    <span>{user.role === "BASIC" ? "Básico" : user.role === "ADMIN" ? "Administrador" : "Superadmin"}</span>
                     {currentRole === "SUPERADMIN" && user.role !== "SUPERADMIN" && (
                       <Button
                         icon="pi pi-pencil"
@@ -110,7 +117,7 @@ export default function UsersList({ users, currentRole }: { users: ManagedUser[]
                         onClick={() => {
                           setEditUser(user);
                           setEditField("role");
-                          setEditForm({ name: user.name, role: user.role === "ADMIN" ? "ADMIN" : "USER" });
+                          setEditForm({ name: user.name, email: user.email, role: user.role === "ADMIN" ? "ADMIN" : "BASIC" });
                         }}
                       />
                     )}
@@ -118,7 +125,7 @@ export default function UsersList({ users, currentRole }: { users: ManagedUser[]
                 </td>
                 <td className="p-4">
                   <Button label="Resetear contraseña" icon="pi pi-key" size="small" outlined onClick={() => setResetUser(user)} />
-                  {user.role !== "SUPERADMIN" && (currentRole === "SUPERADMIN" || user.role === "USER") && (
+                  {user.role !== "SUPERADMIN" && (currentRole === "SUPERADMIN" || user.role === "BASIC") && (
                     <Button
                       icon="pi pi-trash"
                       size="small"
@@ -142,17 +149,19 @@ export default function UsersList({ users, currentRole }: { users: ManagedUser[]
           <InputText placeholder="Nombre" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full" />
           <InputText placeholder="Email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="w-full" />
           <Password placeholder="Contraseña inicial" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} feedback={false} toggleMask className="w-full" inputClassName="w-full" />
-          {currentRole === "SUPERADMIN" && <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value as "USER" | "ADMIN" })} className="w-full rounded border p-2"><option value="USER">Usuario</option><option value="ADMIN">Administrador</option></select>}
+          {currentRole === "SUPERADMIN" && <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value as "BASIC" | "ADMIN" })} className="w-full rounded border p-2"><option value="BASIC">Básico</option><option value="ADMIN">Administrador</option></select>}
           <div className="flex justify-end gap-2"><Button label="Cancelar" severity="secondary" outlined onClick={() => setShowCreate(false)} /><Button label="Crear" onClick={() => void handleCreate()} /></div>
         </div>
       </Dialog>
-      <Dialog visible={editUser !== null} onHide={() => setEditUser(null)} header={editField === "name" ? "Editar nombre" : "Editar rol"} modal style={{ width: "min(90vw, 32rem)" }}>
+      <Dialog visible={editUser !== null} onHide={() => setEditUser(null)} header={editField === "name" ? "Editar nombre" : editField === "email" ? "Editar email" : "Editar rol"} modal style={{ width: "min(90vw, 32rem)" }}>
         <div className="space-y-3">
           {editField === "name" ? (
             <InputText placeholder="Nombre" value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} className="w-full" />
+          ) : editField === "email" ? (
+            <InputText placeholder="Email" type="email" value={editForm.email} onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} className="w-full" />
           ) : (
-            <select value={editForm.role} onChange={(e) => setEditForm({ ...editForm, role: e.target.value as "USER" | "ADMIN" })} className="w-full rounded border p-2">
-              <option value="USER">Usuario</option>
+            <select value={editForm.role} onChange={(e) => setEditForm({ ...editForm, role: e.target.value as "BASIC" | "ADMIN" })} className="w-full rounded border p-2">
+              <option value="BASIC">Básico</option>
               <option value="ADMIN">Administrador</option>
             </select>
           )}

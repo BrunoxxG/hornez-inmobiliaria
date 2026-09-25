@@ -12,7 +12,7 @@ async function main() {
   await prisma.user.createMany({
     data: [
       { name: "Bruno Gimenez", email: "brunogimenez@gmail.com", password, role: "SUPERADMIN" },
-      { name: "Mirko", email: "mirko@gmail.com", password, role: "USER" },
+      { name: "Mirko", email: "mirko@gmail.com", password, role: "BASIC" },
     ],
     skipDuplicates: true,
   });

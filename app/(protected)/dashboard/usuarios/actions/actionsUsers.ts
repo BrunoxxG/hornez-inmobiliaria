@@ -12,7 +12,7 @@ async function getAdminSession() {
   return session;
 }
 
-export async function createManagedUser(values: { name: string; email: string; password: string; role: "USER" | "ADMIN" }) {
+export async function createManagedUser(values: { name: string; email: string; password: string; role: "BASIC" | "ADMIN" }) {
   const session = await getAdminSession();
   if (!session) return { success: false, error: "No autorizado" };
   if (values.role === "ADMIN" && session.user.role !== "SUPERADMIN") {
@@ -44,7 +44,7 @@ export async function resetManagedUserPassword(userId: string, password: string)
   try {
     const target = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
     if (!target) return { success: false, error: "No se encontró el usuario" };
-    if (target.role !== "USER" && session.user.role !== "SUPERADMIN") {
+    if (target.role !== "BASIC" && session.user.role !== "SUPERADMIN") {
       return { success: false, error: "Solo el superadmin puede administrar cuentas administrativas" };
     }
 
@@ -57,23 +57,27 @@ export async function resetManagedUserPassword(userId: string, password: string)
   }
 }
 
-export async function updateManagedUser(userId: string, values: { name: string; role: "USER" | "ADMIN" }) {
+export async function updateManagedUser(userId: string, values: { name: string; email: string; role: "BASIC" | "ADMIN" }) {
   const session = await getAdminSession();
   if (!session || session.user.role !== "SUPERADMIN") {
     return { success: false, error: "Solo el superadmin puede editar usuarios" };
   }
 
   const name = values.name.trim();
+  const email = values.email.trim().toLowerCase();
   if (!name) return { success: false, error: "El nombre es obligatorio" };
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { success: false, error: "Ingresá un email válido" };
 
   try {
     const target = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
     if (!target) return { success: false, error: "No se encontró el usuario" };
     if (target.role === "SUPERADMIN") return { success: false, error: "No se puede modificar al superadmin" };
+    const existingEmail = await prisma.user.findFirst({ where: { email, NOT: { id: userId } }, select: { id: true } });
+    if (existingEmail) return { success: false, error: "Ese email ya está siendo utilizado" };
 
     await prisma.user.update({
       where: { id: userId },
-      data: { name, role: values.role },
+      data: { name, email, role: values.role },
     });
     revalidatePath("/dashboard/usuarios");
     return { success: true };

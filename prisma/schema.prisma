@@ -13,7 +13,7 @@ datasource db {
 }
 
 enum Role {
-  USER
+  BASIC
   ADMIN
   SUPERADMIN
 }
@@ -23,7 +23,7 @@ model User {
   name     String
   email    String @unique
   password String
-  role     Role   @default(USER)
+  role     Role   @default(BASIC)
 
   properties Property[] @relation("PropertyCreators")
   approvedProperties Property[] @relation("PropertyApprovals")
