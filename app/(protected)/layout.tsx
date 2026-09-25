@@ -9,6 +9,9 @@ export default async function Layout({ children }: { children: React.ReactNode }
   if (!session) {
     redirect("/login");
   }
+  if (session.user.mustChangePassword) {
+    redirect("/cambiar-password");
+  }
 
   let unreadInquiries = 0;
   let pendingApprovals = 0;

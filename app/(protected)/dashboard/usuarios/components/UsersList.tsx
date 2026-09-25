@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
-import { Password } from "primereact/password";
 import { Toast } from "primereact/toast";
 import { useRef } from "react";
 import type { Toast as ToastType } from "primereact/toast";
@@ -20,8 +19,7 @@ export default function UsersList({ users, currentRole }: { users: ManagedUser[]
   const [editUser, setEditUser] = useState<ManagedUser | null>(null);
   const [editField, setEditField] = useState<"name" | "email" | "role">("name");
   const [editForm, setEditForm] = useState({ name: "", email: "", role: "BASIC" as "BASIC" | "ADMIN" });
-  const [form, setForm] = useState({ name: "", email: "", password: "", role: "BASIC" as "BASIC" | "ADMIN" });
-  const [newPassword, setNewPassword] = useState("");
+  const [form, setForm] = useState({ name: "", email: "", role: "BASIC" as "BASIC" | "ADMIN" });
   const toast = useRef<ToastType | null>(null);
 
   const showError = (error?: string) => toast.current?.show({ severity: "error", summary: "Error", detail: error, life: 3000 });
@@ -30,18 +28,17 @@ export default function UsersList({ users, currentRole }: { users: ManagedUser[]
     const result = await createManagedUser(form);
     if (!result.success) return showError(result.error);
     setShowCreate(false);
-    setForm({ name: "", email: "", password: "", role: "BASIC" });
+    setForm({ name: "", email: "", role: "BASIC" });
     toast.current?.show({ severity: "success", summary: "Creado", detail: "Usuario creado", life: 3000 });
     window.location.reload();
   };
 
   const handleReset = async () => {
     if (!resetUser) return;
-    const result = await resetManagedUserPassword(resetUser.id, newPassword);
+    const result = await resetManagedUserPassword(resetUser.id);
     if (!result.success) return showError(result.error);
     setResetUser(null);
-    setNewPassword("");
-    toast.current?.show({ severity: "success", summary: "Actualizada", detail: "Contraseña reseteada", life: 3000 });
+    toast.current?.show({ severity: "success", summary: "Restablecida", detail: `La contraseña temporal es el email: ${result.email}`, life: 6000 });
   };
 
   const handleDelete = async () => {
@@ -148,7 +145,6 @@ export default function UsersList({ users, currentRole }: { users: ManagedUser[]
         <div className="space-y-3">
           <InputText placeholder="Nombre" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full" />
           <InputText placeholder="Email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="w-full" />
-          <Password placeholder="Contraseña inicial" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} feedback={false} toggleMask className="w-full" inputClassName="w-full" />
           {currentRole === "SUPERADMIN" && <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value as "BASIC" | "ADMIN" })} className="w-full rounded border p-2"><option value="BASIC">Básico</option><option value="ADMIN">Administrador</option></select>}
           <div className="flex justify-end gap-2"><Button label="Cancelar" severity="secondary" outlined onClick={() => setShowCreate(false)} /><Button label="Crear" onClick={() => void handleCreate()} /></div>
         </div>
@@ -169,9 +165,8 @@ export default function UsersList({ users, currentRole }: { users: ManagedUser[]
         </div>
       </Dialog>
       <Dialog visible={resetUser !== null} onHide={() => setResetUser(null)} header="Resetear contraseña" modal style={{ width: "min(90vw, 28rem)" }}>
-        <p className="mb-3">Nueva contraseña para <strong>{resetUser?.name}</strong></p>
-        <Password placeholder="Nueva contraseña" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} feedback={false} toggleMask className="w-full" inputClassName="w-full" />
-        <div className="mt-4 flex justify-end gap-2"><Button label="Cancelar" severity="secondary" outlined onClick={() => setResetUser(null)} /><Button label="Guardar" onClick={() => void handleReset()} /></div>
+        <p className="mb-3">La contraseña temporal será el email de <strong>{resetUser?.name}</strong>.</p>
+        <div className="mt-4 flex justify-end gap-2"><Button label="Cancelar" severity="secondary" outlined onClick={() => setResetUser(null)} /><Button label="Restablecer" onClick={() => void handleReset()} /></div>
       </Dialog>
       <Dialog visible={deleteUser !== null} onHide={() => setDeleteUser(null)} header="Confirmar eliminación" modal style={{ width: "min(90vw, 28rem)" }}>
         <p>¿Eliminar al usuario <strong>{deleteUser?.name}</strong>?</p>

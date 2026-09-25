@@ -12,7 +12,7 @@ async function getAdminSession() {
   return session;
 }
 
-export async function createManagedUser(values: { name: string; email: string; password: string; role: "BASIC" | "ADMIN" }) {
+export async function createManagedUser(values: { name: string; email: string; role: "BASIC" | "ADMIN" }) {
   const session = await getAdminSession();
   if (!session) return { success: false, error: "No autorizado" };
   if (values.role === "ADMIN" && session.user.role !== "SUPERADMIN") {
@@ -21,13 +21,13 @@ export async function createManagedUser(values: { name: string; email: string; p
 
   const name = values.name.trim();
   const email = values.email.trim().toLowerCase();
-  if (!name || !email || values.password.length < 8) {
-    return { success: false, error: "Completá los datos y usá una contraseña de al menos 8 caracteres" };
+  if (!name || !email) {
+    return { success: false, error: "Completá nombre y email" };
   }
 
   try {
-    const password = await bcrypt.hash(values.password, 10);
-    await prisma.user.create({ data: { name, email, password, role: values.role } });
+    const password = await bcrypt.hash(email, 10);
+    await prisma.user.create({ data: { name, email, password, mustChangePassword: true, role: values.role } });
     revalidatePath("/dashboard/usuarios");
     return { success: true };
   } catch (error) {
@@ -36,21 +36,19 @@ export async function createManagedUser(values: { name: string; email: string; p
   }
 }
 
-export async function resetManagedUserPassword(userId: string, password: string) {
+export async function resetManagedUserPassword(userId: string) {
   const session = await getAdminSession();
   if (!session) return { success: false, error: "No autorizado" };
-  if (password.length < 8) return { success: false, error: "La contraseña debe tener al menos 8 caracteres" };
-
   try {
-    const target = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
+    const target = await prisma.user.findUnique({ where: { id: userId }, select: { role: true, email: true } });
     if (!target) return { success: false, error: "No se encontró el usuario" };
     if (target.role !== "BASIC" && session.user.role !== "SUPERADMIN") {
       return { success: false, error: "Solo el superadmin puede administrar cuentas administrativas" };
     }
 
-    await prisma.user.update({ where: { id: userId }, data: { password: await bcrypt.hash(password, 10) } });
+    await prisma.user.update({ where: { id: userId }, data: { password: await bcrypt.hash(target.email, 10), mustChangePassword: true } });
     revalidatePath("/dashboard/usuarios");
-    return { success: true };
+    return { success: true, email: target.email };
   } catch (error) {
     console.error(error);
     return { success: false, error: "No se pudo resetear la contraseña" };

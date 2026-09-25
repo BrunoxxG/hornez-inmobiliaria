@@ -16,7 +16,7 @@ export default async function UsersPage() {
         <h1 className="text-3xl font-bold text-hornez-blue">Usuarios</h1>
         <p className="mt-2 text-gray-600">Administrá las cuentas que colaboran con la página.</p>
       </div>
-      <UsersList users={users} currentRole={session.user.role ?? "USER"} />
+      <UsersList users={users} currentRole={session.user.role ?? "BASIC"} />
     </section>
   );
 }
