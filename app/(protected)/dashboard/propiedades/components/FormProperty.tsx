@@ -13,8 +13,9 @@ import Loader from "@/app/(protected)/components/Loader";
 import { Dropdown } from "primereact/dropdown";
 import { InputTextarea } from "primereact/inputtextarea";
 import { InputNumber } from "primereact/inputnumber";
+import { InputSwitch } from "primereact/inputswitch";
 import { FileUpload } from "primereact/fileupload";
-import MapPicker from "./MapPickerGoogle";
+import MapPicker from "./MapPicker";
 import { isAdminRole } from "@/lib/authorization";
 import { deletePropertyDraft } from "../../borradores/actions/actionsDrafts";
 import { savePropertyDraft } from "../../borradores/actions/actionsDrafts";
@@ -35,10 +36,17 @@ type DocumentItem = {
   existing: boolean;
 };
 
+const DEFAULT_LOCATION = {
+  lat: -32.2174729,
+  lng: -65.0482866,
+};
+
 export default function FormProperty(props: FormPropertyProps) {
   const { property, locations = [], draftId, draftData, onDraftSaved, onPropertyUpdated, setOpenModalForm, toast, session } = props;
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasLocation, setHasLocation] = useState(Boolean(property?.lat && property?.lng));
+  const [isMapFullscreen, setIsMapFullscreen] = useState(false);
   const [existingImages, setExistingImages] = useState<ImageItem[]>([]);
   const [newImages, setNewImages] = useState<ImageItem[]>([]);
   const [deletedImages, setDeletedImages] = useState<string[]>([]);
@@ -92,7 +100,7 @@ export default function FormProperty(props: FormPropertyProps) {
       propertyTypeId: property?.propertyType.id || String(savedDraft.propertyTypeId || ""),
       address: property?.address || String(savedDraft.address || savedDraft.city || ""),
       city: property?.city || String(savedDraft.city || ""),
-      province: property?.province || String(savedDraft.province || ""),
+      province: property?.province || String(savedDraft.province || "Córdoba"),
       totalRooms: property?.totalRooms ?? Number(savedDraft.totalRooms || 0),
       bedrooms: property?.bedrooms ?? Number(savedDraft.bedrooms || 0),
       bathrooms: property?.bathrooms ?? Number(savedDraft.bathrooms || 0),
@@ -101,8 +109,8 @@ export default function FormProperty(props: FormPropertyProps) {
       landArea: property?.landArea ?? Number(savedDraft.landArea || 0),
       age: property?.age ?? Number(savedDraft.age || 0),
       floors: property?.floors ?? Number(savedDraft.floors || 0),
-      lat: property?.lat ?? Number(savedDraft.lat || 0),
-      lng: property?.lng ?? Number(savedDraft.lng || 0),
+      lat: property?.lat || Number(savedDraft.lat) || DEFAULT_LOCATION.lat,
+      lng: property?.lng || Number(savedDraft.lng) || DEFAULT_LOCATION.lng,
       status: property?.status || (savedDraft.status as PropertyFormZod["status"]) || "AVAILABLE",
       documentation: property?.documentation || (savedDraft.documentation as PropertyFormZod["documentation"]) || "DEED",
       active: property?.active ?? Boolean(savedDraft.active ?? true),
@@ -354,16 +362,21 @@ export default function FormProperty(props: FormPropertyProps) {
   const geocodeAddress = async () => {
     const address = form.getValues("address");
     const city = form.getValues("city");
-    const province = form.getValues("province");
+    const province = form.getValues("province") || "Córdoba";
 
-    if (!city || !province) {
+    if (!city) {
+      form.setValue("province", province);
+      form.setValue("lat", DEFAULT_LOCATION.lat);
+      form.setValue("lng", DEFAULT_LOCATION.lng);
       toast.current?.show({
-        severity: "warn",
-        summary: "Faltan datos",
-        detail: "Completá ciudad y provincia",
+        severity: "info",
+        summary: "Ubicación aproximada",
+        detail: "Se utilizó la ubicación de La Paz",
       });
       return;
     }
+
+    form.setValue("province", province);
 
     const fullQuery = `${address}, ${city}, ${province}, Argentina`;
 
@@ -562,37 +575,47 @@ export default function FormProperty(props: FormPropertyProps) {
               />
             </div>
 
-            <div className="mb-3">
-              <label className="block text-sm font-semibold mb-2">Provincia *</label>
-              <Controller
-                name="province"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <>
-                    <InputText {...field} placeholder="Córdoba" className={`w-full ${fieldState.error ? "p-invalid" : ""}`} />
-                    {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
-                  </>
-                )}
-              />
-            </div>
-
             <div className="col-span-2">
               <div className="flex items-end justify-between mb-2">
-                <label className="block text-sm font-semibold">Ubicación</label>
-                <Button type="button" label="Buscar en mapa" onClick={geocodeAddress} className="p-button-secondary" />
+                <div className="flex items-center gap-2">
+                  <label className="block text-sm font-semibold">Ubicación</label>
+                  <InputSwitch
+                    checked={hasLocation}
+                    onChange={(event) => {
+                      const enabled = event.value;
+                      setHasLocation(enabled);
+                      if (enabled) {
+                        form.setValue("lat", form.getValues("lat") || DEFAULT_LOCATION.lat);
+                        form.setValue("lng", form.getValues("lng") || DEFAULT_LOCATION.lng);
+                      } else {
+                        form.setValue("lat", 0);
+                        form.setValue("lng", 0);
+                      }
+                    }}
+                  />
+                </div>
+                {hasLocation && <Button type="button" label="Buscar en mapa" onClick={() => setIsMapFullscreen(true)} className="p-button-secondary" />}
               </div>
-              <MapPicker
-                lat={form.watch("lat") || 0}
-                lng={form.watch("lng") || 0}
-                onChange={(lat, lng) => {
-                  form.setValue("lat", lat);
-                  form.setValue("lng", lng);
-                }}
-              />
+              {hasLocation ? (
+                <>
+                  <MapPicker
+                    lat={form.watch("lat") || DEFAULT_LOCATION.lat}
+                    lng={form.watch("lng") || DEFAULT_LOCATION.lng}
+                    onChange={(lat, lng) => {
+                      form.setValue("lat", lat);
+                      form.setValue("lng", lng);
+                    }}
+                  />
 
-              <div className="text-xs mt-2 text-gray-500">
-                Lat: {form.watch("lat")} | Lng: {form.watch("lng")}
-              </div>
+                  <div className="text-xs mt-2 text-gray-500">
+                    Lat: {form.watch("lat")} | Lng: {form.watch("lng")}
+                  </div>
+                </>
+              ) : (
+                <p className="rounded-lg bg-gray-100 px-4 py-3 text-sm text-gray-500">
+                  Ubicación desactivada para esta propiedad.
+                </p>
+              )}
             </div>
 
             <div className="w-full">
@@ -999,6 +1022,34 @@ export default function FormProperty(props: FormPropertyProps) {
           </div>
         </div>
       </form>
+      {isMapFullscreen && hasLocation && (
+        <div className="fixed inset-0 z-[10000] bg-white">
+          <div className="absolute left-0 right-0 top-0 z-10 flex items-center justify-between bg-white/95 px-4 py-3 shadow-md backdrop-blur-sm">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">Seleccionar ubicación</h2>
+              <p className="text-sm text-gray-500">Hacé clic en el mapa o mové el marcador.</p>
+            </div>
+            <Button
+              type="button"
+              label="Cerrar mapa"
+              icon="pi pi-times"
+              onClick={() => setIsMapFullscreen(false)}
+              className="dashboard-action-button"
+            />
+          </div>
+          <div className="h-full w-full pt-20">
+            <MapPicker
+              lat={form.watch("lat") || DEFAULT_LOCATION.lat}
+              lng={form.watch("lng") || DEFAULT_LOCATION.lng}
+              height="100%"
+              onChange={(lat, lng) => {
+                form.setValue("lat", lat);
+                form.setValue("lng", lng);
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
