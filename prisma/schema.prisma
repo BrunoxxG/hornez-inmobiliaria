@@ -13,7 +13,7 @@ datasource db {
 }
 
 enum Role {
-  USER
+  BASIC
   ADMIN
   SUPERADMIN
 }
@@ -23,9 +23,12 @@ model User {
   name     String
   email    String @unique
   password String
-  role     Role   @default(USER)
+  mustChangePassword Boolean @default(false)
+  role     Role   @default(BASIC)
 
-  properties Property[]
+  properties Property[] @relation("PropertyCreators")
+  approvedProperties Property[] @relation("PropertyApprovals")
+  drafts Draft[]
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
@@ -53,6 +56,15 @@ model PropertyType {
   @@map("property_types")
 }
 
+model Locality {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("localities")
+}
+
 enum Currency {
   USD
   ARS
@@ -75,6 +87,35 @@ enum FeatureCategory {
   ADDITIONAL
 }
 
+enum ContactReason {
+  TASACION
+  COMPRA
+  VENTA
+  OTRO
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model ContactInquiry {
+  id        String        @id @default(cuid())
+  name      String
+  email     String
+  phone     String
+  reason    ContactReason
+  message   String
+  read      Boolean       @default(false)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([read])
+  @@index([createdAt])
+  @@map("contact_inquiries")
+}
+
 model Property {
   id          String  @id @default(cuid())
   title       String
@@ -95,19 +136,29 @@ model Property {
   bedrooms   Int
   bathrooms  Int
   area       Float
+  coveredArea Float @default(0)
+  landArea Float @default(0)
+  age Int @default(0)
+  floors Int @default(0)
 
   currency Currency @default(USD)
 
   lat Float
   lng Float
 
-  status   PropertyStatus @default(AVAILABLE)
+  status        PropertyStatus        @default(AVAILABLE)
   documentation PropertyDocumentation @default(DEED)
-  active   Boolean        @default(true)
-  standOut Boolean        @default(false)
+  active        Boolean               @default(true)
+  standOut      Boolean               @default(false)
 
   userId String
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation("PropertyCreators", fields: [userId], references: [id])
+
+  approvalStatus ApprovalStatus @default(PENDING)
+  approvedById String?
+  approvedBy User? @relation("PropertyApprovals", fields: [approvedById], references: [id])
+  approvedAt DateTime?
+  rejectionReason String?
 
   images    Image[]
   documents Document[]
@@ -125,13 +176,27 @@ model Property {
   @@index([bedrooms])
   @@index([bathrooms])
   @@index([status])
+  @@index([approvalStatus])
   @@map("properties")
 }
 
+model Draft {
+  id        String   @id @default(cuid())
+  title     String   @default("Sin título")
+  data      Json
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([updatedAt])
+  @@map("property_drafts")
+}
+
 model Feature {
-  id   String @id @default(cuid())
-  name String
-  slug String @unique
+  id       String          @id @default(cuid())
+  name     String
+  slug     String          @unique
   category FeatureCategory @default(SERVICE)
 
   properties PropertyFeature[]
@@ -166,10 +231,10 @@ model Image {
 }
 
 model Document {
-  id         String   @id @default(cuid())
-  url        String
-  name       String
-  
+  id   String @id @default(cuid())
+  url  String
+  name String
+
   property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   propertyId String
 

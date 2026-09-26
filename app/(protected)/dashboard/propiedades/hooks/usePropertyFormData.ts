@@ -38,9 +38,19 @@ export function usePropertyFormData() {
     };
   }, []);
 
+  const refreshData = async () => {
+    const [propertyTypesRes, featuresRes] = await Promise.all([
+      fetch("/api/property-types").then((r) => r.json()),
+      fetch("/api/features").then((r) => r.json()),
+    ]);
+    setPropertyTypes(propertyTypesRes);
+    setFeatures(featuresRes);
+  };
+
   return {
     propertyTypes,
     features,
     isLoading,
+    refreshData,
   };
 }

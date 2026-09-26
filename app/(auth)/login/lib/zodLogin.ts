@@ -1,7 +1,7 @@
 import { object, string,} from "zod";
 
 export const loginSchema = object({
-  email: string("Email is required" ).min(1, "Email is required").email("Invalid email"),
+  identifier: string("Email o usuario requerido").trim().min(1, "Email o usuario requerido"),
   password: string("Password is required")
     .min(1, "Password is required")
     .min(6, "Password must be more than 6 characters")

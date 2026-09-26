@@ -14,8 +14,13 @@ export default {
           throw new Error("Invalid credentials");
         }
 
-        const user = await prisma.user.findUnique({
-          where: { email: data.email },
+        const user = await prisma.user.findFirst({
+          where: {
+            OR: [
+              { email: data.identifier.toLowerCase() },
+              { name: { equals: data.identifier, mode: "insensitive" } },
+            ],
+          },
         });
 
         if (!user || !user.password) {

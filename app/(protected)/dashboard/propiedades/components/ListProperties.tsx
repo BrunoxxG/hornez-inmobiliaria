@@ -2,7 +2,7 @@
 
 import { DataTable, DataTableFilterMeta } from "primereact/datatable";
 import { InputText } from "primereact/inputtext";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { FilterMatchMode } from "primereact/api";
@@ -10,26 +10,70 @@ import { Dialog } from "primereact/dialog";
 import { Toast } from "primereact/toast";
 import type { Toast as ToastType } from "primereact/toast";
 import { useDataTableFilters } from "@/app/lib/hooks/useDataTableFilters";
-import { PROPERTY_STATUS, PropertyZod } from "../lib/zodPublications";
+import { PROPERTY_STATUS, PropertyFormZod, PropertyZod } from "../lib/zodPublications";
 import FormProperty from "./FormProperty";
 import { formatCurrency } from "@/app/(protected)/lib/utils";
 import { Tag } from "primereact/tag";
 import { classNames } from "primereact/utils";
 import { Session } from "next-auth";
+import { deleteProperty } from "../actions/actionsProperties";
 
 const initialFilters: DataTableFilterMeta = {
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   title: { value: null, matchMode: FilterMatchMode.CONTAINS },
 };
 
-export function ListProperties({ properties, session }: { properties: PropertyZod[], session: Session }) {
+export function ListProperties({ properties, locations, session }: { properties: PropertyZod[], locations: string[], session: Session }) {
+  const [items, setItems] = useState(properties);
   const [showNewPropertyModal, setShowNewPropertyModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [propertyToDelete, setPropertyToDelete] = useState<PropertyZod | null>(null);
   const [selectedProperty, setSelectedProperty] = useState<PropertyZod | undefined>(undefined);
   const toast = useRef<ToastType | null>(null);
 
+  useEffect(() => {
+    setItems(properties);
+  }, [properties]);
+
   const { filters, globalFilterValue, onGlobalFilterChange, clearFilters, hasActiveFilters } =
     useDataTableFilters(initialFilters);
+
+  const handleDeleteProperty = async (property: PropertyZod) => {
+    const result = await deleteProperty(property.id);
+    if (result.success) {
+      setItems((current) => current.filter((item) => item.id !== property.id));
+      toast.current?.show({ severity: "success", summary: "Eliminada", detail: "Propiedad eliminada", life: 3000 });
+    } else {
+      toast.current?.show({ severity: "error", summary: "Error", detail: result.error, life: 3000 });
+    }
+  };
+
+  const handlePropertyUpdated = (propertyId: string, values: PropertyFormZod) => {
+    setItems((current) => current.map((item) => item.id === propertyId
+      ? {
+          ...item,
+          title: values.title,
+          description: values.description,
+          price: values.price,
+          address: values.address,
+          city: values.city,
+          province: values.province,
+          totalRooms: values.totalRooms,
+          bedrooms: values.bedrooms,
+          bathrooms: values.bathrooms,
+          area: values.area,
+          coveredArea: values.coveredArea,
+          landArea: values.landArea,
+          age: values.age,
+          floors: values.floors,
+          currency: values.currency,
+          status: values.status,
+          active: values.active,
+          standOut: values.standOut,
+          video: values.video,
+        }
+      : item));
+  };
 
   const titleBodyTemplate = (rowData: PropertyZod) => {
     return (
@@ -48,11 +92,12 @@ export function ListProperties({ properties, session }: { properties: PropertyZo
     );
   };
 
+  const optionalPropertyDataTemplate = (value: number, suffix: string) => value ? `${value} ${suffix}` : "-";
+
   const addressBodyTemplate = (rowData: PropertyZod) => {
     return (
       <div>
-        <div className="font-semibold">{rowData.address}</div>
-        <div className="text-sm text-gray-600">{rowData.city}</div>
+        <div className="font-semibold">{rowData.city}</div>
       </div>
     );
   };
@@ -64,6 +109,13 @@ export function ListProperties({ properties, session }: { properties: PropertyZo
         severity={PROPERTY_STATUS[rowData.status].severity}
       />
     );
+  };
+
+  const approvalBodyTemplate = (rowData: PropertyZod) => {
+    const labels = { PENDING: "Pendiente", APPROVED: "Aprobada", REJECTED: "Rechazada" };
+    const severity = { PENDING: "warning", APPROVED: "success", REJECTED: "warning" } as const;
+    const status = rowData.approvalStatus ?? "APPROVED";
+    return <Tag value={labels[status]} severity={severity[status]} />;
   };
 
   const destacadaBodyTemplate = (row: PropertyZod) => {
@@ -100,7 +152,7 @@ export function ListProperties({ properties, session }: { properties: PropertyZo
           style={{
             backgroundColor: "#F7F7F7",
             border: "1px solid #F9F9F9",
-            color: "#E31E24",
+            color: "#EF7D00",
             borderRadius: "8px",
             minHeight: "40px",
             minWidth: "40px",
@@ -111,6 +163,17 @@ export function ListProperties({ properties, session }: { properties: PropertyZo
             e.stopPropagation();
             setSelectedProperty(rowData);
             setShowDetailModal(true);
+          }}
+        />
+        <Button
+          icon="pi pi-trash"
+          className="p-button-text"
+          severity="danger"
+          tooltip="Eliminar"
+          tooltipOptions={{ position: "top" }}
+          onClick={(e) => {
+            e.stopPropagation();
+            setPropertyToDelete(rowData);
           }}
         />
       </div>
@@ -130,7 +193,7 @@ export function ListProperties({ properties, session }: { properties: PropertyZo
           <Button
             type="button"
             icon="pi pi-filter-slash"
-            label="Limpiar"
+            label="Limpiar filtros"
             outlined
             onClick={clearFilters}
             style={{
@@ -144,7 +207,7 @@ export function ListProperties({ properties, session }: { properties: PropertyZo
         label="Nueva Propiedad"
         icon="pi pi-plus"
         onClick={() => setShowNewPropertyModal(true)}
-        className="p-button-danger"
+        className="dashboard-action-button"
       />
     </div>
   );
@@ -152,8 +215,30 @@ export function ListProperties({ properties, session }: { properties: PropertyZo
   return (
     <div>
       <Toast ref={toast} />
+      <Dialog
+        visible={propertyToDelete !== null}
+        onHide={() => setPropertyToDelete(null)}
+        header="Confirmar eliminación"
+        modal
+        style={{ width: "min(90vw, 28rem)" }}
+      >
+        <p className="m-0 text-gray-700">
+          ¿Estás seguro que deseas eliminar <strong>{propertyToDelete?.title}</strong>?
+        </p>
+        <div className="mt-6 flex justify-end gap-2">
+          <Button label="Cancelar" severity="secondary" outlined onClick={() => setPropertyToDelete(null)} />
+          <Button
+            label="Eliminar"
+            severity="danger"
+            onClick={() => {
+              if (propertyToDelete) void handleDeleteProperty(propertyToDelete);
+              setPropertyToDelete(null);
+            }}
+          />
+        </div>
+      </Dialog>
       <DataTable
-        value={properties}
+        value={items}
         paginator
         rows={10}
         rowsPerPageOptions={[5, 10, 25, 50]}
@@ -167,9 +252,8 @@ export function ListProperties({ properties, session }: { properties: PropertyZo
         <Column field="title" header="Título" body={titleBodyTemplate} sortable style={{ minWidth: "200px" }} />
         <Column field="price" header="Precio" body={priceBodyTemplate} sortable style={{ minWidth: "100px" }} />
         <Column field="propertyType.name" header="Tipo" sortable style={{ minWidth: "100px" }} />
-        <Column field="listingType.name" header="Lista" sortable style={{ minWidth: "100px" }} />
-        <Column field="address" header="Dirección" body={addressBodyTemplate} sortable style={{ minWidth: "200px" }} />
         <Column field="status" header="Estado" body={statusBodyTemplate} sortable style={{ minWidth: "100px" }} />
+        <Column field="approvalStatus" header="Aprobación" body={approvalBodyTemplate} sortable style={{ minWidth: "120px" }} />
         <Column field="active" header="Mostrar" body={destacadaBodyTemplate} sortable style={{ minWidth: "100px" }} />
         <Column header="Acciones" body={actionsBodyTemplate} exportable={false} style={{ minWidth: "100px" }} />
       </DataTable>
@@ -182,7 +266,7 @@ export function ListProperties({ properties, session }: { properties: PropertyZo
         modal
         dismissableMask
       >
-        <FormProperty setOpenModalForm={setShowNewPropertyModal} toast={toast} session={session}/>
+        <FormProperty locations={locations} setOpenModalForm={setShowNewPropertyModal} toast={toast} session={session}/>
       </Dialog>
 
       <Dialog
@@ -197,7 +281,7 @@ export function ListProperties({ properties, session }: { properties: PropertyZo
         dismissableMask
       >
         {selectedProperty && (
-          <FormProperty property={selectedProperty} setOpenModalForm={setShowDetailModal} toast={toast} session={session}/>
+          <FormProperty property={selectedProperty} locations={locations} onPropertyUpdated={handlePropertyUpdated} setOpenModalForm={setShowDetailModal} toast={toast} session={session}/>
         )}
       </Dialog>
     </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Music2 } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -24,6 +24,26 @@ export default function ContactPage() {
   const [sent, setSent] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [submitError, setSubmitError] = useState("");
+
+  useEffect(() => {
+    if (!sent) return;
+
+    const timeout = window.setTimeout(() => setSent(false), 3000);
+    return () => window.clearTimeout(timeout);
+  }, [sent]);
+
+  useEffect(() => {
+    if (window.location.hash !== "#formulario-contacto") return;
+
+    const frame = window.requestAnimationFrame(() => {
+      document.getElementById("formulario-contacto")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -71,10 +91,18 @@ export default function ContactPage() {
           >
             <div className="absolute inset-0 bg-transparent" />
             <div className="relative mx-auto w-full max-w-3xl rounded-2xl bg-white/60 p-6 shadow-xl sm:w-[35%] sm:p-8">
+              {sent && (
+                <div
+                  aria-live="polite"
+                  className="absolute left-1/2 top-1/2 z-10 w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-lg bg-green-600 px-4 py-4 text-center font-semibold text-white shadow-xl"
+                >
+                  Mensaje enviado correctamente.
+                </div>
+              )}
               <p className="mb-6 text-center text-lg font-medium leading-relaxed text-gray-800">
                 Déjanos tus datos y nos comunicaremos a la brevedad.
               </p>
-              <form noValidate onSubmit={handleSubmit} className="space-y-5">
+              <form id="formulario-contacto" noValidate onSubmit={handleSubmit} className="scroll-mt-50 space-y-5">
                 <div className="space-y-5">
                   <label className="block space-y-2 text-center text-sm font-semibold text-gray-700">
                     NOMBRE
@@ -126,6 +154,7 @@ export default function ContactPage() {
                       <option value="" disabled>Seleccionar motivo</option>
                       <option value="tasacion">Tasación</option>
                       <option value="compra">Compra</option>
+                      <option value="venta">Venta</option>
                       <option value="otro">Otro</option>
                     </select>
                   </label>
@@ -139,10 +168,9 @@ export default function ContactPage() {
                   className="w-full resize-y rounded-md border border-gray-300 bg-white/90 px-3 py-2 text-center font-normal outline-none transition-colors focus:border-hornez-orange focus:ring-1 focus:ring-hornez-orange" />
                 </label>
                 <div className="flex flex-col items-center justify-center gap-3">
-                  <button type="submit" className="rounded-md bg-hornez-orange px-6 py-3 font-semibold text-white transition-colors hover:bg-orange-600">
+                  <button type="submit" className="rounded-md border border-gray-300 bg-gray-200 px-6 py-3 font-semibold text-gray-800 transition-colors hover:border-hornez-orange hover:bg-hornez-orange hover:text-white focus:border-hornez-orange focus:bg-hornez-orange focus:text-white active:border-hornez-orange active:bg-hornez-orange active:text-white">
                     Enviar
                   </button>
-                  {sent && <p className="text-sm font-medium text-green-700">Mensaje enviado correctamente.</p>}
                   {submitError && <p className="text-sm font-medium text-red-600">{submitError}</p>}
                 </div>
               </form>
@@ -174,12 +202,11 @@ export default function ContactPage() {
 
           <section className="mt-10 overflow-hidden rounded-xl bg-white shadow-sm">
             <div className="p-6 text-center">
-              <h2 className="text-xl font-bold text-hornez-blue">Ubicación del pueblo La Paz</h2>
               <p className="mt-2 text-gray-600">La Paz, Córdoba</p>
             </div>
             <iframe
-              title="Ubicación de Plaza de La Paz, Córdoba"
-              src="https://www.google.com/maps?q=Plaza%20de%20La%20Paz%2C%20C%C3%B3rdoba%2C%20Argentina&output=embed"
+              title="Ubicación de La Paz, Traslasierra, Córdoba"
+              src="https://www.google.com/maps?q=La%20Paz%2C%20Traslasierra%2C%20C%C3%B3rdoba%2C%20Argentina&output=embed"
               className="h-80 w-full border-0"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
@@ -187,7 +214,7 @@ export default function ContactPage() {
           </section>
 
           <section className="mt-10">
-            <h2 className="mb-5 text-center text-xl font-bold text-hornez-blue">Hablemos</h2>
+            <h2 className="mb-5 text-center text-xl font-bold text-hornez-blue">¿Hablamos?</h2>
             <div className="grid gap-4 sm:grid-cols-3">
               {CONTACT_PHONES.map((contact) => (
                 <Link key={contact.label} href={contact.href} className="rounded-lg bg-white p-4 text-center shadow-sm transition-colors hover:bg-orange-50">

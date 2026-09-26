@@ -23,6 +23,7 @@ export function ListPropertyTypes({ propertyTypes }: { propertyTypes: PropertyTy
   const [showNewPropertyTypeModal, setShowNewPropertyTypeModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedPropertyType, setSelectedPropertyType] = useState<PropertyTypeZod | undefined>(undefined);
+  const [propertyTypeToDelete, setPropertyTypeToDelete] = useState<PropertyTypeZod | null>(null);
   const toast = useRef<ToastType | null>(null);
   const [filteredPropertyTypes, setFilteredPropertyTypes] = useState<PropertyTypeZod[]>(propertyTypes);
 
@@ -34,6 +35,18 @@ export function ListPropertyTypes({ propertyTypes }: { propertyTypes: PropertyTy
     hasActiveFilters,
   } = useDataTableFilters(initialFilters);
 
+  const handleDelete = async () => {
+    if (!propertyTypeToDelete) return;
+    const result = await deletePropertyType(propertyTypeToDelete.id);
+    if (!result.success) {
+      toast.current?.show({ severity: "error", summary: "Error", detail: result.error });
+      return;
+    }
+    setFilteredPropertyTypes((current) => current.filter((propertyType) => propertyType.id !== propertyTypeToDelete.id));
+    setPropertyTypeToDelete(null);
+    toast.current?.show({ severity: "success", summary: "OK", detail: "Tipo de propiedad eliminado" });
+  };
+
   const nameBodyTemplate = (rowData: PropertyTypeZod) => {
     return (
       <div>
@@ -43,19 +56,6 @@ export function ListPropertyTypes({ propertyTypes }: { propertyTypes: PropertyTy
   };
 
   const actionsBodyTemplate = (rowData: PropertyTypeZod) => {
-    const handleDelete = async () => {
-      if (!window.confirm(`¿Eliminar el tipo de propiedad "${rowData.name}"?`)) return;
-
-      const result = await deletePropertyType(rowData.id);
-      if (!result.success) {
-        toast.current?.show({ severity: "error", summary: "Error", detail: result.error });
-        return;
-      }
-
-      setFilteredPropertyTypes((current) => current.filter((propertyType) => propertyType.id !== rowData.id));
-      toast.current?.show({ severity: "success", summary: "OK", detail: "Tipo de propiedad eliminado" });
-    };
-
     return (
       <div className="flex gap-2">
         <Button
@@ -64,7 +64,7 @@ export function ListPropertyTypes({ propertyTypes }: { propertyTypes: PropertyTy
           style={{
             backgroundColor: "#F7F7F7",
             border: "1px solid #F9F9F9",
-            color: "#E31E24",
+            color: "#EF7D00",
             borderRadius: "8px",
             minHeight: "40px",
             minWidth: "40px",
@@ -83,7 +83,7 @@ export function ListPropertyTypes({ propertyTypes }: { propertyTypes: PropertyTy
           style={{
             backgroundColor: "#F7F7F7",
             border: "1px solid #F9F9F9",
-            color: "#6B7280",
+            color: "#C00D0D",
             borderRadius: "8px",
             minHeight: "40px",
             minWidth: "40px",
@@ -92,7 +92,7 @@ export function ListPropertyTypes({ propertyTypes }: { propertyTypes: PropertyTy
           tooltipOptions={{ position: "top" }}
           onClick={(e) => {
             e.stopPropagation();
-            void handleDelete();
+            setPropertyTypeToDelete(rowData);
           }}
         />
       </div>
@@ -100,7 +100,18 @@ export function ListPropertyTypes({ propertyTypes }: { propertyTypes: PropertyTy
   };
 
   const header = (
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-bold text-hornez-blue">Tipos de propiedades</h2>
+          <Button
+            icon="pi pi-plus"
+            aria-label="Nuevo tipo de propiedad"
+            tooltip="Nuevo tipo de propiedad"
+            tooltipOptions={{ position: "top" }}
+            onClick={() => setShowNewPropertyTypeModal(true)}
+            className="dashboard-action-button"
+          />
+        </div>
         <div className="flex gap-2">
           <InputText
             value={globalFilterValue}
@@ -112,7 +123,7 @@ export function ListPropertyTypes({ propertyTypes }: { propertyTypes: PropertyTy
             <Button
               type="button"
               icon="pi pi-filter-slash"
-              label="Limpiar"
+              label="Limpiar filtros"
               outlined
               onClick={clearFilters}
               style={{
@@ -122,21 +133,18 @@ export function ListPropertyTypes({ propertyTypes }: { propertyTypes: PropertyTy
             />
           )}
         </div>
-        <Button
-          label="Nuevo Tipo de Propiedad"
-          icon="pi pi-plus"
-          onClick={() => setShowNewPropertyTypeModal(true)}
-          className="p-button-danger"
-        />
       </div>
   );
 
   return (
-    <div className="border">
+    <div className="border rounded-lg">
       <Toast ref={toast} />
+      <Dialog visible={propertyTypeToDelete !== null} onHide={() => setPropertyTypeToDelete(null)} header="Confirmar eliminación" modal style={{ width: "min(90vw, 28rem)" }}>
+        <p>¿Eliminar el tipo de propiedad <strong>{propertyTypeToDelete?.name}</strong>?</p>
+        <div className="mt-4 flex justify-end gap-2"><Button label="Cancelar" severity="secondary" outlined onClick={() => setPropertyTypeToDelete(null)} /><Button label="Eliminar" severity="danger" onClick={() => void handleDelete()} /></div>
+      </Dialog>
       <DataTable
         value={filteredPropertyTypes}
-        onValueChange={(e) => setFilteredPropertyTypes(e)}
         paginator
         rows={10}
         rowsPerPageOptions={[5, 10, 25, 50]}
@@ -177,7 +185,7 @@ export function ListPropertyTypes({ propertyTypes }: { propertyTypes: PropertyTy
         modal
         dismissableMask
       >
-        {selectedPropertyType && <FormPropertyType propertyType={selectedPropertyType} setOpenModalForm={setShowDetailModal} toast={toast} />}
+        {selectedPropertyType && <FormPropertyType propertyType={selectedPropertyType} onUpdated={(updated) => setFilteredPropertyTypes((current) => current.map((item) => item.id === updated.id ? updated : item))} setOpenModalForm={setShowDetailModal} toast={toast} />}
       </Dialog>
     </div>
   );

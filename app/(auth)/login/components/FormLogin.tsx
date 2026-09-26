@@ -20,7 +20,7 @@ export default function FormLogin() {
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
+      identifier: "",
       password: "",
     },
   });
@@ -33,7 +33,7 @@ export default function FormLogin() {
       if (response.error) {
         setError(response.error);
       } else {
-        router.push('/dashboard/home');
+        router.push('/dashboard/propiedades');
       }
     } catch (error) {
       setError("Error al conectar con el servidor");
@@ -47,19 +47,19 @@ export default function FormLogin() {
       {error && <Message severity="error" text={error} className="w-full mb-3" />}
       <div className="p-fluid">
         <div className="mb-3">
-          <label htmlFor="email" className="block mb-2 font-semibold">
+          <label htmlFor="identifier" className="block mb-2 font-semibold">
             Email / Usuario
           </label>
           <Controller
-            name="email"
+            name="identifier"
             control={form.control}
             render={({ field, fieldState }) => (
               <>
                 <InputText
-                  id="email"
-                  type="email"
+                  id="identifier"
+                  type="text"
                   {...field}
-                  placeholder="usuario@speedunlimited.com"
+                  placeholder="tu@email.com o tu usuario"
                   autoComplete="username"
                   className={fieldState.error ? "p-invalid" : ""}
                 />

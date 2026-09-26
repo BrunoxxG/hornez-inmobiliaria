@@ -150,11 +150,21 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                     </div>
                   )}
 
-                  {property.area != 0 && (
+                  {property.coveredArea != 0 && (
                     <div className="flex items-center justify-between gap-3">
-                      <span>Superficie</span>
-                      <span className="font-medium text-gray-800">{property.area} m²</span>
+                      <span>Total construido</span>
+                      <span className="font-medium text-gray-800">{property.coveredArea} m²</span>
                     </div>
+                  )}
+
+                  {property.landArea != 0 && (
+                    <div className="flex items-center justify-between gap-3"><span>Terreno</span><span className="font-medium text-gray-800">{property.landArea} m²</span></div>
+                  )}
+                  {property.age != 0 && (
+                    <div className="flex items-center justify-between gap-3"><span>Antigüedad</span><span className="font-medium text-gray-800">{property.age} años</span></div>
+                  )}
+                  {property.floors != 0 && (
+                    <div className="flex items-center justify-between gap-3"><span>Plantas</span><span className="font-medium text-gray-800">{property.floors}</span></div>
                   )}
 
                 </div>

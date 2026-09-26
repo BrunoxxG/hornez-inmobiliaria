@@ -1,7 +1,9 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { startTransition, useCallback, useEffect, useRef, useState } from "react";
+import { InputNumber } from "primereact/inputnumber";
+import { Dropdown } from "primereact/dropdown";
 
 type Option = {
   id: string;
@@ -18,9 +20,11 @@ type Feature = {
 export default function PropertiesFilters({
   propertyTypes = [],
   features = [],
+  locations = [],
 }: {
   propertyTypes?: Option[];
   features?: Feature[];
+  locations?: string[];
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -28,12 +32,28 @@ export default function PropertiesFilters({
   const [priceCurrency, setPriceCurrency] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
+  const [location, setLocation] = useState("");
+  const priceFilterRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setPriceCurrency(searchParams.get("currency") || "");
-    setMinPrice(searchParams.get("minPrice") || "");
-    setMaxPrice(searchParams.get("maxPrice") || "");
+    startTransition(() => {
+      setPriceCurrency(searchParams.get("currency") || "");
+      setMinPrice(searchParams.get("minPrice") || "");
+      setMaxPrice(searchParams.get("maxPrice") || "");
+      setLocation(searchParams.get("location") || "");
+    });
   }, [searchParams]);
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (priceFilterRef.current && !priceFilterRef.current.contains(event.target as Node)) {
+        setIsPriceOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
 
   const updateParam = useCallback(
     (key: string, value?: string) => {
@@ -94,16 +114,26 @@ export default function PropertiesFilters({
     setPriceCurrency("");
     setMinPrice("");
     setMaxPrice("");
+    setLocation("");
   };
 
+  const applyLocation = (value = location) => {
+    const selectedLocation = value.trim();
+    setLocation(selectedLocation);
+    updateParam("location", selectedLocation);
+  };
+
+  const formatPrice = (value: string) =>
+    value ? new Intl.NumberFormat("es-AR", { maximumFractionDigits: 2 }).format(Number(value)) : "";
+
   const priceLabel = priceCurrency || minPrice || maxPrice
-    ? `${priceCurrency || "Precio"}${minPrice ? ` desde ${minPrice}` : ""}${maxPrice ? ` hasta ${maxPrice}` : ""}`
+    ? `${priceCurrency || "Precio"}${minPrice ? ` desde ${formatPrice(minPrice)}` : ""}${maxPrice ? ` hasta ${formatPrice(maxPrice)}` : ""}`
     : "Precio";
 
   return (
     <div className="mt-16 bg-white shadow-sm">
       <div className="mx-auto max-w-7xl space-y-4 p-4">
-        <div className="flex flex-nowrap items-start gap-4 overflow-x-auto">
+        <div className="flex flex-wrap items-start gap-4">
           <select
             value={searchParams.get("tipo") || ""}
             onChange={(event) => updateParam("tipo", event.target.value)}
@@ -119,7 +149,7 @@ export default function PropertiesFilters({
             ))}
           </select>
 
-          <div className="relative min-w-48 flex-1">
+          <div ref={priceFilterRef} className="relative min-w-48 flex-1">
             <button
               type="button"
               onClick={() => setIsPriceOpen((open) => !open)}
@@ -142,26 +172,36 @@ export default function PropertiesFilters({
                     <option value="USD">USD</option>
                     <option value="ARS">ARS</option>
                   </select>
-                  <input
-                    type="number"
-                    min="0"
+                  <InputNumber
+                    value={minPrice ? Number(minPrice) : null}
+                    onValueChange={(event) => setMinPrice(event.value == null ? "" : String(event.value))}
+                    locale="es-AR"
+                    mode="decimal"
+                    min={0}
+                    minFractionDigits={0}
+                    maxFractionDigits={2}
+                    useGrouping
                     placeholder="Desde"
-                    value={minPrice}
-                    onChange={(event) => setMinPrice(event.target.value)}
+                    inputClassName="w-full"
                     className="w-full rounded border p-2 focus:border-hornez-orange focus:ring-1 focus:ring-hornez-orange"
                   />
-                  <input
-                    type="number"
-                    min="0"
+                  <InputNumber
+                    value={maxPrice ? Number(maxPrice) : null}
+                    onValueChange={(event) => setMaxPrice(event.value == null ? "" : String(event.value))}
+                    locale="es-AR"
+                    mode="decimal"
+                    min={0}
+                    minFractionDigits={0}
+                    maxFractionDigits={2}
+                    useGrouping
                     placeholder="Hasta"
-                    value={maxPrice}
-                    onChange={(event) => setMaxPrice(event.target.value)}
+                    inputClassName="w-full"
                     className="w-full rounded border p-2 focus:border-hornez-orange focus:ring-1 focus:ring-hornez-orange"
                   />
                   <button
                     type="button"
                     onClick={applyPriceFilters}
-                    className="w-full rounded bg-hornez-orange px-4 py-2 font-semibold text-white hover:bg-orange-600"
+                    className="w-full rounded border border-gray-300 bg-gray-200 px-4 py-2 font-semibold text-gray-800 transition-colors hover:border-hornez-orange hover:bg-hornez-orange hover:text-white focus:border-hornez-orange focus:bg-hornez-orange focus:text-white active:border-hornez-orange active:bg-hornez-orange active:text-white"
                   >
                     Aplicar
                   </button>
@@ -169,6 +209,18 @@ export default function PropertiesFilters({
               </div>
             )}
           </div>
+
+          <Dropdown
+            value={location}
+            options={locations}
+            onChange={(event) => applyLocation(event.value || "")}
+            filter
+            showClear
+            placeholder="Localidad"
+            aria-label="Localidad"
+            className={`min-w-64 flex-1 rounded border ${location ? "border-hornez-orange bg-orange-50" : ""}`}
+            filterPlaceholder="Buscar localidad"
+          />
 
           <select
             value={searchParams.get("documentation") || ""}
@@ -183,21 +235,6 @@ export default function PropertiesFilters({
           </select>
 
           <select
-            value={searchParams.get("areaRange") || ""}
-            onChange={(event) => updateParam("areaRange", event.target.value)}
-            className={`min-w-48 flex-1 rounded border p-2 focus:border-hornez-orange focus:ring-1 focus:ring-hornez-orange ${
-              searchParams.get("areaRange") ? "border-hornez-orange bg-orange-50" : ""
-            }`}
-          >
-            <option value="">Superficie</option>
-            <option value="0-50">Hasta 50 m²</option>
-            <option value="50-100">50 - 100 m²</option>
-            <option value="100-200">100 - 200 m²</option>
-            <option value="200-500">200 - 500 m²</option>
-            <option value="500-">500+ m²</option>
-          </select>
-
-          <select
             value={searchParams.get("bedrooms") || ""}
             onChange={(event) => updateParam("bedrooms", event.target.value)}
             className={`min-w-48 flex-1 rounded border p-2 focus:border-hornez-orange focus:ring-1 focus:ring-hornez-orange ${
@@ -205,7 +242,7 @@ export default function PropertiesFilters({
             }`}
           >
             <option value="">Dormitorios</option>
-            {[1, 2, 3, 4, 5].map((number) => (
+            {[1, 2, 3].map((number) => (
               <option key={number} value={number}>
                 {number}+
               </option>
@@ -215,9 +252,9 @@ export default function PropertiesFilters({
           <button
             type="button"
             onClick={clearFilters}
-            className="shrink-0 rounded border border-gray-300 bg-gray-200 px-4 py-2 text-gray-800 transition-colors hover:bg-gray-300 focus:border-hornez-orange focus:bg-hornez-orange focus:text-white active:border-hornez-orange active:bg-hornez-orange active:text-white"
+            className="shrink-0 rounded border border-gray-300 bg-gray-200 px-4 py-2 text-gray-800 transition-colors hover:border-hornez-orange hover:bg-hornez-orange hover:text-white focus:border-hornez-orange focus:bg-hornez-orange focus:text-white active:border-hornez-orange active:bg-hornez-orange active:text-white"
           >
-            Limpiar
+            Limpiar filtros
           </button>
         </div>
 

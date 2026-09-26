@@ -5,6 +5,7 @@ import { Controller, useForm } from "react-hook-form";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { FormPropertyProps, PROPERTY_STATUS, propertyFormSchema, PropertyFormZod } from "../lib/zodPublications";
 import { createProperty, updateProperty } from "../actions/actionsProperties";
 import { usePropertyFormData } from "../hooks/usePropertyFormData";
@@ -12,8 +13,12 @@ import Loader from "@/app/(protected)/components/Loader";
 import { Dropdown } from "primereact/dropdown";
 import { InputTextarea } from "primereact/inputtextarea";
 import { InputNumber } from "primereact/inputnumber";
+import { InputSwitch } from "primereact/inputswitch";
 import { FileUpload } from "primereact/fileupload";
-import MapPicker from "./MapPickerGoogle";
+import MapPicker from "./MapPicker";
+import { isAdminRole } from "@/lib/authorization";
+import { deletePropertyDraft } from "../../borradores/actions/actionsDrafts";
+import { savePropertyDraft } from "../../borradores/actions/actionsDrafts";
 
 type ImageItem = {
   id?: string;
@@ -31,9 +36,17 @@ type DocumentItem = {
   existing: boolean;
 };
 
+const DEFAULT_LOCATION = {
+  lat: -32.2174729,
+  lng: -65.0482866,
+};
+
 export default function FormProperty(props: FormPropertyProps) {
-  const { property, setOpenModalForm, toast, session } = props;
+  const { property, locations = [], draftId, draftData, onDraftSaved, onPropertyUpdated, setOpenModalForm, toast, session } = props;
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasLocation, setHasLocation] = useState(Boolean(property?.lat && property?.lng));
+  const [isMapFullscreen, setIsMapFullscreen] = useState(false);
   const [existingImages, setExistingImages] = useState<ImageItem[]>([]);
   const [newImages, setNewImages] = useState<ImageItem[]>([]);
   const [deletedImages, setDeletedImages] = useState<string[]>([]);
@@ -42,6 +55,7 @@ export default function FormProperty(props: FormPropertyProps) {
   const [deletedDocuments, setDeletedDocuments] = useState<string[]>([]);
 
   const { propertyTypes, features, isLoading } = usePropertyFormData();
+  const savedDraft = draftData ?? {};
 
   useEffect(() => {
     if (property?.images) {
@@ -79,31 +93,36 @@ export default function FormProperty(props: FormPropertyProps) {
     resolver: zodResolver(propertyFormSchema),
     mode: "onChange",
     defaultValues: {
-      title: property?.title || "",
-      description: property?.description || "",
-      price: property?.price || 0,
-      currency: property?.currency || "USD",
-      propertyTypeId: property?.propertyType.id || "",
-      address: property?.address || "",
-      city: property?.city || "La Paz",
-      province: property?.province || "Córdoba",
-      totalRooms: property?.totalRooms ?? 0,
-      bedrooms: property?.bedrooms ?? 0,
-      bathrooms: property?.bathrooms ?? 0,
-      area: property?.area ?? 0,
-      lat: property?.lat ?? 0,
-      lng: property?.lng ?? 0,
-      status: property?.status || "AVAILABLE",
-      documentation: property?.documentation || "DEED",
-      active: property?.active ?? true,
-      standOut: property?.standOut ?? false,
+      title: property?.title || String(savedDraft.title || ""),
+      description: property?.description || String(savedDraft.description || ""),
+      price: property?.price || Number(savedDraft.price || 0),
+      currency: property?.currency || (savedDraft.currency as "USD" | "ARS") || "USD",
+      propertyTypeId: property?.propertyType.id || String(savedDraft.propertyTypeId || ""),
+      address: property?.address || String(savedDraft.address || savedDraft.city || ""),
+      city: property?.city || String(savedDraft.city || ""),
+      province: property?.province || String(savedDraft.province || "Córdoba"),
+      totalRooms: property?.totalRooms ?? Number(savedDraft.totalRooms || 0),
+      bedrooms: property?.bedrooms ?? Number(savedDraft.bedrooms || 0),
+      bathrooms: property?.bathrooms ?? Number(savedDraft.bathrooms || 0),
+      area: property?.area ?? Number(savedDraft.area || 0),
+      coveredArea: property?.coveredArea ?? Number(savedDraft.coveredArea || 0),
+      landArea: property?.landArea ?? Number(savedDraft.landArea || 0),
+      age: property?.age ?? Number(savedDraft.age || 0),
+      floors: property?.floors ?? Number(savedDraft.floors || 0),
+      lat: property?.lat || Number(savedDraft.lat) || DEFAULT_LOCATION.lat,
+      lng: property?.lng || Number(savedDraft.lng) || DEFAULT_LOCATION.lng,
+      status: property?.status || (savedDraft.status as PropertyFormZod["status"]) || "AVAILABLE",
+      documentation: property?.documentation || (savedDraft.documentation as PropertyFormZod["documentation"]) || "DEED",
+      active: property?.active ?? Boolean(savedDraft.active ?? true),
+      standOut: property?.standOut ?? Boolean(savedDraft.standOut ?? false),
       userId: property?.userId || session.user.id,
-      features: property?.features?.map((f) => f.feature.id) || [],
-      video: property?.video || "",
+      features: property?.features?.map((f) => f.feature.id) || (Array.isArray(savedDraft.features) ? savedDraft.features.filter((value): value is string => typeof value === "string") : []),
+      video: property?.video || String(savedDraft.video || ""),
     },
   });
 
   const { reset } = form;
+  const { clearErrors } = form;
 
   const selectedFeatures = form.watch("features") || [];
 
@@ -114,6 +133,7 @@ export default function FormProperty(props: FormPropertyProps) {
   const handleAddFeature = (featureId: string) => {
     if (!selectedFeatures.includes(featureId)) {
       form.setValue("features", [...selectedFeatures, featureId]);
+      clearErrors("features");
     }
   };
 
@@ -123,6 +143,7 @@ export default function FormProperty(props: FormPropertyProps) {
       selectedFeatures.filter((f) => f !== featureId),
     );
   };
+
 
   const uploadImages = async (images: ImageItem[], title: string) => {
     const uploads = await Promise.all(
@@ -270,13 +291,28 @@ export default function FormProperty(props: FormPropertyProps) {
           throw new Error(error);
         }
 
+        if (draftId) {
+          const draftResult = await deletePropertyDraft(draftId);
+          if (!draftResult.success) {
+            toast.current?.show({
+              severity: "warn",
+              summary: "Propiedad guardada",
+              detail: "La propiedad se guardó, pero no se pudo eliminar el borrador",
+              life: 4000,
+            });
+          } else {
+            onDraftSaved?.(draftId);
+          }
+        }
+
         toast.current?.show({
           severity: "success",
           summary: "OK",
-          detail: "Propiedad guardada",
+          detail: isAdminRole(session.user.role) ? "Propiedad guardada" : "Propiedad enviada para aprobación",
         });
       }
 
+      router.refresh();
       setOpenModalForm?.(false);
     } catch (error) {
       toast.current?.show({
@@ -287,6 +323,17 @@ export default function FormProperty(props: FormPropertyProps) {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleSaveDraft = async () => {
+    const result = await savePropertyDraft(draftId, form.getValues() as unknown as Record<string, unknown>);
+    if (!result.success) {
+      toast.current?.show({ severity: "error", summary: "Error", detail: result.error, life: 3000 });
+      return;
+    }
+    toast.current?.show({ severity: "success", summary: "Guardado", detail: "Borrador guardado", life: 3000 });
+    setOpenModalForm?.(false);
+    router.refresh();
   };
 
   const onSubmitUpdate = async (values: PropertyFormZod) => {
@@ -307,6 +354,7 @@ export default function FormProperty(props: FormPropertyProps) {
       detail: "Propiedad actualizada exitosamente",
       life: 3000,
     });
+    onPropertyUpdated?.(propertyId, values);
     reset();
     setOpenModalForm?.(false);
   };
@@ -314,16 +362,21 @@ export default function FormProperty(props: FormPropertyProps) {
   const geocodeAddress = async () => {
     const address = form.getValues("address");
     const city = form.getValues("city");
-    const province = form.getValues("province");
+    const province = form.getValues("province") || "Córdoba";
 
-    if (!city || !province) {
+    if (!city) {
+      form.setValue("province", province);
+      form.setValue("lat", DEFAULT_LOCATION.lat);
+      form.setValue("lng", DEFAULT_LOCATION.lng);
       toast.current?.show({
-        severity: "warn",
-        summary: "Faltan datos",
-        detail: "Completá ciudad y provincia",
+        severity: "info",
+        summary: "Ubicación aproximada",
+        detail: "Se utilizó la ubicación de La Paz",
       });
       return;
     }
+
+    form.setValue("province", province);
 
     const fullQuery = `${address}, ${city}, ${province}, Argentina`;
 
@@ -393,6 +446,12 @@ export default function FormProperty(props: FormPropertyProps) {
         })}
       >
         <div className="p-4">
+          {property?.approvalStatus === "REJECTED" && property.rejectionReason && (
+            <div className="mb-5 rounded-lg border border-yellow-300 bg-yellow-50 p-4 text-yellow-900">
+              <p className="text-sm font-bold">Motivo del rechazo</p>
+              <p className="mt-1 whitespace-pre-line text-sm">{property.rejectionReason}</p>
+            </div>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="mb-3 col-span-2">
               <label className="block text-sm font-semibold mb-2">Título *</label>
@@ -409,7 +468,7 @@ export default function FormProperty(props: FormPropertyProps) {
             </div>
 
             <div className="mb-3 col-span-2">
-              <label className="block text-sm font-semibold mb-2">Descripción *</label>
+              <label className="block text-sm font-semibold mb-2">Descripción</label>
               <Controller
                 name="description"
                 control={form.control}
@@ -443,7 +502,7 @@ export default function FormProperty(props: FormPropertyProps) {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-2">Moneda *</label>
+              <label className="block text-sm font-semibold mb-2">Moneda</label>
               <Controller
                 name="currency"
                 control={form.control}
@@ -465,7 +524,9 @@ export default function FormProperty(props: FormPropertyProps) {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-2">Tipo *</label>
+              <div className="mb-2 flex items-center justify-between">
+                <label className="block text-sm font-semibold">Tipo *</label>
+              </div>
               <Controller
                 name="propertyTypeId"
                 control={form.control}
@@ -478,6 +539,8 @@ export default function FormProperty(props: FormPropertyProps) {
                       optionValue="id"
                       className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
                       placeholder="Seleccionar Tipo"
+                      showClear
+                      onChange={(event) => field.onChange(event.value)}
                     />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                   </>
@@ -486,27 +549,26 @@ export default function FormProperty(props: FormPropertyProps) {
             </div>
 
             <div className="mb-3">
-              <label className="block text-sm font-semibold mb-2">Dirección *</label>
+              <label className="block text-sm font-semibold mb-2">Localidad *</label>
               <Controller
-                name="address"
+                name="city"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <>
-                    <InputText {...field} placeholder="Dirección" className={`w-full ${fieldState.error ? "p-invalid" : ""}`} />
-                    {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
-                  </>
-                )}
-              />
-            </div>
-
-            <div className="mb-3">
-              <label className="block text-sm font-semibold mb-2">Provincia *</label>
-              <Controller
-                name="province"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <>
-                    <InputText {...field} placeholder="Córdoba" className={`w-full ${fieldState.error ? "p-invalid" : ""}`} />
+                    <Dropdown
+                      value={field.value}
+                      options={Array.from(new Set([...(locations.length > 0 ? locations : []), field.value].filter(Boolean))).sort((a, b) => a.localeCompare(b, "es"))}
+                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
+                      placeholder="Seleccionar localidad"
+                      showClear
+                      onChange={(event) => {
+                        field.onChange(event.value);
+                        if (event.value) {
+                          clearErrors(["city", "address"]);
+                        }
+                        if (!property) form.setValue("address", event.value || "");
+                      }}
+                    />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                   </>
                 )}
@@ -515,25 +577,49 @@ export default function FormProperty(props: FormPropertyProps) {
 
             <div className="col-span-2">
               <div className="flex items-end justify-between mb-2">
-                <label className="block text-sm font-semibold">Ubicación *</label>
-                <Button type="button" label="Buscar en mapa" onClick={geocodeAddress} className="p-button-secondary" />
+                <div className="flex items-center gap-2">
+                  <label className="block text-sm font-semibold">Ubicación</label>
+                  <InputSwitch
+                    checked={hasLocation}
+                    onChange={(event) => {
+                      const enabled = event.value;
+                      setHasLocation(enabled);
+                      if (enabled) {
+                        form.setValue("lat", form.getValues("lat") || DEFAULT_LOCATION.lat);
+                        form.setValue("lng", form.getValues("lng") || DEFAULT_LOCATION.lng);
+                      } else {
+                        form.setValue("lat", 0);
+                        form.setValue("lng", 0);
+                      }
+                    }}
+                  />
+                </div>
+                {hasLocation && <Button type="button" label="Buscar en mapa" onClick={() => setIsMapFullscreen(true)} className="p-button-secondary" />}
               </div>
-              <MapPicker
-                lat={form.watch("lat") || 0}
-                lng={form.watch("lng") || 0}
-                onChange={(lat, lng) => {
-                  form.setValue("lat", lat);
-                  form.setValue("lng", lng);
-                }}
-              />
+              {hasLocation ? (
+                <>
+                  <MapPicker
+                    lat={form.watch("lat") || DEFAULT_LOCATION.lat}
+                    lng={form.watch("lng") || DEFAULT_LOCATION.lng}
+                    onChange={(lat, lng) => {
+                      form.setValue("lat", lat);
+                      form.setValue("lng", lng);
+                    }}
+                  />
 
-              <div className="text-xs mt-2 text-gray-500">
-                Lat: {form.watch("lat")} | Lng: {form.watch("lng")}
-              </div>
+                  <div className="text-xs mt-2 text-gray-500">
+                    Lat: {form.watch("lat")} | Lng: {form.watch("lng")}
+                  </div>
+                </>
+              ) : (
+                <p className="rounded-lg bg-gray-100 px-4 py-3 text-sm text-gray-500">
+                  Ubicación desactivada para esta propiedad.
+                </p>
+              )}
             </div>
 
             <div className="w-full">
-              <label className="block text-sm font-semibold mb-2">Ambientes *</label>
+              <label className="block text-sm font-semibold mb-2">Ambientes</label>
               <Controller
                 name="totalRooms"
                 control={form.control}
@@ -551,7 +637,7 @@ export default function FormProperty(props: FormPropertyProps) {
             </div>
 
             <div className="w-full">
-              <label className="block text-sm font-semibold mb-2">Dormitorios *</label>
+              <label className="block text-sm font-semibold mb-2">Dormitorios</label>
               <Controller
                 name="bedrooms"
                 control={form.control}
@@ -569,7 +655,7 @@ export default function FormProperty(props: FormPropertyProps) {
             </div>
 
             <div className="w-full">
-              <label className="block text-sm font-semibold mb-2">Baños *</label>
+              <label className="block text-sm font-semibold mb-2">Baños</label>
               <Controller
                 name="bathrooms"
                 control={form.control}
@@ -587,7 +673,7 @@ export default function FormProperty(props: FormPropertyProps) {
             </div>
 
             <div className="w-full">
-              <label className="block text-sm font-semibold mb-2">Area (m2) *</label>
+              <label className="block text-sm font-semibold mb-2">Area (m2)</label>
               <Controller
                 name="area"
                 control={form.control}
@@ -602,6 +688,23 @@ export default function FormProperty(props: FormPropertyProps) {
                   </>
                 )}
               />
+            </div>
+
+            <div className="w-full">
+              <label className="block text-sm font-semibold mb-2">Total construido (m²)</label>
+              <Controller name="coveredArea" control={form.control} render={({ field }) => <InputNumber value={field.value} onChange={(e) => field.onChange(e.value ?? 0)} className="w-full" />} />
+            </div>
+            <div className="w-full">
+              <label className="block text-sm font-semibold mb-2">Terreno (m²)</label>
+              <Controller name="landArea" control={form.control} render={({ field }) => <InputNumber value={field.value} onChange={(e) => field.onChange(e.value ?? 0)} className="w-full" />} />
+            </div>
+            <div className="w-full">
+              <label className="block text-sm font-semibold mb-2">Antigüedad</label>
+              <Controller name="age" control={form.control} render={({ field }) => <InputNumber value={field.value} onChange={(e) => field.onChange(e.value ?? 0)} min={0} className="w-full" />} />
+            </div>
+            <div className="w-full">
+              <label className="block text-sm font-semibold mb-2">Plantas</label>
+              <Controller name="floors" control={form.control} render={({ field }) => <InputNumber value={field.value} onChange={(e) => field.onChange(e.value ?? 0)} min={0} className="w-full" />} />
             </div>
 
             <div className="mb-3">
@@ -633,28 +736,7 @@ export default function FormProperty(props: FormPropertyProps) {
                       }))}
                       className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
                       placeholder="Seleccionar estado"
-                    />
-                    {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
-                  </>
-                )}
-              />
-            </div>
-
-            <div className="mb-3">
-              <label className="block text-sm font-semibold mb-2">Documentación *</label>
-              <Controller
-                name="documentation"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <>
-                    <Dropdown
-                      {...field}
-                      options={[
-                        { label: "Escritura", value: "DEED" },
-                        { label: "Derechos posesorios", value: "POSSESSORY_RIGHTS" },
-                      ]}
-                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
-                      placeholder="Seleccionar documentación"
+                      showClear
                     />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                   </>
@@ -663,19 +745,19 @@ export default function FormProperty(props: FormPropertyProps) {
             </div>
 
             <div className="w-full col-span-2">
-              <div className="flex flex-col gap-4">
+              <div className="grid gap-4 md:grid-cols-2">
                 {(["SERVICE", "ADDITIONAL"] as const).map((category) => (
                   <div key={category}>
-                    <label className="mb-2 block text-sm font-medium text-gray-700">
-                      {category === "SERVICE" ? "Servicios" : "Adicionales"}
-                    </label>
+                    <div className="mb-2 flex items-center justify-between">
+                      <label className="block text-sm font-medium text-gray-700">{category === "SERVICE" ? "Servicios" : "Adicionales"}</label>
+                    </div>
                     <Dropdown
                       options={features.filter((feature) => feature.category === category && !selectedFeatures.includes(feature.id))}
                       optionLabel="name"
                       optionValue="id"
-                      onChange={(e) => handleAddFeature(e.value)}
                       className="w-full"
                       placeholder={category === "SERVICE" ? "Seleccionar servicios" : "Seleccionar adicionales"}
+                      onChange={(event) => handleAddFeature(event.value)}
                     />
                     {!isLoading && (
                       <div className="mt-4 flex flex-wrap gap-2">
@@ -706,8 +788,30 @@ export default function FormProperty(props: FormPropertyProps) {
               ) : null}
             </div>
 
+            <div className="mb-3">
+              <label className="block text-sm font-semibold mb-2">Documentación</label>
+              <Controller
+                name="documentation"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <>
+                    <Dropdown
+                      {...field}
+                      options={[
+                        { label: "Escritura", value: "DEED" },
+                        { label: "Derechos posesorios", value: "POSSESSORY_RIGHTS" },
+                      ]}
+                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
+                      placeholder="Seleccionar documentación"
+                    />
+                    {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
+                  </>
+                )}
+              />
+            </div>
+
             <div className="w-full col-span-2">
-              <label className="block text-sm font-semibold mb-2">Imágenes *</label>
+              <label className="block text-sm font-semibold mb-2">Imágenes</label>
               <FileUpload
                 mode="advanced"
                 multiple
@@ -900,15 +1004,52 @@ export default function FormProperty(props: FormPropertyProps) {
           </div>
 
           <div className="flex gap-2 mt-8">
+            {!property && (
+              <Button
+                label="Guardar borrador"
+                icon="pi pi-file-edit"
+                className="dashboard-action-button"
+                type="button"
+                onClick={() => void handleSaveDraft()}
+              />
+            )}
             <Button
               label="Guardar Propiedad"
-              className="p-button-danger"
+              className="dashboard-action-button"
               type="submit"
               disabled={isSubmitting}
             />
           </div>
         </div>
       </form>
+      {isMapFullscreen && hasLocation && (
+        <div className="fixed inset-0 z-[10000] bg-white">
+          <div className="absolute left-0 right-0 top-0 z-10 flex items-center justify-between bg-white/95 px-4 py-3 shadow-md backdrop-blur-sm">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">Seleccionar ubicación</h2>
+              <p className="text-sm text-gray-500">Hacé clic en el mapa o mové el marcador.</p>
+            </div>
+            <Button
+              type="button"
+              label="Cerrar mapa"
+              icon="pi pi-times"
+              onClick={() => setIsMapFullscreen(false)}
+              className="dashboard-action-button"
+            />
+          </div>
+          <div className="h-full w-full pt-20">
+            <MapPicker
+              lat={form.watch("lat") || DEFAULT_LOCATION.lat}
+              lng={form.watch("lng") || DEFAULT_LOCATION.lng}
+              height="100%"
+              onChange={(lat, lng) => {
+                form.setValue("lat", lat);
+                form.setValue("lng", lng);
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

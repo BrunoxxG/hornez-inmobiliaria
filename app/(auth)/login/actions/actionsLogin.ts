@@ -8,7 +8,7 @@ import { loginSchema } from "../lib/zodLogin";
 export async function loginAction(values: z.infer<typeof loginSchema>) {
   try {
     await signIn("credentials", {
-      email: values.email,
+      identifier: values.identifier,
       password: values.password,
       redirect: false,
     });

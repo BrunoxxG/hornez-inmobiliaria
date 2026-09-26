@@ -12,7 +12,40 @@ const getRange = (min?: string, max?: string) => {
   };
 };
 
-export async function getPropertiesView(filters: any): Promise<PropertyZod[]> {
+type PropertyFilters = {
+  currency?: "USD" | "ARS";
+  minPrice?: string;
+  maxPrice?: string;
+  documentation?: "POSSESSORY_RIGHTS" | "DEED";
+  bedrooms?: string;
+  tipo?: string;
+  features?: string;
+  location?: string;
+};
+
+export async function getPropertyLocations(): Promise<string[]> {
+  try {
+    const [localities, properties] = await Promise.all([
+      prisma.locality.findMany({ select: { name: true } }),
+      prisma.property.findMany({
+        where: {
+          active: true,
+          status: "AVAILABLE",
+          approvalStatus: "APPROVED",
+        },
+        select: { city: true },
+      }),
+    ]);
+
+    return Array.from(new Set([...localities.map((locality) => locality.name), ...properties.map((property) => property.city.trim())].filter(Boolean))).sort((a, b) =>
+      a.localeCompare(b, "es"),
+    );
+  } catch (error) {
+    return [];
+  }
+}
+
+export async function getPropertiesView(filters: PropertyFilters): Promise<PropertyZod[]> {
   try {
     const featureFilters = filters.features
       ? filters.features.split(",").map((feature: string) => ({
@@ -29,6 +62,7 @@ export async function getPropertiesView(filters: any): Promise<PropertyZod[]> {
       where: {
         active: true,
         status: "AVAILABLE",
+        approvalStatus: "APPROVED",
         propertyType: filters.tipo
           ? {
               slug: filters.tipo,
@@ -41,7 +75,14 @@ export async function getPropertiesView(filters: any): Promise<PropertyZod[]> {
             : undefined,
         price: getRange(filters.minPrice, filters.maxPrice),
         bedrooms: filters.bedrooms ? { gte: Number(filters.bedrooms) } : undefined,
-        area: getRange(...(filters.areaRange?.split("-") || [])),
+        OR: filters.location
+          ? ["city", "address", "province"].map((field) => ({
+              [field]: {
+                contains: filters.location,
+                mode: "insensitive",
+              },
+            }))
+          : undefined,
         AND: featureFilters,
       },
       orderBy: {
@@ -71,6 +112,10 @@ export async function getPropertiesView(filters: any): Promise<PropertyZod[]> {
         bedrooms: true,
         bathrooms: true,
         area: true,
+        coveredArea: true,
+        landArea: true,
+        age: true,
+        floors: true,
         currency: true,
         lat: true,
         lng: true,
@@ -129,6 +174,7 @@ export async function getPropertiesStand(): Promise<PropertyZod[]> {
       where: {
         active: true,
         status: "AVAILABLE",
+        approvalStatus: "APPROVED",
         standOut: true,
       },
       orderBy: {
@@ -158,6 +204,10 @@ export async function getPropertiesStand(): Promise<PropertyZod[]> {
         bedrooms: true,
         bathrooms: true,
         area: true,
+        coveredArea: true,
+        landArea: true,
+        age: true,
+        floors: true,
         currency: true,
         lat: true,
         lng: true,
@@ -232,6 +282,10 @@ export async function getRelatedProperties(
       bedrooms: true,
       bathrooms: true,
       area: true,
+      coveredArea: true,
+      landArea: true,
+      age: true,
+      floors: true,
       currency: true,
       lat: true,
       lng: true,
@@ -258,6 +312,7 @@ export async function getRelatedProperties(
       where: {
         active: true,
         status: "AVAILABLE",
+        approvalStatus: "APPROVED",
         id: { not: propertyId },
         propertyTypeId,
         city: {
@@ -274,6 +329,7 @@ export async function getRelatedProperties(
       where: {
         active: true,
         status: "AVAILABLE",
+        approvalStatus: "APPROVED",
         id: { not: propertyId },
         propertyTypeId,
       },
@@ -286,6 +342,7 @@ export async function getRelatedProperties(
       where: {
         active: true,
         status: "AVAILABLE",
+        approvalStatus: "APPROVED",
         id: { not: propertyId },
         city: {
           contains: city,
@@ -301,6 +358,7 @@ export async function getRelatedProperties(
       where: {
         active: true,
         status: "AVAILABLE",
+        approvalStatus: "APPROVED",
         id: { not: propertyId },
       },
       take: limit * 4,
@@ -324,8 +382,13 @@ export async function getRelatedProperties(
 
 export async function getPropertyById(propertyId: string): Promise<PropertyZod | null> {
   try {
-    const property = await prisma.property.findUnique({
-      where: { id: propertyId },
+    const property = await prisma.property.findFirst({
+      where: {
+        id: propertyId,
+        active: true,
+        status: "AVAILABLE",
+        approvalStatus: "APPROVED",
+      },
       select: {
         id: true,
         title: true,
@@ -350,6 +413,10 @@ export async function getPropertyById(propertyId: string): Promise<PropertyZod |
         bedrooms: true,
         bathrooms: true,
         area: true,
+        coveredArea: true,
+        landArea: true,
+        age: true,
+        floors: true,
         currency: true,
         lat: true,
         lng: true,

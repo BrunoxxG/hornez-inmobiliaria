@@ -28,7 +28,6 @@ export async function createFeature(values: FeatureFormZod) {
     if (existingFeature) {
       return { success: false, error: "Ya existe una caracteristica con ese nombre" };
     }
-
     const feature = await prisma.feature.create({
       data: {
         name: data.name,
@@ -61,6 +60,13 @@ export async function updateFeature(values: FeatureFormZod, featureId: string) {
 
     if (existingFeature) {
       return { success: false, error: "Ya existe una caracteristica con ese nombre" };
+    }
+    const featureInUse = await prisma.feature.findUnique({
+      where: { id: featureId },
+      select: { properties: { select: { id: true }, take: 1 } },
+    });
+    if (featureInUse?.properties.length) {
+      return { success: false, error: "No se puede editar una característica en uso por una propiedad" };
     }
     await prisma.feature.update({
       where: { id: featureId },
@@ -148,6 +154,14 @@ export async function updateListingType(values: ListingTypeFormZod, listingTypeI
     return { success: false, error: "Ya existe un tipo de listado con ese nombre" };
   }
 
+  const listingTypeInUse = await prisma.listingType.findUnique({
+    where: { id: listingTypeId },
+    select: { properties: { select: { id: true }, take: 1 } },
+  });
+  if (listingTypeInUse?.properties.length) {
+    return { success: false, error: "No se puede editar un tipo de listado en uso por una propiedad" };
+  }
+
   try {
     await prisma.listingType.update({
       where: { id: listingTypeId },
@@ -233,6 +247,14 @@ export async function updatePropertyType(values: PropertyTypeFormZod, propertyTy
 
   if (existingPropertyType) {
     return { success: false, error: "Ya existe un tipo de propiedad con ese nombre" };
+  }
+
+  const propertyTypeInUse = await prisma.propertyType.findUnique({
+    where: { id: propertyTypeId },
+    select: { properties: { select: { id: true }, take: 1 } },
+  });
+  if (propertyTypeInUse?.properties.length) {
+    return { success: false, error: "No se puede editar un tipo de propiedad en uso por una propiedad" };
   }
 
   try {

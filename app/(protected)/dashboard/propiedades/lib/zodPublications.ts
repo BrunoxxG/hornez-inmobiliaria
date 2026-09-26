@@ -25,10 +25,18 @@ export const propertySchema = object({
   bedrooms: number(),
   bathrooms: number(),
   area: number(),
+  coveredArea: number(),
+  landArea: number(),
+  age: number(),
+  floors: number(),
   currency: z.enum(Currency),
   lat: number(),
   lng: number(),
   status: z.enum(PropertyStatus),
+  approvalStatus: z.enum(["PENDING", "APPROVED", "REJECTED"]).optional(),
+  approvedById: string().nullable().optional(),
+  approvedAt: date().nullable().optional(),
+  rejectionReason: string().nullable().optional(),
   documentation: z.enum(["POSSESSORY_RIGHTS", "DEED"]),
   active: boolean(),
   standOut: boolean(),
@@ -61,16 +69,20 @@ export type PropertyZod = z.infer<typeof propertySchema>;
 
 export const propertyFormSchema = object({
   title: string().trim().min(1, "Título requerido"),
-  description: string().trim().min(1, "Descripción requerida"),
-  price: number().min(0, "El precio debe ser mayor o igual a 0"),
+  description: string(),
+  price: number().gt(0, "Precio requerido"),
   propertyTypeId: string().min(1, "Tipo de propiedad requerido"),
-  address: string().trim().min(1, "Dirección requerida"),
-  city: string().trim().min(1, "Ciudad requerida"),
+  address: string().trim().min(1, "Localidad requerida"),
+  city: string().trim().min(1, "Localidad requerida"),
   province: string().trim().min(1, "Provincia requerida"),
   totalRooms: number(),
   bedrooms: number(),
   bathrooms: number(),
   area: number(),
+  coveredArea: number(),
+  landArea: number(),
+  age: number(),
+  floors: number(),
   currency: z.enum(Currency),
   lat: number(),
   lng: number(),
@@ -80,7 +92,7 @@ export const propertyFormSchema = object({
   standOut: boolean(),
   userId: string().min(1, "Usuario requerido"),
   features: array(string()),
-  video: string().trim(),
+  video: string(),
   images: array(object({ url: string(), order: number() })).optional(),
   deletedImages: array(string()).optional(),
   existingImages: array(object({ id: string(), order: number() })).optional(),
@@ -94,6 +106,11 @@ export type PropertyFormZod = z.infer<typeof propertyFormSchema>;
 export type FormPropertyProps = {
   setOpenModalForm?: Dispatch<SetStateAction<boolean>>;
   property?: PropertyZod;
+  locations?: string[];
+  draftId?: string;
+  draftData?: Record<string, unknown>;
+  onDraftSaved?: (draftId: string) => void;
+  onPropertyUpdated?: (propertyId: string, values: PropertyFormZod) => void;
   toast: React.RefObject<ToastType | null>;
   session: Session;
 };

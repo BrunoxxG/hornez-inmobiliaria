@@ -49,3 +49,20 @@ export async function getFeatures(): Promise<FeatureZod[]> {
     return [];
   }
 }
+
+export async function getLocations(): Promise<string[]> {
+  try {
+    const [localities, properties] = await Promise.all([
+      prisma.locality.findMany({ select: { name: true } }),
+      prisma.property.findMany({
+      select: { city: true },
+      }),
+    ]);
+
+    return Array.from(new Set([...localities.map((locality) => locality.name), ...properties.map((property) => property.city.trim())].filter(Boolean))).sort((a, b) =>
+      a.localeCompare(b, "es"),
+    );
+  } catch (error) {
+    return [];
+  }
+}

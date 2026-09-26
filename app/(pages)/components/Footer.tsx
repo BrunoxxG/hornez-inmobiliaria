@@ -1,4 +1,5 @@
 import Link from "next/link";
+import WhatsAppFloating from "./WhatsAppFloating";
 
 // Footer institucional: identidad, contacto y acceso al panel administrativo.
 export default function Footer() {
@@ -25,11 +26,7 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Contacto */}
           <div className="md:justify-self-end">
-            <h3 className="mb-2 text-[0.96rem] font-semibold uppercase tracking-wider text-white">
-              Contacto
-            </h3>
             <ul className="space-y-2 text-[0.96rem] text-gray-400">
               <li className="flex items-center gap-3">
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-gray-300 transition-colors hover:bg-hornez-orange/15 hover:text-hornez-orange">
@@ -48,13 +45,21 @@ export default function Footer() {
                 </a>
               </li>
               <li className="flex items-center gap-3">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-gray-300 transition-colors hover:bg-hornez-orange/15 hover:text-hornez-orange">
-                  <i className="pi pi-map-marker" />
-                </span>
-                <span className="transition-colors hover:text-hornez-orange">La Paz, Córdoba</span>
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=La%20Paz%2C%20Traslasierra%2C%20C%C3%B3rdoba%2C%20Argentina"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 transition-colors hover:text-hornez-orange"
+                >
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-gray-300 transition-colors hover:bg-hornez-orange/15 hover:text-hornez-orange">
+                    <i className="pi pi-map-marker" />
+                  </span>
+                  La Paz, Córdoba
+                </a>
               </li>
             </ul>
           </div>
+
         </div>
       </div>
 
@@ -85,23 +90,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="fixed bottom-5 right-5 z-50">
-        <a
-          href="https://wa.me/5493544400903"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Contactar por WhatsApp"
-          className="peer flex h-[3.85rem] w-[3.85rem] items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition-transform hover:scale-110"
-        >
-          <i className="pi pi-whatsapp text-3xl" />
-        </a>
-        <div className="invisible pointer-events-none absolute bottom-[calc(100%+0.75rem)] right-0 w-max max-w-[18rem] rounded-2xl bg-white px-4 py-3 text-sm font-medium leading-snug text-gray-800 opacity-0 shadow-lg transition-opacity peer-hover:visible peer-hover:opacity-100">
-          Hola! Si estás buscando comprar o poner a la venta tu propiedad,
-          <br />
-          ¡Estoy acá para ayudarte con eso!
-          <span className="absolute -bottom-2 right-6 h-4 w-4 rotate-45 bg-white" />
-        </div>
-      </div>
+      <WhatsAppFloating />
     </footer>
   );
 }

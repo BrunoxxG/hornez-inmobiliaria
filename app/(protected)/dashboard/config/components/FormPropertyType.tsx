@@ -9,7 +9,7 @@ import { FormPropertyTypeProps, propertyTypeFormSchema, PropertyTypeFormZod } fr
 import { createPropertyType, updatePropertyType } from "../actions/actionsConfig";
 
 export default function FormPropertyType(props: FormPropertyTypeProps) {
-  const { propertyType, setOpenModalForm, onCreated, toast } = props;
+  const { propertyType, setOpenModalForm, onCreated, onUpdated, toast } = props;
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<PropertyTypeFormZod>({
@@ -64,6 +64,7 @@ export default function FormPropertyType(props: FormPropertyTypeProps) {
       life: 3000,
     });
     reset();
+    onUpdated?.({ ...propertyType, name: values.name, slug: values.name.toLowerCase().replace(/\s+/g, "-") });
     setOpenModalForm?.(false);
   };
 
@@ -89,7 +90,7 @@ export default function FormPropertyType(props: FormPropertyTypeProps) {
         <div className="flex gap-2 mt-8">
           <Button
             label="Guardar Tipo de Propiedad"
-            className="p-button-danger"
+            className="dashboard-action-button"
             type="submit"
             disabled={!isValid || isSubmitting}
           />

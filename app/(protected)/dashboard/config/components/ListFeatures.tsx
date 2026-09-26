@@ -23,11 +23,12 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
   const [showNewFeatureModal, setShowNewFeatureModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState<FeatureZod | undefined>(undefined);
+  const [featureToDelete, setFeatureToDelete] = useState<FeatureZod | null>(null);
   const toast = useRef<ToastType | null>(null);
   const [filteredFeatures, setFilteredFeatures] = useState<FeatureZod[]>(
     features.filter((feature) => feature.category === category),
   );
-  const title = category === "SERVICE" ? "Servicio" : "Adicional";
+  const title = category === "SERVICE" ? "Servicios" : "Adicionales";
   const titlePlural = category === "SERVICE" ? "Servicios" : "Adicionales";
 
   const {
@@ -38,6 +39,18 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
     hasActiveFilters,
   } = useDataTableFilters(initialFilters);
 
+  const handleDelete = async () => {
+    if (!featureToDelete) return;
+    const result = await deleteFeature(featureToDelete.id);
+    if (!result.success) {
+      toast.current?.show({ severity: "error", summary: "Error", detail: result.error });
+      return;
+    }
+    setFilteredFeatures((current) => current.filter((feature) => feature.id !== featureToDelete.id));
+    setFeatureToDelete(null);
+    toast.current?.show({ severity: "success", summary: "OK", detail: `${title} eliminado` });
+  };
+
   const nameBodyTemplate = (rowData: FeatureZod) => {
     return (
       <div>
@@ -47,19 +60,6 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
   };
 
   const actionsBodyTemplate = (rowData: FeatureZod) => {
-    const handleDelete = async () => {
-      if (!window.confirm(`¿Eliminar el servicio "${rowData.name}"?`)) return;
-
-      const result = await deleteFeature(rowData.id);
-      if (!result.success) {
-        toast.current?.show({ severity: "error", summary: "Error", detail: result.error });
-        return;
-      }
-
-      setFilteredFeatures((current) => current.filter((feature) => feature.id !== rowData.id));
-      toast.current?.show({ severity: "success", summary: "OK", detail: `${title} eliminado` });
-    };
-
     return (
       <div className="flex gap-2">
         <Button
@@ -68,7 +68,7 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
           style={{
             backgroundColor: "#F7F7F7",
             border: "1px solid #F9F9F9",
-            color: "#E31E24",
+            color: "#EF7D00",
             borderRadius: "8px",
             minHeight: "40px",
             minWidth: "40px",
@@ -87,7 +87,7 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
           style={{
             backgroundColor: "#F7F7F7",
             border: "1px solid #F9F9F9",
-            color: "#6B7280",
+            color: "#C00D0D",
             borderRadius: "8px",
             minHeight: "40px",
             minWidth: "40px",
@@ -96,7 +96,7 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
           tooltipOptions={{ position: "top" }}
           onClick={(e) => {
             e.stopPropagation();
-            void handleDelete();
+            setFeatureToDelete(rowData);
           }}
         />
       </div>
@@ -104,7 +104,18 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
   };
 
   const header = (
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-bold text-hornez-blue">{title}</h2>
+          <Button
+            icon="pi pi-plus"
+            aria-label={`Nuevo ${title}`}
+            tooltip={`Nuevo ${title}`}
+            tooltipOptions={{ position: "top" }}
+            onClick={() => setShowNewFeatureModal(true)}
+            className="dashboard-action-button"
+          />
+        </div>
         <div className="flex gap-2">
           <InputText
             value={globalFilterValue}
@@ -116,7 +127,7 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
             <Button
               type="button"
               icon="pi pi-filter-slash"
-              label="Limpiar"
+              label="Limpiar filtros"
               outlined
               onClick={clearFilters}
               style={{
@@ -126,21 +137,18 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
             />
           )}
         </div>
-        <Button
-          label={`Nuevo ${title}`}
-          icon="pi pi-plus"
-          onClick={() => setShowNewFeatureModal(true)}
-          className="p-button-danger"
-        />
       </div>
   );
 
   return (
-    <div className="border">
+    <div className="border rounded-lg">
       <Toast ref={toast} />
+      <Dialog visible={featureToDelete !== null} onHide={() => setFeatureToDelete(null)} header="Confirmar eliminación" modal style={{ width: "min(90vw, 28rem)" }}>
+        <p>¿Eliminar <strong>{featureToDelete?.name}</strong>?</p>
+        <div className="mt-4 flex justify-end gap-2"><Button label="Cancelar" severity="secondary" outlined onClick={() => setFeatureToDelete(null)} /><Button label="Eliminar" severity="danger" onClick={() => void handleDelete()} /></div>
+      </Dialog>
       <DataTable
         value={filteredFeatures}
-        onValueChange={(e) => setFilteredFeatures(e)}
         paginator
         rows={10}
         rowsPerPageOptions={[5, 10, 25, 50]}
@@ -158,7 +166,7 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
       <Dialog
         visible={showNewFeatureModal}
         onHide={() => setShowNewFeatureModal(false)}
-        header={`Nuevo ${title}`}
+        header={`Nuevo ${category === "SERVICE" ? "Servicio" : "Adicional"}`}
         style={{ width: "700px" }}
         modal
         dismissableMask
@@ -177,12 +185,12 @@ export function ListFeatures({ features, category }: { features: FeatureZod[]; c
           setShowDetailModal(false);
           setSelectedFeature(undefined);
         }}
-        header={category === "SERVICE" ? "Servicio" : "Adicional"}
+        header={category === "SERVICE" ? "Servicios" : "Adicionales"}
         style={{ width: "700px" }}
         modal
         dismissableMask
       >
-        {selectedFeature && <FormFeature category={category} feature={selectedFeature} setOpenModalForm={setShowDetailModal} toast={toast} />}
+        {selectedFeature && <FormFeature category={category} feature={selectedFeature} onUpdated={(updated) => setFilteredFeatures((current) => current.map((item) => item.id === updated.id ? updated : item))} setOpenModalForm={setShowDetailModal} toast={toast} />}
       </Dialog>
     </div>
   );
