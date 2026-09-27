@@ -63,12 +63,12 @@ export default async function Home() {
               </ul>
             </div>
 
-            {/* Imagen decorativa / placeholder */}
-            <div className="relative h-80 lg:h-105 bg-gray-100 rounded-2xl overflow-hidden">
-              <div className="flex items-center justify-center h-full text-gray-300">
-                <i className="pi pi-home text-8xl" />
-              </div>
-              {/* Reemplazar con: <Image src="/img/nosotros.jpg" alt="Equipo Hornez" fill className="object-cover" /> */}
+            <div className="relative h-80 overflow-hidden rounded-2xl bg-gray-100 lg:h-105">
+              <img
+                src="/img/bruno.jpg"
+                alt="Bruno Nehuen Gimenez, Hornez Inmobiliaria"
+                className="h-full w-full object-cover object-center"
+              />
             </div>
           </div>
         </div>
