@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   title: "Hornez Inmobiliaria",
   description: "Encontrá tu lugar en el mundo",
   icons: {
-    icon: "/img/logo.svg",
+    icon: "/img/hornero-icono.png?v=5",
     shortcut: "/img/logo.svg",
     apple: "/img/logoColor.png",
   },
@@ -33,9 +33,9 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/img/share-icon.png?v=4",
-        width: 450,
-        height: 200,
+        url: "/img/hornero-icono.png?v=5",
+        width: 842,
+        height: 596,
         alt: "Hornez Inmobiliaria",
       },
     ],
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Hornez Inmobiliaria",
     description: "Encontrá tu lugar en el mundo",
-    images: ["/img/share-icon.png?v=4"],
+    images: ["/img/hornero-icono.png?v=5"],
   },
 };
 
