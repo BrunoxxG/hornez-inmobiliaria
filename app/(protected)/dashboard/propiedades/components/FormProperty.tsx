@@ -95,7 +95,6 @@ export default function FormProperty(props: FormPropertyProps) {
       totalRooms: property?.totalRooms ?? Number(savedDraft.totalRooms || 0),
       bedrooms: property?.bedrooms ?? Number(savedDraft.bedrooms || 0),
       bathrooms: property?.bathrooms ?? Number(savedDraft.bathrooms || 0),
-      area: property?.area ?? Number(savedDraft.area || 0),
       coveredArea: property?.coveredArea ?? Number(savedDraft.coveredArea || 0),
       landArea: property?.landArea ?? Number(savedDraft.landArea || 0),
       age: property?.age ?? Number(savedDraft.age || 0),
@@ -532,24 +531,6 @@ export default function FormProperty(props: FormPropertyProps) {
               <label className="block text-sm font-semibold mb-2">Baños</label>
               <Controller
                 name="bathrooms"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <>
-                    <InputNumber
-                      value={field.value}
-                      onChange={(e) => field.onChange(e.value ?? 0)}
-                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
-                    />
-                    {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
-                  </>
-                )}
-              />
-            </div>
-
-            <div className="w-full">
-              <label className="block text-sm font-semibold mb-2">Area (m2)</label>
-              <Controller
-                name="area"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <>

@@ -28,7 +28,6 @@ type PendingProperty = {
   totalRooms: number;
   bedrooms: number;
   bathrooms: number;
-  area: number;
   coveredArea: number;
   landArea: number;
   age: number;

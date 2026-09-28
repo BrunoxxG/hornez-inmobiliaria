@@ -17,14 +17,16 @@ export default function FeaturedProperties({ properties }: { properties: Propert
         <p className="text-center text-lg text-gray-500">Próximamente publicaremos propiedades disponibles.</p>
       )}
 
-      <div className="mt-8 flex justify-center">
-        <Link
-          href="/propiedades"
-          className="inline-flex items-center justify-center rounded-md border border-hornez-orange bg-white px-5 py-3 text-sm font-semibold text-hornez-orange transition-colors hover:bg-orange-50"
-        >
-          Ver más propiedades <span aria-hidden="true">&nbsp;&gt;</span>
-        </Link>
-      </div>
+      {properties.length > 0 && (
+        <div className="mt-8 flex justify-center">
+          <Link
+            href="/propiedades"
+            className="inline-flex items-center justify-center rounded-md border border-hornez-orange bg-white px-5 py-3 text-sm font-semibold text-hornez-orange transition-colors hover:bg-orange-50"
+          >
+            Ver más propiedades <span aria-hidden="true">&nbsp;&gt;</span>
+          </Link>
+        </div>
+      )}
 
       <section className="mt-12 overflow-hidden rounded-xl bg-white shadow-sm">
         <div className="p-6 text-center">
