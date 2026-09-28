@@ -38,27 +38,35 @@ export default function PropertyGallery({
       <div className="order-1 min-w-0 flex-1 md:order-1">
         {/* Imagen principal */}
         <div className="relative flex h-80 items-center justify-center overflow-hidden rounded-xl bg-gray-100 md:h-120">
+        <img
+          src={images[active].url}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full scale-110 object-cover opacity-25 blur-2xl"
+        />
         <img src="/img/vendeLogo.png" alt="venta logo" className={`h-15 absolute top-3 left-3 ${operation !== "Venta" ? "hidden" : "" }`} />
         <img src="/img/alquilaLogo.png" alt="alquiler logo" className={`h-15 absolute top-3 left-3 ${operation !== "Alquiler" ? "hidden" : "" }`} />
         <img
           src={images[active].url}
           alt="Imagen de la propiedad"
-          className="h-full w-full cursor-zoom-in object-contain"
+          className="relative z-10 h-full w-full cursor-zoom-in object-contain"
           sizes="(max-width: 768px) 100vw, 60vw"
           onClick={() => setIsModalOpen(true)}
         />
         {images.length > 1 && (
           <>
             <button
+              type="button"
               onClick={() => setActive((prev) => (prev - 1 + images.length) % images.length)}
-              className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full w-10 h-10 flex items-center justify-center transition-colors"
+              className="absolute left-3 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white transition-colors hover:bg-black/70"
               aria-label="Anterior"
             >
               <i className="pi pi-chevron-left" />
             </button>
             <button
+              type="button"
               onClick={() => setActive((prev) => (prev + 1) % images.length)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full w-10 h-10 flex items-center justify-center transition-colors"
+              className="absolute right-3 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white transition-colors hover:bg-black/70"
               aria-label="Siguiente"
             >
               <i className="pi pi-chevron-right" />
