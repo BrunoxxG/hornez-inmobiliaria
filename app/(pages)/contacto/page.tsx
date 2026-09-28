@@ -202,7 +202,7 @@ export default function ContactPage() {
 
           <section className="mt-10 overflow-hidden rounded-xl bg-white shadow-sm">
             <div className="p-6 text-center">
-              <p className="mt-2 text-gray-600">La Paz, Córdoba</p>
+              <h2 className="text-xl font-bold text-hornez-blue">La Paz, Traslasierra - Córdoba</h2>
             </div>
             <iframe
               title="Ubicación de La Paz, Traslasierra, Córdoba"

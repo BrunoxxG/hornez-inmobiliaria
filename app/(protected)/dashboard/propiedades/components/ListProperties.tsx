@@ -61,7 +61,6 @@ export function ListProperties({ properties, locations, session }: { properties:
           totalRooms: values.totalRooms,
           bedrooms: values.bedrooms,
           bathrooms: values.bathrooms,
-          area: values.area,
           coveredArea: values.coveredArea,
           landArea: values.landArea,
           age: values.age,

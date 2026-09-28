@@ -37,13 +37,13 @@ export default function PropertyGallery({
     <div className="flex flex-col gap-3 md:flex-row">
       <div className="order-1 min-w-0 flex-1 md:order-1">
         {/* Imagen principal */}
-        <div className="relative h-80 overflow-hidden rounded-xl bg-gray-100 md:h-120">
+        <div className="relative flex h-80 items-center justify-center overflow-hidden rounded-xl bg-gray-100 md:h-120">
         <img src="/img/vendeLogo.png" alt="venta logo" className={`h-15 absolute top-3 left-3 ${operation !== "Venta" ? "hidden" : "" }`} />
         <img src="/img/alquilaLogo.png" alt="alquiler logo" className={`h-15 absolute top-3 left-3 ${operation !== "Alquiler" ? "hidden" : "" }`} />
         <img
           src={images[active].url}
           alt="Imagen de la propiedad"
-          className="cursor-zoom-in object-cover"
+          className="h-full w-full cursor-zoom-in object-contain"
           sizes="(max-width: 768px) 100vw, 60vw"
           onClick={() => setIsModalOpen(true)}
         />

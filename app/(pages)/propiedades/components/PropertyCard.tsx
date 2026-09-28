@@ -1,5 +1,5 @@
 import { PropertyZod } from "@/app/(protected)/dashboard/propiedades/lib/zodPublications";
-import { BedDouble, LayoutDashboard, Maximize, Toilet } from "lucide-react";
+import { BedDouble, LayoutDashboard, Toilet } from "lucide-react";
 import Link from "next/link";
 
 // Tarjeta reutilizable de propiedad: se usa tanto en listados como en carruseles relacionados.
@@ -69,12 +69,6 @@ export default function PropertyCard({ property, compact = false }: { property: 
               <span className="flex items-center gap-1">
                 <Toilet size={compact ? 14 : 20} />
                 {property.bathrooms}
-              </span>
-            )}
-            {property.area != 0 && (
-              <span className="flex items-center gap-1">
-                <Maximize size={compact ? 14 : 20} />
-                {property.area} m²
               </span>
             )}
           </div>

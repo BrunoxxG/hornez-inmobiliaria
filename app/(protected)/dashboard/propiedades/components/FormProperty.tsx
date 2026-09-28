@@ -13,9 +13,7 @@ import Loader from "@/app/(protected)/components/Loader";
 import { Dropdown } from "primereact/dropdown";
 import { InputTextarea } from "primereact/inputtextarea";
 import { InputNumber } from "primereact/inputnumber";
-import { InputSwitch } from "primereact/inputswitch";
 import { FileUpload } from "primereact/fileupload";
-import MapPicker from "./MapPicker";
 import { isAdminRole } from "@/lib/authorization";
 import { deletePropertyDraft } from "../../borradores/actions/actionsDrafts";
 import { savePropertyDraft } from "../../borradores/actions/actionsDrafts";
@@ -36,17 +34,10 @@ type DocumentItem = {
   existing: boolean;
 };
 
-const DEFAULT_LOCATION = {
-  lat: -32.2174729,
-  lng: -65.0482866,
-};
-
 export default function FormProperty(props: FormPropertyProps) {
   const { property, locations = [], draftId, draftData, onDraftSaved, onPropertyUpdated, setOpenModalForm, toast, session } = props;
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [hasLocation, setHasLocation] = useState(Boolean(property?.lat && property?.lng));
-  const [isMapFullscreen, setIsMapFullscreen] = useState(false);
   const [existingImages, setExistingImages] = useState<ImageItem[]>([]);
   const [newImages, setNewImages] = useState<ImageItem[]>([]);
   const [deletedImages, setDeletedImages] = useState<string[]>([]);
@@ -104,13 +95,12 @@ export default function FormProperty(props: FormPropertyProps) {
       totalRooms: property?.totalRooms ?? Number(savedDraft.totalRooms || 0),
       bedrooms: property?.bedrooms ?? Number(savedDraft.bedrooms || 0),
       bathrooms: property?.bathrooms ?? Number(savedDraft.bathrooms || 0),
-      area: property?.area ?? Number(savedDraft.area || 0),
       coveredArea: property?.coveredArea ?? Number(savedDraft.coveredArea || 0),
       landArea: property?.landArea ?? Number(savedDraft.landArea || 0),
       age: property?.age ?? Number(savedDraft.age || 0),
       floors: property?.floors ?? Number(savedDraft.floors || 0),
-      lat: property?.lat || Number(savedDraft.lat) || DEFAULT_LOCATION.lat,
-      lng: property?.lng || Number(savedDraft.lng) || DEFAULT_LOCATION.lng,
+      lat: property?.lat ?? Number(savedDraft.lat || 0),
+      lng: property?.lng ?? Number(savedDraft.lng || 0),
       status: property?.status || (savedDraft.status as PropertyFormZod["status"]) || "AVAILABLE",
       documentation: property?.documentation || (savedDraft.documentation as PropertyFormZod["documentation"]) || "DEED",
       active: property?.active ?? Boolean(savedDraft.active ?? true),
@@ -162,6 +152,10 @@ export default function FormProperty(props: FormPropertyProps) {
 
         const data = await res.json();
 
+        if (!res.ok) {
+          throw new Error(data?.error || "No se pudo subir la imagen");
+        }
+
         if (!data?.url) return null;
 
         return {
@@ -192,6 +186,10 @@ export default function FormProperty(props: FormPropertyProps) {
         });
 
         const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data?.error || "No se pudo subir el documento");
+        }
 
         if (!data?.url) return null;
 
@@ -317,8 +315,9 @@ export default function FormProperty(props: FormPropertyProps) {
     } catch (error) {
       toast.current?.show({
         severity: "error",
-        summary: "Error",
-        detail: "Error al subir imágenes",
+        summary: "No se pudo guardar",
+        detail: error instanceof Error ? error.message : "Ocurrió un error al guardar la propiedad",
+        life: 5000,
       });
     } finally {
       setIsSubmitting(false);
@@ -357,80 +356,6 @@ export default function FormProperty(props: FormPropertyProps) {
     onPropertyUpdated?.(propertyId, values);
     reset();
     setOpenModalForm?.(false);
-  };
-
-  const geocodeAddress = async () => {
-    const address = form.getValues("address");
-    const city = form.getValues("city");
-    const province = form.getValues("province") || "Córdoba";
-
-    if (!city) {
-      form.setValue("province", province);
-      form.setValue("lat", DEFAULT_LOCATION.lat);
-      form.setValue("lng", DEFAULT_LOCATION.lng);
-      toast.current?.show({
-        severity: "info",
-        summary: "Ubicación aproximada",
-        detail: "Se utilizó la ubicación de La Paz",
-      });
-      return;
-    }
-
-    form.setValue("province", province);
-
-    const fullQuery = `${address}, ${city}, ${province}, Argentina`;
-
-    try {
-      let res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullQuery)}&countrycodes=ar`,
-      );
-
-      let data = await res.json();
-
-      if (data.length > 0) {
-        const { lat, lon } = data[0];
-
-        form.setValue("lat", Number(lat));
-        form.setValue("lng", Number(lon));
-
-        return;
-      }
-
-      const cityQuery = `${city}, ${province}, Argentina`;
-
-      res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cityQuery)}&countrycodes=ar`,
-      );
-
-      data = await res.json();
-
-      if (data.length > 0) {
-        const { lat, lon } = data[0];
-
-        form.setValue("lat", Number(lat));
-        form.setValue("lng", Number(lon));
-
-        toast.current?.show({
-          severity: "warn",
-          summary: "Aproximado",
-          detail: "No se encontró la dirección exacta, se centró en la ciudad",
-        });
-
-        return;
-      }
-
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo encontrar la ubicación",
-      });
-    } catch (error) {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "Error al buscar ubicación",
-      });
-    }
   };
 
   return (
@@ -575,49 +500,6 @@ export default function FormProperty(props: FormPropertyProps) {
               />
             </div>
 
-            <div className="col-span-2">
-              <div className="flex items-end justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <label className="block text-sm font-semibold">Ubicación</label>
-                  <InputSwitch
-                    checked={hasLocation}
-                    onChange={(event) => {
-                      const enabled = event.value;
-                      setHasLocation(enabled);
-                      if (enabled) {
-                        form.setValue("lat", form.getValues("lat") || DEFAULT_LOCATION.lat);
-                        form.setValue("lng", form.getValues("lng") || DEFAULT_LOCATION.lng);
-                      } else {
-                        form.setValue("lat", 0);
-                        form.setValue("lng", 0);
-                      }
-                    }}
-                  />
-                </div>
-                {hasLocation && <Button type="button" label="Buscar en mapa" onClick={() => setIsMapFullscreen(true)} className="p-button-secondary" />}
-              </div>
-              {hasLocation ? (
-                <>
-                  <MapPicker
-                    lat={form.watch("lat") || DEFAULT_LOCATION.lat}
-                    lng={form.watch("lng") || DEFAULT_LOCATION.lng}
-                    onChange={(lat, lng) => {
-                      form.setValue("lat", lat);
-                      form.setValue("lng", lng);
-                    }}
-                  />
-
-                  <div className="text-xs mt-2 text-gray-500">
-                    Lat: {form.watch("lat")} | Lng: {form.watch("lng")}
-                  </div>
-                </>
-              ) : (
-                <p className="rounded-lg bg-gray-100 px-4 py-3 text-sm text-gray-500">
-                  Ubicación desactivada para esta propiedad.
-                </p>
-              )}
-            </div>
-
             <div className="w-full">
               <label className="block text-sm font-semibold mb-2">Ambientes</label>
               <Controller
@@ -658,24 +540,6 @@ export default function FormProperty(props: FormPropertyProps) {
               <label className="block text-sm font-semibold mb-2">Baños</label>
               <Controller
                 name="bathrooms"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <>
-                    <InputNumber
-                      value={field.value}
-                      onChange={(e) => field.onChange(e.value ?? 0)}
-                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
-                    />
-                    {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
-                  </>
-                )}
-              />
-            </div>
-
-            <div className="w-full">
-              <label className="block text-sm font-semibold mb-2">Area (m2)</label>
-              <Controller
-                name="area"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <>
@@ -1022,34 +886,6 @@ export default function FormProperty(props: FormPropertyProps) {
           </div>
         </div>
       </form>
-      {isMapFullscreen && hasLocation && (
-        <div className="fixed inset-0 z-[10000] bg-white">
-          <div className="absolute left-0 right-0 top-0 z-10 flex items-center justify-between bg-white/95 px-4 py-3 shadow-md backdrop-blur-sm">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900">Seleccionar ubicación</h2>
-              <p className="text-sm text-gray-500">Hacé clic en el mapa o mové el marcador.</p>
-            </div>
-            <Button
-              type="button"
-              label="Cerrar mapa"
-              icon="pi pi-times"
-              onClick={() => setIsMapFullscreen(false)}
-              className="dashboard-action-button"
-            />
-          </div>
-          <div className="h-full w-full pt-20">
-            <MapPicker
-              lat={form.watch("lat") || DEFAULT_LOCATION.lat}
-              lng={form.watch("lng") || DEFAULT_LOCATION.lng}
-              height="100%"
-              onChange={(lat, lng) => {
-                form.setValue("lat", lat);
-                form.setValue("lng", lng);
-              }}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

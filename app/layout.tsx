@@ -20,6 +20,25 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Hornez Inmobiliaria",
   description: "Encontrá tu lugar en el mundo",
+  icons: {
+    icon: "/img/logo.svg",
+    shortcut: "/img/logo.svg",
+    apple: "/img/logoColor.png",
+  },
+  openGraph: {
+    title: "Hornez Inmobiliaria",
+    description: "Encontrá tu lugar en el mundo",
+    siteName: "Hornez Inmobiliaria",
+    type: "website",
+    images: [
+      {
+        url: "/img/logoColor.png",
+        width: 600,
+        height: 135,
+        alt: "Hornez Inmobiliaria",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
