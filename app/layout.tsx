@@ -18,6 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://www.hornezinmobiliaria.com"),
   title: "Hornez Inmobiliaria",
   description: "Encontrá tu lugar en el mundo",
   icons: {
@@ -38,6 +39,12 @@ export const metadata: Metadata = {
         alt: "Hornez Inmobiliaria",
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Hornez Inmobiliaria",
+    description: "Encontrá tu lugar en el mundo",
+    images: ["/img/logoColor.png"],
   },
 };
 
