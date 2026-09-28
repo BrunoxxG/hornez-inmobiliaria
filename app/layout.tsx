@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/img/logo.svg?v=3",
+        url: "/img/share-icon.png?v=4",
         width: 450,
         height: 200,
         alt: "Hornez Inmobiliaria",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Hornez Inmobiliaria",
     description: "Encontrá tu lugar en el mundo",
-    images: ["/img/logo.svg?v=3"],
+    images: ["/img/share-icon.png?v=4"],
   },
 };
 
