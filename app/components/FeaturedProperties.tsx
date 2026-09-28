@@ -3,19 +3,19 @@ import { PropertyZod } from "@/app/(protected)/dashboard/propiedades/lib/zodPubl
 import Link from "next/link";
 
 export default function FeaturedProperties({ properties }: { properties: PropertyZod[] }) {
-  if (!properties.length) {
-    return <p className="text-center text-lg text-gray-500">Próximamente publicaremos propiedades disponibles.</p>;
-  }
-
   return (
     <>
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {properties.slice(0, 6).map((property, index) => (
-          <div key={property.id} className={index >= 4 ? "hidden sm:block" : ""}>
-            <PropertyCard property={property} />
-          </div>
-        ))}
-      </div>
+      {properties.length > 0 ? (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {properties.slice(0, 6).map((property, index) => (
+            <div key={property.id} className={index >= 4 ? "hidden sm:block" : ""}>
+              <PropertyCard property={property} />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-center text-lg text-gray-500">Próximamente publicaremos propiedades disponibles.</p>
+      )}
 
       <div className="mt-8 flex justify-center">
         <Link
@@ -25,6 +25,19 @@ export default function FeaturedProperties({ properties }: { properties: Propert
           Ver más propiedades <span aria-hidden="true">&nbsp;&gt;</span>
         </Link>
       </div>
+
+      <section className="mt-12 overflow-hidden rounded-xl bg-white shadow-sm">
+        <div className="p-6 text-center">
+          <h2 className="text-xl font-bold text-hornez-blue">La Paz, Traslasierra - Córdoba</h2>
+        </div>
+        <iframe
+          title="Ubicación de La Paz, Traslasierra, Córdoba"
+          src="https://www.google.com/maps?q=La%20Paz%2C%20Traslasierra%2C%20C%C3%B3rdoba%2C%20Argentina&output=embed"
+          className="h-80 w-full border-0"
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+        />
+      </section>
     </>
   );
 }
