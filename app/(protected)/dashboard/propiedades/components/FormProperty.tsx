@@ -152,6 +152,10 @@ export default function FormProperty(props: FormPropertyProps) {
 
         const data = await res.json();
 
+        if (!res.ok) {
+          throw new Error(data?.error || "No se pudo subir la imagen");
+        }
+
         if (!data?.url) return null;
 
         return {
@@ -182,6 +186,10 @@ export default function FormProperty(props: FormPropertyProps) {
         });
 
         const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data?.error || "No se pudo subir el documento");
+        }
 
         if (!data?.url) return null;
 
@@ -307,8 +315,9 @@ export default function FormProperty(props: FormPropertyProps) {
     } catch (error) {
       toast.current?.show({
         severity: "error",
-        summary: "Error",
-        detail: "Error al subir imágenes",
+        summary: "No se pudo guardar",
+        detail: error instanceof Error ? error.message : "Ocurrió un error al guardar la propiedad",
+        life: 5000,
       });
     } finally {
       setIsSubmitting(false);
