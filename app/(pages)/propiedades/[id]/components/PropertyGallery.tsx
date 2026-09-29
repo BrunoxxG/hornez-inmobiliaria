@@ -26,8 +26,8 @@ export default function PropertyGallery({
   if (images.length === 0) {
     return (
       <div className="relative flex items-center justify-center h-80 bg-gray-100 rounded-xl text-gray-400">
-        <img src="/img/vendeLogo.png" alt="venta logo" className={`h-15 absolute top-3 left-3 ${operation !== "Venta" ? "hidden" : "" }`} />
-        <img src="/img/alquilaLogo.png" alt="alquiler logo" className={`h-15 absolute top-3 left-3 ${operation !== "Alquiler" ? "hidden" : "" }`} />
+        <img src="/img/vendeLogo.png" alt="venta logo" className={`absolute left-3 top-3 z-20 h-15 ${operation !== "Venta" ? "hidden" : "" }`} />
+        <img src="/img/alquilaLogo.png" alt="alquiler logo" className={`absolute left-3 top-3 z-20 h-15 ${operation !== "Alquiler" ? "hidden" : "" }`} />
         <i className="pi pi-image text-6xl" />
       </div>
     );
