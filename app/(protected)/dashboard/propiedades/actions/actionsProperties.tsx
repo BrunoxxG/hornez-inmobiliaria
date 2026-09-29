@@ -106,6 +106,8 @@ export async function createProperty(values: PropertyFormZod) {
     });
 
     revalidatePath("/dashboard/propiedades");
+    revalidatePath("/");
+    revalidatePath("/propiedades");
     return { success: true };
   } catch (error) {
     console.error(error);
@@ -265,6 +267,8 @@ export async function updateProperty(values: PropertyFormZod, propertyId: string
     });
 
     revalidatePath("/dashboard/propiedades");
+    revalidatePath("/");
+    revalidatePath("/propiedades");
     return { success: true };
   } catch (error) {
     console.error(error);
@@ -288,6 +292,8 @@ export async function deleteProperty(propertyId: string) {
 
     await prisma.property.delete({ where: { id: propertyId } });
     revalidatePath("/dashboard/propiedades");
+    revalidatePath("/");
+    revalidatePath("/propiedades");
     return { success: true };
   } catch (error) {
     console.error(error);
