@@ -11,6 +11,14 @@ export async function createProperty(values: PropertyFormZod) {
   const session = await auth();
   if (!session?.user?.id) return { success: false, error: "No autorizado" };
 
+  const currentUser = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { id: true },
+  });
+  if (!currentUser) {
+    return { success: false, error: "La sesión venció. Cerrá sesión y volvé a ingresar." };
+  }
+
   const { data, success } = propertyFormSchema.safeParse(values);
   if (!success) {
     return { success: false, error: "Invalid data" };
@@ -66,7 +74,6 @@ export async function createProperty(values: PropertyFormZod) {
         totalRooms,
         bedrooms,
         bathrooms,
-        area: 0,
         coveredArea,
         landArea,
         age,
@@ -111,7 +118,10 @@ export async function createProperty(values: PropertyFormZod) {
     return { success: true };
   } catch (error) {
     console.error(error);
-    return { success: false, error: "Ocurrio un error" };
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Ocurrió un error al guardar la propiedad",
+    };
   }
 }
 
@@ -189,7 +199,6 @@ export async function updateProperty(values: PropertyFormZod, propertyId: string
           totalRooms,
           bedrooms,
           bathrooms,
-          area: 0,
           coveredArea,
           landArea,
           age,
@@ -272,7 +281,10 @@ export async function updateProperty(values: PropertyFormZod, propertyId: string
     return { success: true };
   } catch (error) {
     console.error(error);
-    return { success: false, error: "Ocurrio un error" };
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Ocurrió un error al actualizar la propiedad",
+    };
   }
 }
 
