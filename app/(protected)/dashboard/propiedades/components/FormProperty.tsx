@@ -34,6 +34,46 @@ type DocumentItem = {
   existing: boolean;
 };
 
+const compressImage = async (file: File): Promise<File> => {
+  if (!file.type.startsWith("image/") || file.size <= 1_500_000) return file;
+
+  return new Promise((resolve) => {
+    const image = new Image();
+    const objectUrl = URL.createObjectURL(file);
+
+    image.onload = () => {
+      const maxSize = 2000;
+      const scale = Math.min(1, maxSize / Math.max(image.width, image.height));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(image.width * scale);
+      canvas.height = Math.round(image.height * scale);
+
+      const context = canvas.getContext("2d");
+      if (!context) {
+        URL.revokeObjectURL(objectUrl);
+        resolve(file);
+        return;
+      }
+
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob(
+        (blob) => {
+          URL.revokeObjectURL(objectUrl);
+          resolve(blob ? new File([blob], file.name.replace(/\.[^.]+$/, ".jpg"), { type: "image/jpeg" }) : file);
+        },
+        "image/jpeg",
+        0.82,
+      );
+    };
+
+    image.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      resolve(file);
+    };
+    image.src = objectUrl;
+  });
+};
+
 export default function FormProperty(props: FormPropertyProps) {
   const { property, locations = [], draftId, draftData, onDraftSaved, onPropertyUpdated, setOpenModalForm, toast, session } = props;
   const router = useRouter();
@@ -683,8 +723,9 @@ export default function FormProperty(props: FormPropertyProps) {
                 uploadOptions={{ className: "hidden" }}
                 chooseLabel="Seleccionar Imágenes"
                 auto={false}
-                onSelect={(e) => {
-                  const mapped = e.files.map((file: File) => ({
+                onSelect={async (e) => {
+                  const compressedFiles = await Promise.all(e.files.map((file: File) => compressImage(file)));
+                  const mapped = compressedFiles.map((file) => ({
                     file,
                     url: URL.createObjectURL(file),
                     existing: false,
