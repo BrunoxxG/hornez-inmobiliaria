@@ -146,8 +146,6 @@ export default function FormProperty(props: FormPropertyProps) {
       landArea: property?.landArea ?? Number(savedDraft.landArea || 0),
       age: property?.age ?? Number(savedDraft.age || 0),
       floors: property?.floors ?? Number(savedDraft.floors || 0),
-      lat: property?.lat ?? Number(savedDraft.lat || 0),
-      lng: property?.lng ?? Number(savedDraft.lng || 0),
       status: property?.status || (savedDraft.status as PropertyFormZod["status"]) || "AVAILABLE",
       documentation: property?.documentation || (savedDraft.documentation as PropertyFormZod["documentation"]) || "DEED",
       active: property?.active ?? Boolean(savedDraft.active ?? true),

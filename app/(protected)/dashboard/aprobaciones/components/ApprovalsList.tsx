@@ -32,8 +32,6 @@ type PendingProperty = {
   landArea: number;
   age: number;
   floors: number;
-  lat: number;
-  lng: number;
   status: "AVAILABLE" | "RESERVED" | "SOLD" | "RENTED";
   documentation: "POSSESSORY_RIGHTS" | "DEED";
   active: boolean;
