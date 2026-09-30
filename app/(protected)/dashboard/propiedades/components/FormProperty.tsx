@@ -525,6 +525,7 @@ export default function FormProperty(props: FormPropertyProps) {
                       options={Array.from(new Set([...(locations.length > 0 ? locations : []), field.value].filter(Boolean))).sort((a, b) => a.localeCompare(b, "es"))}
                       className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
                       placeholder="Seleccionar localidad"
+                      emptyMessage="No hay localidades disponibles"
                       showClear
                       onChange={(event) => {
                         field.onChange(event.value);
