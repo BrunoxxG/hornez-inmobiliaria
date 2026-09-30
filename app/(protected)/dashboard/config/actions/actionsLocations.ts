@@ -19,6 +19,7 @@ export async function createLocation(name: string) {
   try {
     const locality = await prisma.locality.create({ data: { name: cleanName } });
     revalidatePath("/dashboard/config");
+    revalidatePath("/dashboard/propiedades");
     revalidatePath("/propiedades");
     return { success: true, locality };
   } catch (error) {
