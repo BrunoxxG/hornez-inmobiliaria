@@ -17,7 +17,7 @@ type Draft = {
   user: { name: string; email: string };
 };
 
-export default function DraftsPageClient({ drafts, session }: { drafts: Draft[]; session: Session }) {
+export default function DraftsPageClient({ drafts, locations, session }: { drafts: Draft[]; locations: string[]; session: Session }) {
   const [selectedDraft, setSelectedDraft] = useState<Draft | null>(null);
   const [removedDraftIds, setRemovedDraftIds] = useState<string[]>([]);
   const [draftListVersion, setDraftListVersion] = useState(0);
@@ -45,6 +45,7 @@ export default function DraftsPageClient({ drafts, session }: { drafts: Draft[];
               setDraftListVersion((current) => current + 1);
             }}
             setOpenModalForm={(open) => { if (!open) setSelectedDraft(null); }}
+            locations={locations}
             toast={toast}
             session={session}
           />
