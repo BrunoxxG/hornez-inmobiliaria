@@ -108,6 +108,13 @@ export default function FormProperty(props: FormPropertyProps) {
 
       setExistingDocuments(mappedDocuments);
     }
+    if (!property && Array.isArray(savedDraft.images)) {
+      setExistingImages(
+        savedDraft.images
+          .filter((image): image is { url: string; order?: number } => Boolean(image && typeof image === "object" && "url" in image && typeof image.url === "string"))
+          .map((image) => ({ url: image.url, existing: true, order: image.order })),
+      );
+    }
   }, [property]);
 
   useEffect(() => {
@@ -365,14 +372,39 @@ export default function FormProperty(props: FormPropertyProps) {
   };
 
   const handleSaveDraft = async () => {
-    const result = await savePropertyDraft(draftId, form.getValues() as unknown as Record<string, unknown>);
-    if (!result.success) {
-      toast.current?.show({ severity: "error", summary: "Error", detail: result.error, life: 3000 });
-      return;
+    setIsSubmitting(true);
+    try {
+      const values = form.getValues();
+      const orderedImages = allImages.map((image, index) => ({ ...image, order: index }));
+      const newImages = orderedImages.filter((image) => !image.existing && image.file);
+      const uploadedImages = await uploadImages(newImages, String(values.title || "borrador"));
+      const savedImages = orderedImages
+        .filter((image) => image.existing)
+        .map((image) => ({ url: image.url, order: image.order! }))
+        .concat(uploadedImages);
+      const result = await savePropertyDraft(draftId, {
+        ...(values as unknown as Record<string, unknown>),
+        images: savedImages,
+      });
+
+      if (!result.success) {
+        toast.current?.show({ severity: "error", summary: "Error", detail: result.error, life: 3000 });
+        return;
+      }
+
+      toast.current?.show({ severity: "success", summary: "Guardado", detail: "Borrador guardado", life: 3000 });
+      setOpenModalForm?.(false);
+      router.refresh();
+    } catch (error) {
+      toast.current?.show({
+        severity: "error",
+        summary: "No se pudo guardar",
+        detail: error instanceof Error ? error.message : "Ocurrió un error al guardar el borrador",
+        life: 5000,
+      });
+    } finally {
+      setIsSubmitting(false);
     }
-    toast.current?.show({ severity: "success", summary: "Guardado", detail: "Borrador guardado", life: 3000 });
-    setOpenModalForm?.(false);
-    router.refresh();
   };
 
   const onSubmitUpdate = async (values: PropertyFormZod) => {
