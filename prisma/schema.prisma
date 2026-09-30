@@ -142,9 +142,6 @@ model Property {
 
   currency Currency @default(USD)
 
-  lat Float
-  lng Float
-
   status        PropertyStatus        @default(AVAILABLE)
   documentation PropertyDocumentation @default(DEED)
   active        Boolean               @default(true)
