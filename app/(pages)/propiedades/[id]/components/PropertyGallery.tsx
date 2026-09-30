@@ -44,8 +44,8 @@ export default function PropertyGallery({
           aria-hidden="true"
           className="absolute inset-0 h-full w-full scale-110 object-cover opacity-25 blur-2xl"
         />
-        <img src="/img/vendeLogo.png" alt="venta logo" className={`h-15 absolute top-3 left-3 ${operation !== "Venta" ? "hidden" : "" }`} />
-        <img src="/img/alquilaLogo.png" alt="alquiler logo" className={`h-15 absolute top-3 left-3 ${operation !== "Alquiler" ? "hidden" : "" }`} />
+        <img src="/img/vendeLogo.png" alt="venta logo" className={`absolute left-3 top-3 z-20 h-15 ${operation !== "Venta" ? "hidden" : "" }`} />
+        <img src="/img/alquilaLogo.png" alt="alquiler logo" className={`absolute left-3 top-3 z-20 h-15 ${operation !== "Alquiler" ? "hidden" : "" }`} />
         <img
           src={images[active].url}
           alt="Imagen de la propiedad"
