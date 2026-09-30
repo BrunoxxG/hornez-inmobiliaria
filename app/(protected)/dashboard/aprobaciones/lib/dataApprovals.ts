@@ -22,8 +22,6 @@ export async function getPendingProperties() {
       landArea: true,
       age: true,
       floors: true,
-      lat: true,
-      lng: true,
       status: true,
       documentation: true,
       active: true,

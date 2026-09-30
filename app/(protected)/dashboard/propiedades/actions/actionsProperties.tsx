@@ -41,8 +41,6 @@ export async function createProperty(values: PropertyFormZod) {
       age,
       floors,
       currency,
-      lat,
-      lng,
       status,
       documentation,
       active,
@@ -79,8 +77,6 @@ export async function createProperty(values: PropertyFormZod) {
         age,
         floors,
         currency,
-        lat,
-        lng,
         status,
         documentation,
         active,
@@ -89,10 +85,11 @@ export async function createProperty(values: PropertyFormZod) {
         approvalStatus: isAdminRole(session.user.role) ? "APPROVED" : "PENDING",
         approvedById: isAdminRole(session.user.role) ? session.user.id : null,
         approvedAt: isAdminRole(session.user.role) ? new Date() : null,
-        video,
+        video: video || "-",
         features: {
           create: features.map((featureId) => ({
             featureId,
+            value: "-",
           })),
         },
         images: {
@@ -151,8 +148,6 @@ export async function updateProperty(values: PropertyFormZod, propertyId: string
       age,
       floors,
       currency,
-      lat,
-      lng,
       status,
       documentation,
       active,
@@ -204,8 +199,6 @@ export async function updateProperty(values: PropertyFormZod, propertyId: string
           age,
           floors,
           currency,
-          lat,
-          lng,
           status,
           documentation,
           active,
@@ -223,6 +216,7 @@ export async function updateProperty(values: PropertyFormZod, propertyId: string
             deleteMany: {},
             create: features.map((featureId) => ({
               featureId,
+              value: "-",
             })),
           },
           images: {

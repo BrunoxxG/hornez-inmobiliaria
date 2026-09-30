@@ -35,8 +35,6 @@ export async function getProperties(): Promise<PropertyZod[]> {
         age: true,
         floors: true,
         currency: true,
-        lat: true,
-        lng: true,
         status: true,
         approvalStatus: true,
         approvedById: true,
