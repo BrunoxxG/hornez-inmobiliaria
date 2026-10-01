@@ -118,6 +118,7 @@ model ContactInquiry {
 
 model Property {
   id          String  @id @default(cuid())
+  referenceCode String @unique
   title       String
   description String
   price       Decimal @db.Decimal(12, 2)

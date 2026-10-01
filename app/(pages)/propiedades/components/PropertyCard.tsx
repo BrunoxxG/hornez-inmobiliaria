@@ -75,7 +75,8 @@ export default function PropertyCard({ property, compact = false }: { property: 
         </div>
       </Link>
 
-      <div className="flex justify-end px-4 pb-4">
+      <div className="flex items-center justify-between gap-3 px-4 pb-4">
+        <span className="text-xs font-semibold text-gray-500">Cod Ref: {property.referenceCode}</span>
         <a
           href={whatsappUrl}
           target="_blank"

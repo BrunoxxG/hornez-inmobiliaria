@@ -243,7 +243,7 @@ export function ListProperties({ properties, locations, session }: { properties:
         rowsPerPageOptions={[5, 10, 25, 50]}
         dataKey="id"
         filters={filters}
-        globalFilterFields={["title"]}
+        globalFilterFields={["title", "referenceCode"]}
         header={header}
         emptyMessage="No se encontraron propiedades"
         className="datatable-responsive"

@@ -106,11 +106,12 @@ async function main() {
     },
   ];
 
-  for (const property of properties) {
+  for (const [index, property] of properties.entries()) {
     const { featureSlugs, ...data } = property;
     const created = await prisma.property.create({
       data: {
         ...data,
+        referenceCode: `HOR${String(index + 1).padStart(6, "0")}`,
         listingTypeId: venta.id,
         status: "AVAILABLE",
         active: true,

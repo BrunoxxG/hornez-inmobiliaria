@@ -9,6 +9,7 @@ export async function getProperties(): Promise<PropertyZod[]> {
       },
       select: {
         id: true,
+        referenceCode: true,
         title: true,
         description: true,
         price: true,

@@ -67,6 +67,8 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               operation={property.listingType.name}
             />
 
+            <p className="text-sm font-semibold text-gray-500">Cod Ref: {property.referenceCode}</p>
+
             <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_1.1fr_1.3fr]">
               <div className="rounded-xl bg-white p-5 shadow-sm">
                 <h2 className="mb-4 text-xl font-bold text-hornez-orange">Servicios</h2>

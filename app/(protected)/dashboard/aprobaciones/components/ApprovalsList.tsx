@@ -13,6 +13,7 @@ import type { Session } from "next-auth";
 
 type PendingProperty = {
   id: string;
+  referenceCode: string;
   title: string;
   description: string;
   city: string;

@@ -7,6 +7,7 @@ import { Session } from "next-auth";
 
 export const propertySchema = object({
   id: string(),
+  referenceCode: string(),
   title: string(),
   description: string(),
   price: number(),

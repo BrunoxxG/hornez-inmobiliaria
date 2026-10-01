@@ -6,6 +6,7 @@ export async function getPendingProperties() {
     orderBy: { createdAt: "asc" },
     select: {
       id: true,
+      referenceCode: true,
       title: true,
       description: true,
       city: true,
