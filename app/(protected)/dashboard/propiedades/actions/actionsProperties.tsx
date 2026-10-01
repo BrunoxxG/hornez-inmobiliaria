@@ -25,6 +25,7 @@ export async function createProperty(values: PropertyFormZod) {
   }
 
   try {
+    const referenceCode = `HOR${String((await prisma.property.count()) + 1).padStart(6, "0")}`;
     const {
       title,
       description,
@@ -61,6 +62,7 @@ export async function createProperty(values: PropertyFormZod) {
 
     await prisma.property.create({
       data: {
+        referenceCode,
         title,
         description,
         price: new Prisma.Decimal(price),

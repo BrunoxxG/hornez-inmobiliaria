@@ -90,6 +90,7 @@ export async function getPropertiesView(filters: PropertyFilters): Promise<Prope
       },
       select: {
         id: true,
+        referenceCode: true,
         title: true,
         description: true,
         price: true,
@@ -179,6 +180,7 @@ export async function getPropertiesStand(): Promise<PropertyZod[]> {
       },
       select: {
         id: true,
+        referenceCode: true,
         title: true,
         description: true,
         price: true,
@@ -264,6 +266,7 @@ export async function getRelatedProperties(
   try {
     const selectConfig = {
       id: true,
+      referenceCode: true,
       title: true,
       description: true,
       price: true,
@@ -382,6 +385,7 @@ export async function getPropertyById(propertyId: string): Promise<PropertyZod |
       },
       select: {
         id: true,
+        referenceCode: true,
         title: true,
         description: true,
         price: true,
