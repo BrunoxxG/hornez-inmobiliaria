@@ -18,7 +18,7 @@ export default function PropertyCard({ property, compact = false }: { property: 
   const image = property.images[0]?.url;
   const operation = property.listingType.name;
   const propertyUrl = `/propiedades/${property.id}`;
-  const publicBaseUrl = typeof window === "undefined" ? process.env.NEXT_PUBLIC_APP_URL || "https://www.hornezinmobiliaria.com" : window.location.origin;
+  const publicBaseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.hornezinmobiliaria.com";
   const absolutePropertyUrl = `${publicBaseUrl.replace(/\/$/, "")}${propertyUrl}`;
   const whatsappMessage = `Hola, me interesa la propiedad: ${property.title}. Cod Ref: ${property.referenceCode}. Link: ${absolutePropertyUrl}`;
   const whatsappUrl = `https://wa.me/5493544400903?text=${encodeURIComponent(whatsappMessage)}`;
