@@ -37,7 +37,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
   if (!property) notFound();
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  const propertyUrl = `${appUrl.replace(/\/$/, "")}/propiedades/${property.id}`;
+  const propertyUrl = `${appUrl.replace(/\/$/, "")}/propiedades/${property.referenceCode}`;
   const whatsappMessage = `Hola, me interesa la propiedad: ${property.title}. Link: ${propertyUrl}`;
   const relatedProperties = await getRelatedProperties(property.id, property.city, property.propertyType.id, 3);
 

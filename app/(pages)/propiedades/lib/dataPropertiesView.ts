@@ -374,11 +374,11 @@ export async function getRelatedProperties(
   }
 }
 
-export async function getPropertyById(propertyId: string): Promise<PropertyZod | null> {
+export async function getPropertyById(propertyKey: string): Promise<PropertyZod | null> {
   try {
     const property = await prisma.property.findFirst({
       where: {
-        id: propertyId,
+        OR: [{ id: propertyKey }, { referenceCode: propertyKey }],
         active: true,
         status: "AVAILABLE",
         approvalStatus: "APPROVED",
