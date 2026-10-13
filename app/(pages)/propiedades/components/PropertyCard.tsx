@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { PropertyZod } from "@/app/(protected)/dashboard/propiedades/lib/zodPublications";
 import { BedDouble, LayoutDashboard, Toilet } from "lucide-react";
 import Link from "next/link";
@@ -11,11 +14,31 @@ const currencyFormat = (price: number, currency: string) =>
   }).format(price);
 
 export default function PropertyCard({ property, compact = false }: { property: PropertyZod; compact?: boolean }) {
+  const [shareStatus, setShareStatus] = useState<"idle" | "copied">("idle");
   const image = property.images[0]?.url;
   const operation = property.listingType.name;
   const propertyUrl = `/propiedades/${property.id}`;
-  const whatsappMessage = `Hola, me interesa la propiedad: ${property.title}. Link: ${propertyUrl}`;
+  const publicBaseUrl = typeof window === "undefined" ? process.env.NEXT_PUBLIC_APP_URL || "https://www.hornezinmobiliaria.com" : window.location.origin;
+  const absolutePropertyUrl = `${publicBaseUrl.replace(/\/$/, "")}${propertyUrl}`;
+  const whatsappMessage = `Hola, me interesa la propiedad: ${property.title}. Cod Ref: ${property.referenceCode}. Link: ${absolutePropertyUrl}`;
   const whatsappUrl = `https://wa.me/5493544400903?text=${encodeURIComponent(whatsappMessage)}`;
+
+  const handleShare = async () => {
+    const shareData = {
+      title: property.title,
+      text: `Cod Ref: ${property.referenceCode} - ${property.title}`,
+      url: absolutePropertyUrl,
+    };
+
+    if (navigator.share) {
+      await navigator.share(shareData);
+      return;
+    }
+
+    await navigator.clipboard.writeText(absolutePropertyUrl);
+    setShareStatus("copied");
+    window.setTimeout(() => setShareStatus("idle"), 2000);
+  };
 
   return (
     <div
@@ -77,15 +100,26 @@ export default function PropertyCard({ property, compact = false }: { property: 
 
       <div className="flex items-center justify-between gap-3 px-4 pb-4">
         <span className="text-xs font-semibold text-gray-500">Cod Ref: {property.referenceCode}</span>
-        <a
-          href={whatsappUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 rounded-md bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-800 transition-colors hover:bg-hornez-orange hover:text-white active:bg-hornez-orange active:text-white"
-        >
-          <i className="pi pi-whatsapp" />
-          Consultar
-        </a>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => void handleShare()}
+            title={shareStatus === "copied" ? "Enlace copiado" : "Compartir propiedad"}
+            aria-label={shareStatus === "copied" ? "Enlace copiado" : "Compartir propiedad"}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-gray-200 text-gray-800 transition-colors hover:bg-hornez-orange hover:text-white"
+          >
+            <i className={shareStatus === "copied" ? "pi pi-check" : "pi pi-share-alt"} />
+          </button>
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-md bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-800 transition-colors hover:bg-hornez-orange hover:text-white active:bg-hornez-orange active:text-white"
+          >
+            <i className="pi pi-whatsapp" />
+            Consultar
+          </a>
+        </div>
       </div>
     </div>
   );
