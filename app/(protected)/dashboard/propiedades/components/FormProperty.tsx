@@ -75,7 +75,17 @@ const compressImage = async (file: File): Promise<File> => {
 };
 
 export default function FormProperty(props: FormPropertyProps) {
-  const { property, locations = [], draftId, draftData, onDraftSaved, onPropertyUpdated, setOpenModalForm, toast, session } = props;
+  const {
+    property,
+    locations = [],
+    draftId,
+    draftData,
+    onDraftSaved,
+    onPropertyUpdated,
+    setOpenModalForm,
+    toast,
+    session,
+  } = props;
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [existingImages, setExistingImages] = useState<ImageItem[]>([]);
@@ -111,7 +121,9 @@ export default function FormProperty(props: FormPropertyProps) {
     if (!property && Array.isArray(savedDraft.images)) {
       setExistingImages(
         savedDraft.images
-          .filter((image): image is { url: string; order?: number } => Boolean(image && typeof image === "object" && "url" in image && typeof image.url === "string"))
+          .filter((image): image is { url: string; order?: number } =>
+            Boolean(image && typeof image === "object" && "url" in image && typeof image.url === "string"),
+          )
           .map((image) => ({ url: image.url, existing: true, order: image.order })),
       );
     }
@@ -147,11 +159,16 @@ export default function FormProperty(props: FormPropertyProps) {
       age: property?.age ?? Number(savedDraft.age || 0),
       floors: property?.floors ?? Number(savedDraft.floors || 0),
       status: property?.status || (savedDraft.status as PropertyFormZod["status"]) || "AVAILABLE",
-      documentation: property?.documentation || (savedDraft.documentation as PropertyFormZod["documentation"]) || "DEED",
+      documentation:
+        property?.documentation || (savedDraft.documentation as PropertyFormZod["documentation"]) || "DEED",
       active: property?.active ?? Boolean(savedDraft.active ?? true),
       standOut: property?.standOut ?? Boolean(savedDraft.standOut ?? false),
       userId: property?.userId || session.user.id,
-      features: property?.features?.map((f) => f.feature.id) || (Array.isArray(savedDraft.features) ? savedDraft.features.filter((value): value is string => typeof value === "string") : []),
+      features:
+        property?.features?.map((f) => f.feature.id) ||
+        (Array.isArray(savedDraft.features)
+          ? savedDraft.features.filter((value): value is string => typeof value === "string")
+          : []),
       video: property?.video || String(savedDraft.video || ""),
     },
   });
@@ -178,7 +195,6 @@ export default function FormProperty(props: FormPropertyProps) {
       selectedFeatures.filter((f) => f !== featureId),
     );
   };
-
 
   const uploadImages = async (images: ImageItem[], title: string) => {
     const uploads = await Promise.all(
@@ -300,14 +316,25 @@ export default function FormProperty(props: FormPropertyProps) {
         setIsSubmitting(false);
         return;
       }
-      const newImagesOrdered = allImages.map((img, index) => ({ ...img, order: index })).filter((img) => !img.existing);
+      const imagesOrdered = allImages.map((img, index) => ({
+        ...img,
+        order: index,
+      }));
 
-      const uploaded = await uploadImages(newImagesOrdered, values.title);
+      const draftImages = imagesOrdered
+        .filter((img) => img.existing && !img.id)
+        .map(({ url, order }) => ({ url, order }));
+
+      const newImages = imagesOrdered.filter((img) => !img.existing);
+
+      const uploaded = await uploadImages(newImages, values.title);
+
+      const finalImages = [...draftImages, ...uploaded];
       const uploadedDocuments = await uploadDocuments(newDocuments, values.title);
 
       const payload = {
         ...values,
-        images: uploaded,
+        images: finalImages,
         deletedImages,
         existingImages: existingImages
           .filter((img): img is ImageItem & { id: string } => !!img.id)
@@ -455,7 +482,11 @@ export default function FormProperty(props: FormPropertyProps) {
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <>
-                    <InputText {...field} placeholder="Título" className={`w-full ${fieldState.error ? "p-invalid" : ""}`} />
+                    <InputText
+                      {...field}
+                      placeholder="Título"
+                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
+                    />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                   </>
                 )}
@@ -469,7 +500,12 @@ export default function FormProperty(props: FormPropertyProps) {
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <>
-                    <InputTextarea {...field} rows={4} placeholder="Descripción" className={`w-full ${fieldState.error ? "p-invalid" : ""}`} />
+                    <InputTextarea
+                      {...field}
+                      rows={4}
+                      placeholder="Descripción"
+                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
+                    />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                   </>
                 )}
@@ -552,7 +588,9 @@ export default function FormProperty(props: FormPropertyProps) {
                   <>
                     <Dropdown
                       value={field.value}
-                      options={Array.from(new Set([...(locations.length > 0 ? locations : []), field.value].filter(Boolean))).sort((a, b) => a.localeCompare(b, "es"))}
+                      options={Array.from(
+                        new Set([...(locations.length > 0 ? locations : []), field.value].filter(Boolean)),
+                      ).sort((a, b) => a.localeCompare(b, "es"))}
                       className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
                       placeholder="Seleccionar localidad"
                       emptyMessage="No hay localidades disponibles"
@@ -627,19 +665,53 @@ export default function FormProperty(props: FormPropertyProps) {
 
             <div className="w-full">
               <label className="block text-sm font-semibold mb-2">Total construido (m²)</label>
-              <Controller name="coveredArea" control={form.control} render={({ field }) => <InputNumber value={field.value} onChange={(e) => field.onChange(e.value ?? 0)} className="w-full" />} />
+              <Controller
+                name="coveredArea"
+                control={form.control}
+                render={({ field }) => (
+                  <InputNumber value={field.value} onChange={(e) => field.onChange(e.value ?? 0)} className="w-full" />
+                )}
+              />
             </div>
             <div className="w-full">
               <label className="block text-sm font-semibold mb-2">Terreno (m²)</label>
-              <Controller name="landArea" control={form.control} render={({ field }) => <InputNumber value={field.value} onChange={(e) => field.onChange(e.value ?? 0)} className="w-full" />} />
+              <Controller
+                name="landArea"
+                control={form.control}
+                render={({ field }) => (
+                  <InputNumber value={field.value} onChange={(e) => field.onChange(e.value ?? 0)} className="w-full" />
+                )}
+              />
             </div>
             <div className="w-full">
               <label className="block text-sm font-semibold mb-2">Antigüedad</label>
-              <Controller name="age" control={form.control} render={({ field }) => <InputNumber value={field.value} onChange={(e) => field.onChange(e.value ?? 0)} min={0} className="w-full" />} />
+              <Controller
+                name="age"
+                control={form.control}
+                render={({ field }) => (
+                  <InputNumber
+                    value={field.value}
+                    onChange={(e) => field.onChange(e.value ?? 0)}
+                    min={0}
+                    className="w-full"
+                  />
+                )}
+              />
             </div>
             <div className="w-full">
               <label className="block text-sm font-semibold mb-2">Plantas</label>
-              <Controller name="floors" control={form.control} render={({ field }) => <InputNumber value={field.value} onChange={(e) => field.onChange(e.value ?? 0)} min={0} className="w-full" />} />
+              <Controller
+                name="floors"
+                control={form.control}
+                render={({ field }) => (
+                  <InputNumber
+                    value={field.value}
+                    onChange={(e) => field.onChange(e.value ?? 0)}
+                    min={0}
+                    className="w-full"
+                  />
+                )}
+              />
             </div>
 
             <div className="mb-3">
@@ -649,7 +721,11 @@ export default function FormProperty(props: FormPropertyProps) {
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <>
-                    <InputText {...field} placeholder="URL Video" className={`w-full ${fieldState.error ? "p-invalid" : ""}`} />
+                    <InputText
+                      {...field}
+                      placeholder="URL Video"
+                      className={`w-full ${fieldState.error ? "p-invalid" : ""}`}
+                    />
                     {fieldState.error && <small className="p-error">{fieldState.error.message}</small>}
                   </>
                 )}
@@ -684,10 +760,14 @@ export default function FormProperty(props: FormPropertyProps) {
                 {(["SERVICE", "ADDITIONAL"] as const).map((category) => (
                   <div key={category}>
                     <div className="mb-2 flex items-center justify-between">
-                      <label className="block text-sm font-medium text-gray-700">{category === "SERVICE" ? "Servicios" : "Adicionales"}</label>
+                      <label className="block text-sm font-medium text-gray-700">
+                        {category === "SERVICE" ? "Servicios" : "Adicionales"}
+                      </label>
                     </div>
                     <Dropdown
-                      options={features.filter((feature) => feature.category === category && !selectedFeatures.includes(feature.id))}
+                      options={features.filter(
+                        (feature) => feature.category === category && !selectedFeatures.includes(feature.id),
+                      )}
                       optionLabel="name"
                       optionValue="id"
                       className="w-full"
@@ -702,7 +782,10 @@ export default function FormProperty(props: FormPropertyProps) {
                             return feature?.category === category ? [feature] : [];
                           })
                           .map((feature) => (
-                            <div key={feature.id} className="flex items-center gap-2 rounded-full bg-gray-200 px-3 py-1">
+                            <div
+                              key={feature.id}
+                              className="flex items-center gap-2 rounded-full bg-gray-200 px-3 py-1"
+                            >
                               <span>{feature.name}</span>
                               <button
                                 type="button"
@@ -718,9 +801,7 @@ export default function FormProperty(props: FormPropertyProps) {
                   </div>
                 ))}
               </div>
-              {isLoading ? (
-                <span>Cargando servicios y adicionales...</span>
-              ) : null}
+              {isLoading ? <span>Cargando servicios y adicionales...</span> : null}
             </div>
 
             <div className="mb-3">
