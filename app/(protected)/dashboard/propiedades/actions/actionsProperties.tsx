@@ -25,7 +25,11 @@ export async function createProperty(values: PropertyFormZod) {
   }
 
   try {
-    const referenceCode = `HOR${String((await prisma.property.count()) + 1).padStart(6, "0")}`;
+    const [{ value }] = await prisma.$queryRaw<{ value: bigint }[]>`
+                        SELECT nextval('"property_reference_seq"') AS value
+                          `;
+
+    const referenceCode = `HOR${value.toString().padStart(6, "0")}`;
     const {
       title,
       description,
